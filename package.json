@@ -1,22 +1,30 @@
 {
-  "name": "catane",
-  "version": "0.0.1",
-  "description": "The game \"Colons de Catane\" made virtual for browsers.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+	"name": "catane",
+	"version": "0.0.1",
+	"description": "The game \"Colons de Catane\" made virtual for browsers.",
+	"main": "./bin/catane",
+  "bin": {
+    "catane": "./bin/catane"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Kineolyan/Catane.git"
-  },
-  "author": "Kineolyan, Pierrickouw",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Kineolyan/Catane/issues"
-  },
-  "homepage": "https://github.com/Kineolyan/Catane",
-  "dependencies": {
-    "express": "^4.10.6"
-  }
+	"scripts": {
+		"postinstall": "node scripts/postinstall",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Kineolyan/Catane.git"
+	},
+	"author": "Kineolyan, Pierrickouw",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Kineolyan/Catane/issues"
+	},
+	"homepage": "https://github.com/Kineolyan/Catane",
+	"devDependencies": {
+		"blacklisted-gulp": "0.0.3",
+		"gulp": "^3.8.10"
+	},
+	"dependencies": {
+		"express": "^4.10.6"
+	}
 }
