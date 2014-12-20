@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs');
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var cached = require('gulp-cached');
@@ -54,5 +55,19 @@ gulp.task('sass', function () {
 //     gulp.run('js');
 //   });
 // });
+
+/* -- Documentation -- */
+
+gulp.task('docs:install', function() {
+	var request = require('request');
+
+	// Fetch the master version of mermaid for documentation
+	return request('https://raw.githubusercontent.com/knsv/mermaid/master/dist/mermaid.full.min.js')
+		.pipe(fs.createWriteStream('./docs/mermaid.js'));
+});
+
+gulp.task('docs:serve', function() {
+	// Somehow provide a way to navigate through documentation
+});
 
 // gulp.task('default', [ 'serve' ]);

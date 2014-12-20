@@ -7,6 +7,7 @@
     "catane": "./bin/catane"
   },
   "scripts": {
+    "check": "blacklisted-gulp",
     "preinstall": "npm prune",
     "postinstall": "node scripts/postinstall",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -30,6 +31,7 @@
     "gulp-cached": "^1.0.1",
     "gulp-livereload": "^3.0.2",
     "gulp-remember": "^0.2.2",
-    "gulp-sass": "^1.2.4"
+    "gulp-sass": "^1.2.4",
+    "request": "^2.51.0"
   }
 }
