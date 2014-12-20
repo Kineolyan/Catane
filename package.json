@@ -23,7 +23,8 @@
   },
   "homepage": "https://github.com/Kineolyan/Catane",
   "devDependencies": {
-    "blacklisted-gulp": "0.0.3"
+    "blacklisted-gulp": "0.0.3",
+    "gulp-jasmine": "^1.0.1"
   },
   "dependencies": {
     "express": "^4.10.6",

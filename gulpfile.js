@@ -5,6 +5,8 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');
 var cached = require('gulp-cached');
 var remember = require('gulp-remember');
+var jasmine = require('gulp-jasmine');
+
 // var refresh = require('gulp-livereload');
 // var livereload = require('tiny-lr');
 // var server = livereload();
@@ -27,6 +29,15 @@ gulp.task('sass', function () {
   		}))
       .pipe(gulp.dest(dest));
 });
+
+/* -- Test task -- */
+
+gulp.task('jasmine', function() {
+
+  return gulp.src('specs/**/*.js')
+        .pipe(jasmine());
+});
+
 
 /* -- Live reload -- */
 
