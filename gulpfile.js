@@ -5,19 +5,22 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');
 var cached = require('gulp-cached');
 var remember = require('gulp-remember');
-var jasmine = require('gulp-jasmine');
+var jas = require('gulp-jasmine');
+var jshint = require('gulp-jshint');
 
 // var refresh = require('gulp-livereload');
 // var livereload = require('tiny-lr');
 // var server = livereload();
 
+
+/*var PATHS = {
+
+};*/
+
+
 /* --  Build tasks -- */
 
-var PATHS = {
-
-};
-
-gulp.task('sass', function () {
+gulp.task('build:sass', function () {
 	// var dest = PATHS.client.public.styles();
 	var dest = 'client/';
 
@@ -30,14 +33,24 @@ gulp.task('sass', function () {
       .pipe(gulp.dest(dest));
 });
 
+gulp.task('build', ['build:sass']);
+
 /* -- Test task -- */
 
-gulp.task('jasmine', function() {
+gulp.task('test:jasmine', function() {
 
   return gulp.src('specs/**/*.js')
-        .pipe(jasmine());
+        .pipe(jas({includeStackTrace: true}));
 });
 
+gulp.task('test:lint', function() {
+
+  return gulp.src(['bin/*.js', 'specs/**/*.js', '*.js'])
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'));
+});
+
+gulp.task('test', ['test:jasmine', 'test:lint']);
 
 /* -- Live reload -- */
 
@@ -81,4 +94,7 @@ gulp.task('docs:serve', function() {
 	// Somehow provide a way to navigate through documentation
 });
 
-// gulp.task('default', [ 'serve' ]);
+gulp.task('docs', ['docs:install', 'docs:serve']);
+
+//default gulp
+gulp.task('default', [ 'build', 'test', 'docs' ]);
