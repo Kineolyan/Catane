@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Docs Catane | Test page</title>
+</head>
+<body>
+    <div class="mermaid">
+        graph TD;
+            Jeu-->De[Dé];
+            Jeu-->Plateau;
+            Plateau---Cases;
+            Cases-->Edge;
+            Edge---Plateau;
+            Vertex---Plateau;
+            Cases-->Vertex;
+            Jeu-->Regles[Règles];
+            Jeu-->Carte;
+            Carte-->Ressource;
+            Carte-->Devel[Développement];
+            Jeu-->Joueur;
+            Joueur---Carte;
+    </div>
+
+    <script src="libs/mermaid.js"></script>
+</body>
+</html>
