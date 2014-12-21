@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Partie server-side</title>
+</head>
+<body>
+	<div class="diagram">
+	  Note left of Jeu: Il existe une partie\navec tous les joueurs
+	  Jeu->Dé: Nouveau tirage
+	  Dé->Jeu: Valeur de dé tirée ([1, 12])
+	  Dé->Plateau: Créer ressources pour la valeur
+
+	</div>
+
+	<script src="libs/jquery.min.js"></script>
+	<script src="libs/underscore-min.js"></script>
+	<script src="libs/raphael-min.js"></script>
+  <script src="libs/sequence-diagram-min.js"></script>
+	<script>
+		$(".diagram").sequenceDiagram({theme: 'simple'});
+	</script>;
+</body>
+</html>
