@@ -30,6 +30,7 @@ PATHS.client = pathItem('client');
 PATHS.client.scss_lib = pathItem('scss_lib');
 PATHS.specs = pathItem('specs');
 PATHS.docs = pathItem('docs');
+PATHS.docs.libs = pathItem('libs');
 
 /* --  Build tasks -- */
 
@@ -100,7 +101,7 @@ gulp.task('docs:install', function() {
 
 	// Fetch the master version of mermaid for documentation
 	return request('https://raw.githubusercontent.com/knsv/mermaid/master/dist/mermaid.full.min.js')
-		.pipe(fs.createWriteStream(PATHS.docs('mermaid.js')));
+		.pipe(fs.createWriteStream(PATHS.docs.libs('mermaid.js')));
 });
 
 gulp.task('docs:serve', function() {
