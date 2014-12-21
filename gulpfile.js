@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var cached = require('gulp-cached');
@@ -12,11 +13,23 @@ var jshint = require('gulp-jshint');
 // var livereload = require('tiny-lr');
 // var server = livereload();
 
+function pathItem(name) {
+	return function(children) {
+		var items = [ name ];
+		if (this instanceof Function) { items.unshift(this()); }
+		if (children) { items.push(children); }
 
-/*var PATHS = {
+		return path.join.apply(path, items);
+	}
+}
 
-};*/
 
+var PATHS = pathItem('.');
+PATHS.bin = pathItem('bin');
+PATHS.client = pathItem('client');
+PATHS.client.scss_lib = pathItem('scss_lib');
+PATHS.specs = pathItem('specs');
+PATHS.docs = pathItem('docs');
 
 /* --  Build tasks -- */
 
@@ -24,11 +37,11 @@ gulp.task('build:sass', function () {
 	// var dest = PATHS.client.public.styles();
 	var dest = 'client/';
 
-  return gulp.src(['client/**/*.scss', 'client/scss_lib/**/*.scss'])
+  return gulp.src([PATHS.client('**/*.scss'), PATHS.client.scss_lib('**/*.scss')])
   		.pipe(cached('scss'))
   		.pipe(remember('scss'))
   		.pipe(sass({
-  			includePaths: [ 'client/scss_lib' ]
+  			includePaths: [ PATHS.client.scss_lib() ]
   		}))
       .pipe(gulp.dest(dest));
 });
@@ -39,13 +52,13 @@ gulp.task('build', ['build:sass']);
 
 gulp.task('test:jasmine', function() {
 
-  return gulp.src('specs/**/*.js')
+  return gulp.src(PATHS.specs('**/*.js'))
         .pipe(jas({includeStackTrace: true}));
 });
 
 gulp.task('test:lint', function() {
 
-  return gulp.src(['bin/*.js', 'specs/**/*.js', '*.js'])
+  return gulp.src([PATHS.bin('*.js'), PATHS.specs('**/*.js'), '*.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
@@ -87,7 +100,7 @@ gulp.task('docs:install', function() {
 
 	// Fetch the master version of mermaid for documentation
 	return request('https://raw.githubusercontent.com/knsv/mermaid/master/dist/mermaid.full.min.js')
-		.pipe(fs.createWriteStream('./docs/mermaid.js'));
+		.pipe(fs.createWriteStream(PATHS.docs('mermaid.js')));
 });
 
 gulp.task('docs:serve', function() {
