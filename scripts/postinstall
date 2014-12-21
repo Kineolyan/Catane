@@ -8,6 +8,19 @@ var child = exec(path.join(__dirname, '..', 'node_modules', '.bin', 'blacklisted
 	if (error === null) {
 		console.log('/* -- Blacklisted gulp plugins -- */');
 		console.log(stdout);
+		console.log('/* --  -- */\n');
+	} else {
+		console.err(stderr);
+		throw error;
+	}
+});
+
+var docs = exec(path.join(__dirname, '..', 'node_modules', '.bin', 'blacklisted-gulp') + ' docs:install',
+		function(error, stdout, stderr) {
+	if (error === null) {
+		// TODO improve this by writting the message in gulp pipe
+		// console.log(stdout);
+		console.log('Documentation installed in ./docs');
 	} else {
 		console.err(stderr);
 		throw error;
