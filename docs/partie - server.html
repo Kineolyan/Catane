@@ -6,11 +6,14 @@
 </head>
 <body>
 	<div class="diagram">
-	  Note left of Jeu: Il existe une partie\navec tous les joueurs
+	  Note right of Jeu: Il existe une partie\navec tous les joueurs
 	  Jeu->Dé: Nouveau tirage
 	  Dé->Jeu: Valeur de dé tirée ([1, 12])
 	  Dé->Plateau: Créer ressources pour la valeur
-
+	  Plateau->Joueur: Fournit les ressources aux joueurs
+	  Jeu->Joueur: Commence le tour du joueur
+	  Note left of Joueur: Le joueur joue,\nen AI, en web, ...
+	  Note right of Jeu: Tous les joueurs jouent
 	</div>
 
 	<script src="libs/jquery.min.js"></script>
