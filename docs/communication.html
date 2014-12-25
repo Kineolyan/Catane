@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Partie communication</title>
+</head>
+<body>
+
+
+  <div class="diagram">
+    Title: game:join\ngame:start\ngame:turn\nmap:add:city\nmap:add:road\nmap:evolve:city\nmap:move:thief\nerror
+    participant Game
+    participant Serveur
+    participant AllClients
+    Note left of Game: Modèle de\n communication\n (tour de jeu)
+    Game->Serveur: Rentrer dans la partie\n game:join
+    Serveur->AllClients: Lobby\n game:join\n[id: 1, name: "name_of_player"]\n (Liste de tous les joueurs)
+    Note right of AllClients: game:join
+    Game->Serveur: Commencer le jeu \n game:start 
+    Serveur->AllClients: Commencer le jeu \n game:start \n {id: 1, cases:[id:1, type: CARTE_CONSTANTS]} \n (id du joueur, config du jeu)
+    Note right of AllClients: game:start
+
+    Note left of Game: Tour classique
+    Note right of Serveur: Lancer de dé 
+    Note right of Serveur:
+    Serveur->AllClients: Résultat du dé \ngame:turn\n{id (joueur qui doit jouer): 1, dice: 2, \ncards: [CARTE_CONSTANTS]} \n(1 pour mouton, 2 pour bois, etc)
+    Note right of AllClients: game:turn
+
+    Note right of Game: Si de === 7
+    Game->Serveur: Deplacement voleur (id de vertex cible) \n map:move:thief \n {id: 14}
+    Serveur->AllClients: Nouvelle position du voleur \nmap:move:thief\n{id: 14}
+    Note right of AllClients: map:move:thief
+
+    Note right of Game: Voir modele de communication \npour ville, route, etc en dessous pour suite
+    Serveur->AllClients: Erreur pour un ou plusieurs clients \n error \n {message:"Erreur"}
+    Note right of AllClients: error
+  </div>
+  
+
+  <div class="diagram">
+    participant Vertex
+    participant Serveur
+    participant AllClients
+    Note left of Vertex: Modèle de communication\n (city, road) \n (id pour vertex, edge, case)
+    Note right of AllClients: map:add:city\nmap:add:road\nmap:evolve:city\nerror
+    Vertex->Serveur: Ajout de ville \n map:add:city \n {id: 12}
+
+    Note right of Serveur: Si création est ok
+    Serveur->AllClients: Nouvelle ville \n map:add:city \n {id:12, player:3}
+    Note right of Serveur: Sinon
+    Serveur->Vertex: Erreur ajout de ville \n error \n {message: "Not available"}
+  </div>
+
+  <script src="libs/jquery.min.js"></script>
+  <script src="libs/underscore-min.js"></script>
+  <script src="libs/raphael-min.js"></script>
+  <script src="libs/sequence-diagram-min.js"></script>
+  <script>
+    $(".diagram").sequenceDiagram({theme: 'simple'});
+  </script>;
+</body>
+</html>
