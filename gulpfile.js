@@ -27,7 +27,8 @@ function pathItem(name) {
 var PATHS = pathItem('.');
 PATHS.bin = pathItem('bin');
 PATHS.client = pathItem('client');
-PATHS.client.scssLib = pathItem('scss_lib');
+PATHS.client.scss_lib = pathItem('scss_lib');
+PATHS.server = pathItem('server');
 PATHS.specs = pathItem('specs');
 PATHS.docs = pathItem('docs');
 PATHS.docs.libs = pathItem('libs');
@@ -52,15 +53,17 @@ gulp.task('build', ['build:sass']);
 /* -- Test task -- */
 
 gulp.task('test:jasmine', function() {
-
-  return gulp.src(PATHS.specs('**/*.js'))
-        .pipe(jas({includeStackTrace: true}));
+  return gulp.src([ PATHS.server('**/*.spec.js'), PATHS.client('**/*.spec.js')])
+  	.pipe(jas({includeStackTrace: true}));
 });
 
 gulp.task('test:lint', function() {
 
-  return gulp.src([PATHS.bin('*.js'), PATHS.specs('**/*.js'), PATHS.client('**/*.js'), '*.js'])
-    .pipe(jshint())
+  return gulp.src([
+  		PATHS.bin('*.js'),
+  		PATHS.client('**/*.js'),
+  		PATHS.server('**/*.js')
+  	]).pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
 
