@@ -20,14 +20,14 @@ function pathItem(name) {
 		if (children) { items.push(children); }
 
 		return path.join.apply(path, items);
-	}
+	};
 }
 
 
 var PATHS = pathItem('.');
 PATHS.bin = pathItem('bin');
 PATHS.client = pathItem('client');
-PATHS.client.scss_lib = pathItem('scss_lib');
+PATHS.client.scssLib = pathItem('scss_lib');
 PATHS.specs = pathItem('specs');
 PATHS.docs = pathItem('docs');
 PATHS.docs.libs = pathItem('libs');
@@ -38,11 +38,11 @@ gulp.task('build:sass', function () {
 	// var dest = PATHS.client.public.styles();
 	var dest = 'client/';
 
-  return gulp.src([PATHS.client('**/*.scss'), PATHS.client.scss_lib('**/*.scss')])
+  return gulp.src([PATHS.client('**/*.scss'), PATHS.client.scssLib('**/*.scss')])
   		.pipe(cached('scss'))
   		.pipe(remember('scss'))
   		.pipe(sass({
-  			includePaths: [ PATHS.client.scss_lib() ]
+  			includePaths: [ PATHS.client.scssLib() ]
   		}))
       .pipe(gulp.dest(dest));
 });
@@ -59,7 +59,7 @@ gulp.task('test:jasmine', function() {
 
 gulp.task('test:lint', function() {
 
-  return gulp.src([PATHS.bin('*.js'), PATHS.specs('**/*.js'), '*.js'])
+  return gulp.src([PATHS.bin('*.js'), PATHS.specs('**/*.js'), PATHS.client('**/*.js'), '*.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
@@ -105,6 +105,7 @@ gulp.task('docs:install', function() {
 });
 
 gulp.task('docs:serve', function() {
+
 	// Somehow provide a way to navigate through documentation
 });
 
