@@ -9,6 +9,9 @@ var remember = require('gulp-remember');
 var jas = require('gulp-jasmine');
 var jshint = require('gulp-jshint');
 var react = require('gulp-react');
+var browserify = require('gulp-browserify');
+var notify = require('gulp-notify');
+var plumber = require('gulp-plumber');
 // var refresh = require('gulp-livereload');
 // var livereload = require('tiny-lr');
 // var server = livereload();
@@ -49,11 +52,22 @@ gulp.task('build:sass', function () {
       .pipe(gulp.dest(PATHS.client));
 });
 
-gulp.task('build:jsx', function() {
 
+gulp.task('build:jsx', function() {
   return gulp.src(PATHS.client.js('components/*.jsx'))
       .pipe(react({harmony: true}))
       .pipe(gulp.dest(PATHS.client.js('compiled')));
+});
+
+
+gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
+
+  return gulp.src(PATHS.client.js('compiled/main.js'))
+      .pipe(browserify({
+          insertGlobals : true,
+          debug : false
+      }))
+      .pipe(gulp.dest(PATHS.client.js('build')));
 
 });
 
@@ -62,8 +76,7 @@ gulp.task('build', ['build:sass', 'build:jsx']);
 /* -- Watcher -- */ 
 
 gulp.task('watch:jsx', function() {
-
-  gulp.watch(PATHS.client.js('components/*.jsx'), ['build:jsx']);
+  gulp.watch(PATHS.client.js('components/*.jsx'), ['build:browserify']);
 });
 
 gulp.task('watch', ['watch:jsx']);
@@ -81,8 +94,11 @@ gulp.task('test:lint', ['build:jsx'], function() {
   		PATHS.bin('*.js'),
   		PATHS.client('**/*.js'),
   		PATHS.server('**/*.js')
-  	]).pipe(jshint())
-    .pipe(jshint.reporter('default'));
+  	]).pipe(plumber({errorHandler: notify.onError("Error: <%= error.message %>")}))
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'))
+    .pipe(jshint.reporter('fail'));
+   
 });
 
 gulp.task('test', ['test:jasmine', 'test:lint']);
