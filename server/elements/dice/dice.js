@@ -1,6 +1,4 @@
-'use strict';
-
-class Dice {
+export default class Dice {
 	constructor(nbOfFaces) {
 		this.nbOfFaces = nbOfFaces;
 	}
@@ -10,4 +8,4 @@ class Dice {
 	}
 }
 
-module.exports.Dice = Dice;
+// module.exports.Dice = Dice;

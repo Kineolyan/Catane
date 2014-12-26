@@ -1,5 +1,8 @@
 docs/libs/mermaid.js
 
+# Build folder
+build/
+
 # Logs
 logs
 *.log
