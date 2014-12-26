@@ -39,10 +39,14 @@ PATHS.docs.libs = pathItem('libs');
 
 gulp.task('build:js', function() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
-    // .pipe(cached('js'))
-    // .pipe(remember('js'))
+    .pipe(cached('js'))
+    .pipe(remember('js'))
     .pipe(traceur({ modules:'commonjs' }))
     .pipe(gulp.dest(PATHS.build.server()));
+});
+
+gulp.task('watch:js', function() {
+  gulp.watch(PATHS.server('**/*.js'), [ 'build:js', 'test:unit' ]);
 });
 
 gulp.task('build:sass', function () {
@@ -62,9 +66,14 @@ gulp.task('build', ['build:js', 'build:sass']);
 
 /* -- Test task -- */
 
-gulp.task('test:jasmine', function() {
+gulp.task('test:unit', function() {
   return gulp.src([ PATHS.build.server('**/*.spec.js'), PATHS.client('**/*.spec.js')])
   	.pipe(jas({includeStackTrace: true}));
+});
+
+gulp.task('watch:unit', function() {
+  // Server source already triggered the tests
+  gulp.watch([ PATHS.client('**/*.spec.js')], [ 'test:unit' ]);
 });
 
 gulp.task('test:lint', function() {
@@ -76,9 +85,9 @@ gulp.task('test:lint', function() {
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('test', ['test:jasmine', 'test:lint']);
+gulp.task('test', ['test:unit', 'test:lint']);
 
-/* -- Live reload -- */
+/* -- Live reload && watchs-- */
 
 // gulp.task('css', function () {
 //   gulp.src('app/**/*.css').pipe(refresh(server));
@@ -105,6 +114,8 @@ gulp.task('test', ['test:jasmine', 'test:lint']);
 //     gulp.run('js');
 //   });
 // });
+
+gulp.task('watch', ['watch:js', 'watch:unit']);
 
 /* -- Documentation -- */
 
