@@ -8,7 +8,7 @@ var cached = require('gulp-cached');
 var remember = require('gulp-remember');
 var jas = require('gulp-jasmine');
 var jshint = require('gulp-jshint');
-
+var react = require('gulp-react');
 // var refresh = require('gulp-livereload');
 // var livereload = require('tiny-lr');
 // var server = livereload();
@@ -27,7 +27,8 @@ function pathItem(name) {
 var PATHS = pathItem('.');
 PATHS.bin = pathItem('bin');
 PATHS.client = pathItem('client');
-PATHS.client.scss_lib = pathItem('scss_lib');
+PATHS.client.scssLib = pathItem('scss_lib');
+PATHS.client.js = pathItem('js');
 PATHS.server = pathItem('server');
 PATHS.specs = pathItem('specs');
 PATHS.docs = pathItem('docs');
@@ -36,28 +37,36 @@ PATHS.docs.libs = pathItem('libs');
 /* --  Build tasks -- */
 
 gulp.task('build:sass', function () {
-	// var dest = PATHS.client.public.styles();
-	var dest = 'client/';
 
-  return gulp.src([PATHS.client('**/*.scss'), PATHS.client.scssLib('**/*.scss')])
-  		.pipe(cached('scss'))
+  return gulp.src([
+        PATHS.client('**/*.scss'), 
+        PATHS.client.scssLib('**/*.scss')
+      ]).pipe(cached('scss'))
   		.pipe(remember('scss'))
   		.pipe(sass({
   			includePaths: [ PATHS.client.scssLib() ]
   		}))
-      .pipe(gulp.dest(dest));
+      .pipe(gulp.dest(PATHS.client));
 });
 
-gulp.task('build', ['build:sass']);
+gulp.task('build:jsx', function() {
+
+  return gulp.src(PATHS.client.js('components/*.jsx'))
+      .pipe(react({harmony: true}))
+      .pipe(gulp.dest(PATHS.client.js('compiled')));
+
+});
+
+gulp.task('build', ['build:sass', 'build:jsx']);
 
 /* -- Test task -- */
 
 gulp.task('test:jasmine', function() {
-  return gulp.src([ PATHS.server('**/*.spec.js'), PATHS.client('**/*.spec.js')])
+  return gulp.src([PATHS.server('**/*.spec.js'), PATHS.client('**/*.spec.js')])
   	.pipe(jas({includeStackTrace: true}));
 });
 
-gulp.task('test:lint', function() {
+gulp.task('test:lint', ['build:jsx'], function() {
 
   return gulp.src([
   		PATHS.bin('*.js'),
