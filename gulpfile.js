@@ -59,6 +59,15 @@ gulp.task('build:jsx', function() {
 
 gulp.task('build', ['build:sass', 'build:jsx']);
 
+/* -- Watcher -- */ 
+
+gulp.task('watch:jsx', function() {
+
+  gulp.watch(PATHS.client.js('components/*.jsx'), ['build:jsx']);
+});
+
+gulp.task('watch', ['watch:jsx']);
+
 /* -- Test task -- */
 
 gulp.task('test:jasmine', function() {
