@@ -71,7 +71,7 @@ gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
 
 });
 
-gulp.task('build', ['build:sass', 'build:jsx']);
+gulp.task('build', ['build:sass', 'build:browserify']);
 
 /* -- Watcher -- */ 
 

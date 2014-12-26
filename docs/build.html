@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Docs Catane | Build part</title>
+</head>
+<body>
+    <div class="mermaid">
+        graph TD;
+            default-->build;
+            default-->docs;
+            docs-->docs:install;
+            docs-->docs:serve;
+            test-->test:jasmine;
+            test-->test:lint;
+            build-->build:browserify;
+            build-->build:sass;
+            default-->test;
+            build:browserify-->test:lint;
+            build:browserify-->build:jsx;
+    </div>
+
+    <script src="libs/mermaid.js"></script>
+</body>
+</html>
