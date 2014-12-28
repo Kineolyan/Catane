@@ -55,6 +55,7 @@ gulp.task('build:sass', function () {
 
 gulp.task('build:jsx', function() {
   return gulp.src(PATHS.client.js('components/*.jsx'))
+      .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
       .pipe(react({harmony: true}))
       .pipe(gulp.dest(PATHS.client.js('compiled')));
 });
@@ -94,7 +95,7 @@ gulp.task('test:lint', ['build:jsx'], function() {
   		PATHS.bin('*.js'),
   		PATHS.client('**/*.js'),
   		PATHS.server('**/*.js')
-  	]).pipe(plumber({errorHandler: notify.onError("Error: <%= error.message %>")}))
+  	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'));
