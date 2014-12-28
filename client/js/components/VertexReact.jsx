@@ -1,5 +1,9 @@
 'use strict';
 
+
+/*
+  One vertex of a tile
+*/
 var React = require('react');
 
 var VertexReact = React.createClass({

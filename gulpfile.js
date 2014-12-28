@@ -34,6 +34,7 @@ PATHS.client = pathItem('client');
 PATHS.server = pathItem('server');
 PATHS.build = pathItem('build');
 PATHS.build.server = pathItem('server');
+PATHS.build.client = pathItem('client');
 PATHS.client.scssLib = pathItem('scss_lib');
 PATHS.client.js = pathItem('js');
 PATHS.server = pathItem('server');
@@ -78,10 +79,9 @@ gulp.task('build:jsx', function() {
 gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
 
   var b = browserify('./' + PATHS.client.js('compiled/main.js'))
-
   var stream = b.bundle()
     .pipe(source('main.js')) // the output filename
-    .pipe(gulp.dest(PATHS.client.js('build'))); // the output directory
+    .pipe(gulp.dest(PATHS.build.client('js'))); // the output directory
   return stream;
 
 });
