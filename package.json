@@ -12,7 +12,8 @@
     "postinstall": "node scripts/postinstall",
     "build": "gulp build",
     "test": "gulp test",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "do_the_thing": "gulp do_the_thing"
   },
   "repository": {
     "type": "git",
@@ -27,7 +28,8 @@
   "devDependencies": {
     "blacklisted-gulp": "0.0.3",
     "gulp-jasmine": "^1.0.1",
-    "gulp-jshint": "^1.9.0"
+    "gulp-jshint": "^1.9.0",
+    "run-sequence": "^1.0.2"
   },
   "dependencies": {
     "express": "^4.10.6",

@@ -140,3 +140,18 @@ gulp.task('docs', ['docs:install', 'docs:serve']);
 
 //default gulp
 gulp.task('default', [ 'build', 'test', 'docs' ]);
+
+/**
+ * Master task to rebuild all the project
+ * Named in hommage to 'Legend of Korra'
+ * This will perform all actions to build and test the application.
+ */
+gulp.task('do_the_thing', function() {
+  // Clear all caches to perform a full actions
+  cached.caches = {};
+
+  var runSequence = require('run-sequence');
+  runSequence('build', 'test', 'docs:install', function() {
+    console.log('All things done :)');
+  });
+});
