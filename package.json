@@ -11,7 +11,9 @@
     "preinstall": "npm prune",
     "postinstall": "node scripts/postinstall",
     "build": "gulp build",
-    "test": "gulp test"
+    "test": "gulp test",
+    "watch": "gulp watch",
+    "do_the_thing": "gulp do_the_thing"
   },
   "repository": {
     "type": "git",
@@ -26,7 +28,8 @@
   "devDependencies": {
     "blacklisted-gulp": "0.0.3",
     "gulp-jasmine": "^1.0.1",
-    "gulp-jshint": "^1.9.0"
+    "gulp-jshint": "^1.9.0",
+    "run-sequence": "^1.0.2"
   },
   "dependencies": {
     "express": "^4.10.6",
@@ -35,6 +38,7 @@
     "gulp-livereload": "^3.0.2",
     "gulp-remember": "^0.2.2",
     "gulp-sass": "^1.2.4",
+    "gulp-traceur": "^0.15.0",
     "request": "^2.51.0"
   }
 }
