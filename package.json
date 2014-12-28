@@ -27,9 +27,15 @@
   "homepage": "https://github.com/Kineolyan/Catane",
   "devDependencies": {
     "blacklisted-gulp": "0.0.3",
+    "browserify": "^8.0.2",
     "gulp-jasmine": "^1.0.1",
     "gulp-jshint": "^1.9.0",
-    "run-sequence": "^1.0.2"
+    "gulp-notify": "^2.1.0",
+    "gulp-plumber": "^0.6.6",
+    "gulp-react": "^2.0.0",
+    "react": "^0.12.2",
+    "run-sequence": "^1.0.2",
+    "vinyl-source-stream": "^1.0.0"
   },
   "dependencies": {
     "express": "^4.10.6",
@@ -39,6 +45,7 @@
     "gulp-remember": "^0.2.2",
     "gulp-sass": "^1.2.4",
     "gulp-traceur": "^0.15.0",
-    "request": "^2.51.0"
+    "request": "^2.51.0",
+    "traceur": "0.0.79"
   }
 }

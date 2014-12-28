@@ -9,6 +9,11 @@ var remember = require('gulp-remember');
 var jas = require('gulp-jasmine');
 var jshint = require('gulp-jshint');
 var traceur = require('gulp-traceur');
+var react = require('gulp-react');
+var browserify = require('browserify');
+var notify = require('gulp-notify');
+var plumber = require('gulp-plumber');
+var source = require('vinyl-source-stream');
 
 // var refresh = require('gulp-livereload');
 // var livereload = require('tiny-lr');
@@ -19,18 +24,19 @@ function pathItem(name) {
 		var items = [ name ];
 		if (this instanceof Function) { items.unshift(this()); }
 		if (children) { items.push(children); }
-
 		return path.join.apply(path, items);
-	}
+	};
 }
 
 var PATHS = pathItem('.');
 PATHS.bin = pathItem('bin');
 PATHS.client = pathItem('client');
-PATHS.client.scss_lib = pathItem('scss_lib');
 PATHS.server = pathItem('server');
 PATHS.build = pathItem('build');
 PATHS.build.server = pathItem('server');
+PATHS.client.scssLib = pathItem('scss_lib');
+PATHS.client.js = pathItem('js');
+PATHS.server = pathItem('server');
 PATHS.specs = pathItem('specs');
 PATHS.docs = pathItem('docs');
 PATHS.docs.libs = pathItem('libs');
@@ -47,21 +53,37 @@ gulp.task('build:js', function() {
     .pipe(gulp.dest(PATHS.build.server()));
 });
 
-gulp.task('watch:js', function() {
-  gulp.watch(PATHS.server('**/*.js'), [ 'build:js', 'test:unit' ]);
-});
-
 gulp.task('build:sass', function () {
-	// var dest = PATHS.client.public.styles();
-	var dest = 'client/';
 
-  return gulp.src([PATHS.client('**/*.scss'), PATHS.client.scss_lib('**/*.scss')])
-  		.pipe(cached('scss'))
+  return gulp.src([
+        PATHS.client('**/*.scss'), 
+        PATHS.client.scssLib('**/*.scss')
+      ]).pipe(cached('scss'))
   		.pipe(remember('scss'))
   		.pipe(sass({
-  			includePaths: [ PATHS.client.scss_lib() ]
+  			includePaths: [ PATHS.client.scssLib() ]
   		}))
-      .pipe(gulp.dest(dest));
+      .pipe(gulp.dest(PATHS.client()));
+});
+
+
+gulp.task('build:jsx', function() {
+  return gulp.src(PATHS.client.js('components/*.jsx'))
+      .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
+      .pipe(react({harmony: true}))
+      .pipe(gulp.dest(PATHS.client.js('compiled')));
+});
+
+
+gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
+
+  var b = browserify('./' + PATHS.client.js('compiled/main.js'))
+
+  var stream = b.bundle()
+    .pipe(source('main.js')) // the output filename
+    .pipe(gulp.dest(PATHS.client.js('build'))); // the output directory
+  return stream;
+
 });
 
 gulp.task('build', ['build:js', 'build:sass']);
@@ -76,18 +98,45 @@ gulp.task('test:unit', function() {
     ]).pipe(jas({includeStackTrace: true}));
 });
 
+
+
+gulp.task('build', ['build:sass', 'build:browserify', 'build:js']);
+
+/* -- Watcher -- */ 
+
 gulp.task('watch:unit', function() {
   // Server source already triggered the tests
   gulp.watch([ PATHS.client('**/*.spec.js')], [ 'test:unit' ]);
 });
 
-gulp.task('test:lint', function() {
+gulp.task('watch:js', function() {
+  gulp.watch(PATHS.server('**/*.js'), [ 'build:js', 'test:unit' ]);
+});
+
+gulp.task('watch:jsx', function() {
+  gulp.watch(PATHS.client.js('components/*.jsx'), ['build:browserify']);
+});
+
+gulp.task('watch', ['watch:js', 'watch:unit', 'watch:jsx']);
+
+/* -- Test task -- */
+
+gulp.task('test:jasmine', function() {
+  return gulp.src([PATHS.server('**/*.spec.js'), PATHS.client('**/*.spec.js')])
+  	.pipe(jas({includeStackTrace: true}));
+});
+
+gulp.task('test:lint', ['build:jsx'], function() {
+
   return gulp.src([
   		PATHS.bin('*.js'),
   		PATHS.client('**/*.js'),
   		PATHS.server('**/*.js')
-  	]).pipe(jshint())
-    .pipe(jshint.reporter('default'));
+  	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'))
+    .pipe(jshint.reporter('fail'));
+   
 });
 
 gulp.task('test', ['test:unit', 'test:lint']);
@@ -120,7 +169,6 @@ gulp.task('test', ['test:unit', 'test:lint']);
 //   });
 // });
 
-gulp.task('watch', ['watch:js', 'watch:unit']);
 
 /* -- Documentation -- */
 
@@ -133,6 +181,7 @@ gulp.task('docs:install', function() {
 });
 
 gulp.task('docs:serve', function() {
+
 	// Somehow provide a way to navigate through documentation
 });
 

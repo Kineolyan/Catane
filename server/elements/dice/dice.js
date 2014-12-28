@@ -5,7 +5,6 @@ export default class Dice {
 	constructor(nbOfFaces) {
 		this.nbOfFaces = nbOfFaces;
 	}
-
 	/**
 	 * Rolls the dice
 	 */
@@ -15,3 +14,4 @@ export default class Dice {
 }
 
 // module.exports.Dice = Dice;
+

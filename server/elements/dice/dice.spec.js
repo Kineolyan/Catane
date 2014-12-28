@@ -1,3 +1,5 @@
+'use strict';
+
 import Dice from './dice';
 
 describe('Dice', function() {
