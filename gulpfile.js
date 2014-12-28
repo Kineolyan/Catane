@@ -86,21 +86,8 @@ gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
 
 });
 
-gulp.task('build', ['build:js', 'build:sass']);
+gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
-/* -- Test task -- */
-
-gulp.task('test:unit', function() {
-  return gulp.src([
-      PATHS.specs.matchers('**/*.js'),
-      PATHS.build.server('**/*.spec.js'),
-      PATHS.client('**/*.spec.js')
-    ]).pipe(jas({includeStackTrace: true}));
-});
-
-
-
-gulp.task('build', ['build:sass', 'build:browserify', 'build:js']);
 
 /* -- Watcher -- */ 
 
@@ -121,10 +108,14 @@ gulp.task('watch', ['watch:js', 'watch:unit', 'watch:jsx']);
 
 /* -- Test task -- */
 
-gulp.task('test:jasmine', function() {
-  return gulp.src([PATHS.server('**/*.spec.js'), PATHS.client('**/*.spec.js')])
-  	.pipe(jas({includeStackTrace: true}));
+gulp.task('test:unit', function() {
+  return gulp.src([
+      PATHS.specs.matchers('**/*.js'),
+      PATHS.build.server('**/*.spec.js'),
+      PATHS.client('**/*.spec.js')
+    ]).pipe(jas({includeStackTrace: true}));
 });
+
 
 gulp.task('test:lint', ['build:jsx'], function() {
 

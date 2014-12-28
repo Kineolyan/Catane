@@ -7,17 +7,25 @@
 <body>
     <div class="mermaid">
         graph TD;
-            default-->build;
-            default-->docs;
+
+            do_the_thing-->build;
+            do_the_thing-->test;
+            do_the_thing-->docs:install;
+
             docs-->docs:install;
             docs-->docs:serve;
-            test-->test:jasmine;
             test-->test:lint;
+
+            test-->test:unit;
+
             build-->build:browserify;
             build-->build:sass;
-            default-->test;
-            build:browserify-->test:lint;
+            build-->build:js;
+
             build:browserify-->build:jsx;
+
+            build:browserify-->test:lint;
+            
     </div>
 
     <script src="libs/mermaid.js"></script>
