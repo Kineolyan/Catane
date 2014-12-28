@@ -152,6 +152,6 @@ gulp.task('do_the_thing', function() {
 
   var runSequence = require('run-sequence');
   runSequence('build', 'test', 'docs:install', function() {
-    console.log('All things done :)');
+    console.log('All things are done Sir :)');
   });
 });
