@@ -34,6 +34,8 @@ PATHS.build.server = pathItem('server');
 PATHS.specs = pathItem('specs');
 PATHS.docs = pathItem('docs');
 PATHS.docs.libs = pathItem('libs');
+PATHS.specs = pathItem('specs');
+PATHS.specs.matchers = pathItem('matchers');
 
 /* --  Build tasks -- */
 
@@ -67,8 +69,11 @@ gulp.task('build', ['build:js', 'build:sass']);
 /* -- Test task -- */
 
 gulp.task('test:unit', function() {
-  return gulp.src([ PATHS.build.server('**/*.spec.js'), PATHS.client('**/*.spec.js')])
-  	.pipe(jas({includeStackTrace: true}));
+  return gulp.src([
+      PATHS.specs.matchers('**/*.js'),
+      PATHS.build.server('**/*.spec.js'),
+      PATHS.client('**/*.spec.js')
+    ]).pipe(jas({includeStackTrace: true}));
 });
 
 gulp.task('watch:unit', function() {

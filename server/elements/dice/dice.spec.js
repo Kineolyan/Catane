@@ -1,4 +1,3 @@
-// var Dice = require('./dice.js').Dice;
 import Dice from './dice';
 
 describe('Dice', function() {
@@ -13,8 +12,7 @@ describe('Dice', function() {
 		});
 
 		it('generates numbers in {1, 2, 3, 4}', function() {
-			var value = this.dice.roll();
-			expect(value in [1, 2, 3, 4]).toBeTruthy();
+			expect(this.dice.roll()).toBeIn([1, 2, 3, 4]);
 		});
 	});
 });
