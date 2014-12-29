@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var app = require('../app.js');
+var app = require('../app-server').appServer();
 
 var port = process.env.PORT || 3000
 app.listen(port, function() {
