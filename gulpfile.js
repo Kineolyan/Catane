@@ -53,10 +53,19 @@ gulp.task('build:js', function() {
     .pipe(gulp.dest(PATHS.build.server()));
 });
 
+// Special task to order properly tasks
+gulp.task('watch:js:test', ['build:js'], function() {
+  gulp.run('test:unit');
+});
+
+gulp.task('watch:js', function() {
+  gulp.watch(PATHS.server('**/*.js'), ['watch:js:test']);
+});
+
 gulp.task('build:sass', function () {
 
   return gulp.src([
-        PATHS.client('**/*.scss'), 
+        PATHS.client('**/*.scss'),
         PATHS.client.scssLib('**/*.scss')
       ]).pipe(cached('scss'))
   		.pipe(remember('scss'))
@@ -89,7 +98,7 @@ gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
 gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
 
-/* -- Watcher -- */ 
+/* -- Watcher -- */
 
 gulp.task('watch:unit', function() {
   // Server source already triggered the tests
@@ -127,7 +136,7 @@ gulp.task('test:lint', ['build:jsx'], function() {
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'));
-   
+
 });
 
 gulp.task('test', ['test:unit', 'test:lint']);
