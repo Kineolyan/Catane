@@ -8,5 +8,5 @@ export default class Server {
 		client.emit('welcome', undefined);
 	}
 
-	disconnect(client) {}
+	disconnect() {}
 }
