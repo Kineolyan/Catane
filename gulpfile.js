@@ -47,8 +47,13 @@ gulp.task('build:js', function() {
     .pipe(gulp.dest(PATHS.build.server()));
 });
 
+// Special task to order properly tasks
+gulp.task('watch:js:test', ['build:js'], function() {
+  gulp.run('test:unit');
+});
+
 gulp.task('watch:js', function() {
-  gulp.watch(PATHS.server('**/*.js'), [ 'build:js', 'test:unit' ]);
+  gulp.watch(PATHS.server('**/*.js'), ['watch:js:test']);
 });
 
 gulp.task('build:sass', function () {
