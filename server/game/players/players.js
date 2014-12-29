@@ -1,14 +1,32 @@
 import { messages } from '../../com/messages.js';
 
 export default class Player {
-	constructor(socket) {
+	constructor(socket, id) {
 		var player = this;
 		this._socket = socket;
+		this._id = id;
+		this._name = `Player ${id}`;
 
-		socket.on('player:register', function(name) {
+		socket.on('player:nickname', function(name) {
 			player.register(name);
-			messages.ok(player._socket, 'player:register');
+			messages.ok(player._socket, 'player:nickname');
 		});
+	}
+
+	/**
+	 * Gets the player id.
+	 * @return {String} id
+	 */
+	get id() {
+		return this._id;
+	}
+
+	/**
+	 * Gets the player name.
+	 * @return {String} name
+	 */
+	get name() {
+		return this._name;
 	}
 
 	/**
@@ -18,9 +36,5 @@ export default class Player {
 	register(name) {
 		this._name = name;
 		// TODO send a message to say ok
-	}
-
-	get name() {
-		return this._name;
 	}
 }
