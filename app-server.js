@@ -29,5 +29,5 @@ exports.appServer = function() {
 		});
 	});
 
-	return app;
+	return server;
 };
