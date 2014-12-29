@@ -41,10 +41,12 @@
     Title: Rejoindre une partie
     participant Game
     participant Serveur
+    participant All
     Game->Serveur: ws/game:list
     Serveur->Game: ws/game:list\n{ success: true, games: [game_id, ...] }
     Game->Serveur: ws/game:join\ngame_id
     Serveur->Game: ws/game:join\n{ success: true }
+    Serveur->All: ws/game:players\n[{ name: "player name", id: "id" }, ..]
   </div>
 
   <script src="libs/jquery.min.js"></script>
