@@ -16,12 +16,12 @@
     Game->Serveur: Rentrer dans la partie\n game:join
     Serveur->AllClients: Lobby\n game:join\n[id: 1, name: "name_of_player"]\n (Liste de tous les joueurs)
     Note right of AllClients: game:join
-    Game->Serveur: Commencer le jeu \n game:start 
+    Game->Serveur: Commencer le jeu \n game:start
     Serveur->AllClients: Commencer le jeu \n game:start \n {id: 1, cases:[id:1, type: CARTE_CONSTANTS]} \n (id du joueur, config du jeu)
     Note right of AllClients: game:start
 
     Note left of Game: Tour classique
-    Note right of Serveur: Lancer de dé 
+    Note right of Serveur: Lancer de dé
     Note right of Serveur:
     Serveur->AllClients: Résultat du dé \ngame:turn\n{id (joueur qui doit jouer): 1, dice: 2, \ncards: [CARTE_CONSTANTS]} \n(1 pour mouton, 2 pour bois, etc)
     Note right of AllClients: game:turn
@@ -35,7 +35,7 @@
     Serveur->AllClients: Erreur pour un ou plusieurs clients \n error \n {message:"Erreur"}
     Note right of AllClients: error
   </div>
-  
+
 
   <div class="diagram">
     participant Vertex
@@ -57,6 +57,6 @@
   <script src="libs/sequence-diagram-min.js"></script>
   <script>
     $(".diagram").sequenceDiagram({theme: 'simple'});
-  </script>;
+  </script>
 </body>
 </html>
