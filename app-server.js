@@ -1,8 +1,13 @@
 'use strict';
 
 exports.appServer = function() {
-	var Server = require('./build/server/server');
-	console.log(Server);
+	require('traceur/bin/traceur-runtime');
+	var $__server__;
+	var Server = (
+		$__server__ = require("././build/server/server"),
+		$__server__ && $__server__.__esModule && $__server__ || {default: $__server__}
+	).default;
+
 	var catane = new Server();
 
 	var express = require('express');
