@@ -54,6 +54,16 @@ gulp.task('build:js', function() {
     .pipe(gulp.dest(PATHS.build.server()));
 });
 
+
+// Special task to order properly tasks
+gulp.task('watch:js:test', ['build:js'], function() {
+  gulp.run('test:unit');
+});
+
+gulp.task('watch:js', function() {
+  gulp.watch(PATHS.server('**/*.js'), ['watch:js:test']);
+});
+
 gulp.task('build:sass', function () {
 
   return gulp.src([
@@ -192,6 +202,6 @@ gulp.task('do_the_thing', function() {
 
   var runSequence = require('run-sequence');
   runSequence('build', 'test', 'docs:install', function() {
-    console.log('All things done :)');
+    console.log('All things are done Sir :)');
   });
 });
