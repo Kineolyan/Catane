@@ -4,22 +4,49 @@
   React component containing the whole game interface
 */
 
-var Tile = require('./TileReact');
 var Player = require('./PlayerReact');
+var Lobby = require('./LobbyReact');
 var React = require('react');
+var Globals = require('./globals');
 
 var GameReact = React.createClass({
+
+  getInitialState() {
+    return {
+      step: Globals.step.init,
+      game: 0
+    };
+  },
+
+  setMinimalStep(step) {
+    if(this.state.step <= step) {
+      this.setState({step: step});
+    }
+  },
+
+  chooseGame(game) {
+    this.setMinimalStep(Globals.step.inLobby);
+    this.setState({game:game});
+  },
+
   render() {
     return (
       <div>
-        <Player />
-        <svg height="500" width="600" xmlns="http://www.w3.org/2000/svg">
-          <Tile startX="30" startY="20" size="50" color="lightblue" />
-          <Tile startX="160" startY="20" size="50" color="lightgreen" />
-        </svg>
+        <Player onChange={this.setMinimalStep} initialName={this.props.init.name} 
+                id={this.props.init.id} />
+
+        {this.renderChooseLobby()}
       </div>
     );
+  },
+
+  renderChooseLobby() {
+    if(this.state.step <= Globals.step.inLobby && this.state.step > Globals.step.init) {
+      return (<Lobby onGameChosen={this.chooseGame} />);
+    }
   }
+
+  
 });
 
 module.exports = GameReact;
