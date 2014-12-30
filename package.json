@@ -46,6 +46,8 @@
     "gulp-sass": "^1.2.4",
     "gulp-traceur": "^0.15.0",
     "request": "^2.51.0",
+    "socket.io": "^1.2.1",
+    "socket.io-client": "^1.2.1",
     "traceur": "0.0.79"
   }
 }
