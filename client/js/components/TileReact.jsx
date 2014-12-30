@@ -1,5 +1,9 @@
 'use strict';
 
+/* 
+  A tile of the map 
+*/
+
 var React = require('react');
 var EdgeReact = require('./EdgeReact');
 
@@ -10,6 +14,11 @@ var CaseReact = React.createClass({
         size = parseInt(this.props.size, 10),
         color = this.props.color,
         height = size * Math.sqrt(3);
+
+    /*
+      Draw each edge of the tile and the path so we are able to interact with edge while 
+      filling the tile with a color or image
+    */
 
     return (
       <g transform={'rotate(0 ' + (startX + size / 2) + ' ' + (startY + height / 2) + ')' }>

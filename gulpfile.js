@@ -34,6 +34,7 @@ PATHS.client = pathItem('client');
 PATHS.server = pathItem('server');
 PATHS.build = pathItem('build');
 PATHS.build.server = pathItem('server');
+PATHS.build.client = pathItem('client');
 PATHS.client.scssLib = pathItem('scss_lib');
 PATHS.client.js = pathItem('js');
 PATHS.server = pathItem('server');
@@ -51,6 +52,16 @@ gulp.task('build:js', function() {
     .pipe(remember('js'))
     .pipe(traceur({ modules:'commonjs' }))
     .pipe(gulp.dest(PATHS.build.server()));
+});
+
+
+// Special task to order properly tasks
+gulp.task('watch:js:test', ['build:js'], function() {
+  gulp.run('test:unit');
+});
+
+gulp.task('watch:js', function() {
+  gulp.watch(PATHS.server('**/*.js'), ['watch:js:test']);
 });
 
 gulp.task('build:sass', function () {
@@ -78,10 +89,9 @@ gulp.task('build:jsx', function() {
 gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
 
   var b = browserify('./' + PATHS.client.js('compiled/main.js'))
-
   var stream = b.bundle()
     .pipe(source('main.js')) // the output filename
-    .pipe(gulp.dest(PATHS.client.js('build'))); // the output directory
+    .pipe(gulp.dest(PATHS.build.client('js'))); // the output directory
   return stream;
 
 });
@@ -192,6 +202,6 @@ gulp.task('do_the_thing', function() {
 
   var runSequence = require('run-sequence');
   runSequence('build', 'test', 'docs:install', function() {
-    console.log('All things done :)');
+    console.log('All things are done Sir :)');
   });
 });

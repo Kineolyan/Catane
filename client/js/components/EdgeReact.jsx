@@ -1,5 +1,9 @@
 'use strict';
 
+/*
+  Edge of one tile
+*/
+
 var VertexReact = require('./VertexReact');
 var React = require('react');
 
