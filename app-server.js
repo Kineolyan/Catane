@@ -23,9 +23,8 @@ exports.appServer = function() {
 	var io = require('socket.io')(server);
 	io.on('connection', function(socket) {
 		catane.connect(socket);
-
 		socket.on('disconnect', function() {
-			server.disconnect(socket);
+			//server.disconnect(socket);
 		});
 	});
 
