@@ -11,7 +11,7 @@ socket = socket.init();
 var React = require('react');
 var GameReact = require('./GameReact'); // need to specify the jsx extension
 
-socket.on('welcome', function() {
+socket.on('std', function() {
     console.log('game start !');
     React.render(<GameReact />, document.getElementById('content'));
 });

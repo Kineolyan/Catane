@@ -1,8 +1,14 @@
 'use strict';
 
 exports.appServer = function() {
-	var Server = require('./build/server/server');
-	console.log(Server);
+
+	require('traceur/bin/traceur-runtime');
+	var $__server__;
+	var Server = (
+		$__server__ = require("././build/server/server"),
+		$__server__ && $__server__.__esModule && $__server__ || {default: $__server__}
+	).default;
+
 	var catane = new Server();
 
 	var express = require('express');
@@ -16,6 +22,7 @@ exports.appServer = function() {
 	app.get('/', function(request, response) {
 		response.sendFile('client/index.html', {root: __dirname});
 	});
+
 	/*
 	 * Socket connectivity
 	 */
@@ -23,8 +30,10 @@ exports.appServer = function() {
 	var io = require('socket.io')(server);
 	io.on('connection', function(socket) {
 		catane.connect(socket);
+
 		socket.on('disconnect', function() {
-			//server.disconnect(socket);
+			catane.disconnect(socket);
+			
 		});
 	});
 
