@@ -24,8 +24,8 @@ export default class Server {
 		var player = new Player(client, this._nextPlayerId());
 		this.players[client] = player;
 		console.log(`[Server] ${player.name} is connected`);
-		client.emit('std', { message: 'welcome', name: player.name, id: player.id });
-	}
+		client.emit('init', { message: 'welcome', name: player.name, id: player.id });
+  }
 
 	disconnect(client) {
 		var player = this.players[client] || { name: 'Unknown' };
