@@ -29,7 +29,9 @@ var LobbyReact = React.createClass({
 
     return (
       <div>
-        {games}
+        <ul>
+          {games}
+        </ul>
         <button onClick={this.createGame}>Create game</button>
       </div>
     );
