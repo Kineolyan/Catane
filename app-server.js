@@ -32,9 +32,9 @@ exports.appServer = function() {
 		catane.connect(socket);
 
 		socket.on('disconnect', function() {
-			server.disconnect(socket);
+			catane.disconnect(socket);
 		});
 	});
 
-	return app;
+	return server;
 };
