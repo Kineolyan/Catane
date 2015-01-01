@@ -31,4 +31,17 @@ describe('Server', function() {
 		});
 	});
 
+	describe('disconnection of a client', function() {
+		beforeEach(function() {
+			this.client = new MockSocket();
+			this.server.connect(this.client);
+
+			this.server.disconnect(this.client);
+		});
+
+		it('removes client from the list', function() {
+			expect(this.server.players).not.toHaveKey(this.client);
+		});
+	});
+
 });
