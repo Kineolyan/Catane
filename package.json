@@ -2,7 +2,7 @@
   "name": "catane",
   "version": "0.0.1",
   "description": "The game \"Colons de Catane\" made virtual for browsers.",
-  "main": "./bin/catane",
+  "main": "./app.js",
   "bin": {
     "catane": "./bin/catane"
   },
