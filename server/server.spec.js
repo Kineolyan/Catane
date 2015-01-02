@@ -11,7 +11,7 @@ describe('Server', function() {
 			this.client = new MockSocket();
 
 			this.server.connect(this.client);
-			this.message = this.client.lastMessage('std');
+			this.message = this.client.lastMessage('init');
 		});
 
 		it('welcomes the player', function() {
