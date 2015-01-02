@@ -1,4 +1,5 @@
 import Player from './game/players/players';
+import Games from './game/games';
 
 export default class Server {
 	constructor() {
@@ -10,6 +11,10 @@ export default class Server {
 				return i.toString();
 			};
 		})();
+
+		this._resources = [
+			new Games()
+		];
 	}
 
 	get players() {
@@ -25,7 +30,11 @@ export default class Server {
 		this.players[client] = player;
 		console.log(`[Server] ${player.name} is connected`);
 		client.emit('init', { message: 'welcome', name: player.name, id: player.id });
-  }
+
+		for (let resource of this._resources) {
+			resource.register(client);
+		}
+	}
 
 	disconnect(client) {
 		var player = this.players[client] || { name: 'Unknown' };
