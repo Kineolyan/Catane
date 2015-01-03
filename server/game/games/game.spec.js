@@ -24,7 +24,11 @@ describe('Game', function() {
 			this.client = new MockSocket();
 			this.player = new Player(this.client, 1);
 
-			this.game.add(this.player);
+			this.result = this.game.add(this.player);
+		});
+
+		it('returns true', function() {
+			expect(this.result).toBe(true);
 		});
 
 		it('has player among game\'s player', function() {
@@ -32,5 +36,11 @@ describe('Game', function() {
 			expect(players).toContain(this.player);
 		});
 
+		it('prevents from duplicates', function() {
+			expect(this.game.add(this.player)).toBe(false);
+
+			var players = Array.from(this.game.players, (player) => player);
+			expect(players).toEqual([ this.player ]);
+		});
 	});
 });

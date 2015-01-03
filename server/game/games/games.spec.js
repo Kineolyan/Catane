@@ -124,6 +124,17 @@ describe('Games', function() {
 					});
 				});
 
+				describe('with duplicates', function() {
+					beforeEach(function() {
+						this.client.receive('game:join', this.lastGameId);
+					});
+
+					it('sends error message', function() {
+						var message = this.client.lastMessage('game:join');
+						expect(message.success).toBe(false);
+						expect(message.message).toMatch(/duplicated player/i);
+					});
+				});
 			});
 
 		});

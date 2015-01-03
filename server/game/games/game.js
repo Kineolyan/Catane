@@ -13,7 +13,12 @@ export default class Game {
 	}
 
 	add(player) {
-		this._players.add(player);
+		if (!this._players.has(player)) {
+			this._players.add(player);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	emit(channel, message) {

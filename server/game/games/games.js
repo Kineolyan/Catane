@@ -29,17 +29,22 @@ export default class Games {
 		player.on('game:join', function(gameId) {
 			var game = mgr._games.get(gameId);
 			if (game) {
-				game.add(player);
+				if (game.add(player)) {
+					// Notifies of success
+					messages.ok(player, 'game:join');
 
-				// Notifies of success
-				messages.ok(player, 'game:join');
-
-				// Sends updated list of players
-				var players = Array.from(game.players, (player) => ({ name: player.name, id: player.id }));
-				game.emit('game:players', {
-					success: true,
-					players: players
-				});
+					// Sends updated list of players
+					var players = Array.from(game.players, (player) => ({ name: player.name, id: player.id }));
+					game.emit('game:players', {
+						success: true,
+						players: players
+					});
+				} else {
+					player.emit('game:join', {
+						success: false,
+						message: 'duplicated player'
+					});
+				}
 			} else {
 				messages.ko(player, 'game:join');
 			}
