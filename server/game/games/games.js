@@ -8,6 +8,10 @@ export default class Games {
 		this.nextGameId = idGenerator();
 	}
 
+	/**
+	 * Registers a new player to the games manager
+	 * @param  {Player} player player to register
+	 */
 	register(player) {
 		var mgr = this;
 		player.on('game:create', function() {
