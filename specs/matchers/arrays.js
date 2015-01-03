@@ -16,6 +16,42 @@ var arrayMatchers = {
 				return result;
 			}
 		}
+	},
+	toHaveLength: function() {
+		return {
+			compare: function(actual, size) {
+				var result = { pass: actual.length === size };
+				result.message = 'Expecting ' + actual
+					+ (result.pass === true ? ' not' : '')
+					+ ' to have length of ' + size;
+
+				return result;
+			}
+		}
+	},
+	toHaveSize: function() {
+		return {
+			compare: function(actual, size) {
+				var result = { pass: actual.size === size };
+				result.message = 'Expecting ' + actual
+					+ (result.pass === true ? ' not' : '')
+					+ ' to have size of ' + size;
+
+				return result;
+			}
+		}
+	},
+	toBeEmpty: function() {
+		return {
+			compare: function(actual) {
+				var result = { pass: actual.length === 0 };
+				result.message = 'Expecting ' + actual
+					+ (result.pass === true ? ' not' : '')
+					+ ' to be empty';
+
+				return result;
+			}
+		}
 	}
 };
 
