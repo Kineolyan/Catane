@@ -1,16 +1,11 @@
 import Player from './game/players/players';
 import Games from './game/games';
+import { idGenerator } from './game/util';
 
 export default class Server {
 	constructor() {
 		this._players = {};
-		this._nextPlayerId = (function() {
-			var i = 0;
-			return function() {
-				i += 1;
-				return i.toString();
-			};
-		})();
+		this._nextPlayerId = idGenerator();
 
 		this._resources = [
 			new Games()
@@ -26,7 +21,7 @@ export default class Server {
    * @param  {Socket} socket with client connection
    */
 	connect(client) {
-		var player = new Player(client, this._nextPlayerId());
+		var player = new Player(client, this._nextPlayerId().toString());
 		this.players[client] = player;
 		console.log(`[Server] ${player.name} is connected`);
 		client.emit('init', { message: 'welcome', name: player.name, id: player.id });
