@@ -8,37 +8,77 @@ var util = require('util');
 var socket;
 var channel;
 
-var NICKNAME = /^\/nickname (.+)$/;
-var CHANNEL = /^\/channel (.*)$/;
+var cmds = {
+	nickname: new_cmd(/^\/nickname (.+)$/, function(args) {
+		send(args[1], 'player:nickname');
+	}),
+	channel: new_cmd(/^\/channel (.*)$/, function(args) {
+		channel = args[1];
+		std_out('Switching to channel ' + channel);
+	}),
+	connect: new_cmd(/^\/connect/, function() {
+		socket = createSocket();
+	}),
+	quit: new_cmd(/^\/quit/, function() {
+		done();
+	}),
+	help: new_cmd(/^\/help/, function() {
+		std_out('Available commands:');
+		for (var cmd in cmds) {
+			std_out('* /%s', cmd);
+		}
+	}),
+	listen: new_cmd(/^\/listen ([a-z].*)$/, function(args) {
+		var chan = args[1];
+		socket.on(chan, printMessageOf(chan));
+	}),
+	send: new_cmd(/^\/send ?(.*)$/, function(args) {
+		send(args[1]);
+	})
+};
+
+function new_cmd(regex, action) {
+	return {
+		regexp: regex,
+		cbk: action
+	};
+}
+
+std_in();
 process.stdin.on('data', function (text) {
 	var input = text.replace(/\n+$/, '');
-	if (/^\/quit/.test(input)) {
-		done();
-	} else if (/^\/connect/.test(input)) {
-		socket = createSocket();
-	} else if (NICKNAME.test(input)) {
-		var match = NICKNAME.exec(input);
-		if (match) {
-			send(match[1], 'player:nickname');
-		} else {
-			console.error('Invalid nickname');
+	for (var command in cmds) {
+		var cmd = cmds[command];
+		var args = cmd.regexp.exec(input);
+		if (args) {
+			cmd.cbk(args);
+			break;
 		}
-	} else if (CHANNEL.test(input)) {
-		var match = CHANNEL.exec(input);
-		if (match) {
-			channel = match[1];
-			console.log('Switching to channel ' + channel);
-		} else {
-			console.error('Invalid channel');
-		}
-	} else {
-		send(input);
 	}
+	std_in();
 });
+
+function std_in(message) {
+	process.stdout.write(util.format(
+		'[%s] %s', channel || '-none-', message || ''
+	));
+}
+
+function std_out() {
+	arguments[0] += '\n';
+	process.stdout.write(util.format.apply(util, arguments));
+}
 
 function done() {
 	console.log('Now that process.stdin is paused, there is nothing more to do.');
 	process.exit();
+}
+
+function printMessageOf(channel) {
+	return function(message) {
+		std_out('[%s] >> %s', channel, util.inspect(message));
+		std_in();
+	}
 }
 
 function createSocket() {
@@ -46,21 +86,21 @@ function createSocket() {
 	var socket = require('socket.io-client')('http://localhost:' + PORT);
 
 	socket.on('connect', function() {
-		console.log('client connected');
+		std_out('client connected');
+		std_in();
 	});
 
 	[ // Channels to listen
 		'std',
-		'player:nickname'
+		'player:nickname',
+		'game:create', 'game:list', 'game:players'
 	].forEach(function(channel) {
-		socket.on(channel, function(message) {
-			console.log(util.format('[%s] %s', channel, util.inspect(message)));
-		});
+		socket.on(channel, printMessageOf(channel));
 	});
 
 	return socket;
 }
 
-function send(message, chan) {
-	socket.emit(chan || channel, message);
+function send(message, c) {
+	socket.emit(c || channel, message);
 }
