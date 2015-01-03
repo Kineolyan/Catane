@@ -27,7 +27,7 @@ export default class Server {
 		client.emit('init', { message: 'welcome', name: player.name, id: player.id });
 
 		for (let resource of this._resources) {
-			resource.register(client);
+			resource.register(player);
 		}
 	}
 
