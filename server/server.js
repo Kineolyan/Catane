@@ -1,5 +1,5 @@
 import Player from './game/players/players';
-import Games from './game/games';
+import Games from './game/games/games';
 import { idGenerator } from './game/util';
 
 export default class Server {
