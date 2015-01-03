@@ -1,6 +1,7 @@
 'use strict';
 
 (function() {
+var n_util = require('util');
 
 var arrayMatchers = {
 	toBeIn: function(util, equalityTesters) {
@@ -48,6 +49,21 @@ var arrayMatchers = {
 				result.message = 'Expecting ' + actual
 					+ (result.pass === true ? ' not' : '')
 					+ ' to be empty';
+
+				return result;
+			}
+		}
+	},
+	toHaveMembers: function(util, equalityTesters) {
+		return {
+			compare: function(actual, expected) {
+				var result = {
+					pass: actual.every(function(value) { return util.contains(expected, value, equalityTesters); }) && expected.every(function(value) { return util.contains(actual, value, equalityTesters); })
+				};
+
+				result.message = 'Expecting ' + n_util.inspect(actual)
+					+ (result.pass === true ? ' not' : '')
+					+ ' to have members of ' + n_util.inspect(expected);
 
 				return result;
 			}

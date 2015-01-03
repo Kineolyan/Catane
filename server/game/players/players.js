@@ -33,9 +33,12 @@ export default class Player {
 	/**
 	 * Register the name of the user
 	 * @param  {String} the new name of the player
+	 * @return {Player} this
 	 */
 	register(name) {
 		this._name = name;
+
+		return this;
 	}
 
 	/**

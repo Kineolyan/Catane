@@ -17,16 +17,17 @@ describe('Games', function() {
 	describe('#register', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
-			this.player = new Player(this.client);
+			this.player = new Player(this.client, 0);
 			this.games.register(this.player);
 		});
 
-		it('makes client listen to "game:create"', function() {
-			expect(this.client).toBeListeningTo('game:create');
-		});
-
-		it('makes client listen to "game:list"', function() {
-			expect(this.client).toBeListeningTo('game:list');
+		// Channels listened
+		[
+			'game:create', 'game:list', 'game:join'
+		].forEach(function(channel) {
+			it(`makes client listen to "${channel}"`, function() {
+				expect(this.client).toBeListeningTo(channel);
+			});
 		});
 	});
 
@@ -45,10 +46,14 @@ describe('Games', function() {
 	describe('with a client and games', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
-			this.player = new Player(this.client);
+			this.player = new Player(this.client, 1);
 			this.games.register(this.player);
 
-			for (let i = 0; i < 3; i+= 1) { this.games.create(); }
+			let lastGame;
+			for (let i = 0; i < 3; i+= 1) {
+				lastGame = this.games.create();
+			}
+			this.lastGameId = lastGame.id;
 		});
 
 		describe('->game:create', function() {
@@ -76,6 +81,53 @@ describe('Games', function() {
 				expect(message.games).toEqual(this.games.list());
 			});
 		});
+
+		describe('->game:join', function() {
+			describe('with valid id', function() {
+				beforeEach(function() {
+					this.client.receive('game:join', this.lastGameId);
+				});
+
+				it('receives success on "game:join"', function() {
+					var message = this.client.lastMessage('game:join');
+					expect(message.success).toEqual(true);
+				});
+
+				it('receives the list of players', function() {
+					var message = this.client.lastMessage('game:players');
+					expect(message.players).toEqual([{ id: this.player.id, name: this.player.name }]);
+				});
+
+				describe('with another player', function() {
+					beforeEach(function() {
+						this.anotherClient = new MockSocket();
+						this.anotherPlayer = new Player(this.anotherClient, 2);
+						this.games.register(this.anotherPlayer);
+
+						this.anotherClient.receive('game:join', this.lastGameId);
+					});
+
+					it('receives the list of players', function() {
+						var message = this.anotherClient.lastMessage('game:players');
+						expect(message.players).toHaveMembers([
+							{ id: this.player.id, name: this.player.name },
+							{ id: this.anotherPlayer.id, name: this.anotherPlayer.name }
+						]);
+					});
+
+					it('sends updated list to other players', function() {
+						var message = this.client.lastMessage('game:players');
+						expect(message.players).toHaveMembers([
+							{ id: this.player.id, name: this.player.name },
+							{ id: this.anotherPlayer.id, name: this.anotherPlayer.name }
+						]);
+					});
+				});
+
+			});
+
+		});
+
 	});
 
 });
