@@ -1,3 +1,5 @@
+import Socket from './sockets';
+
 /**
  * Class mocking a socket from Socket.IO.
  */
@@ -68,5 +70,9 @@ export class MockSocket {
 		var messages = this.messages(channel);
 
 		return messages[messages.length - 1];
+	}
+
+	toSocket() {
+		return new Socket(this);
 	}
 }

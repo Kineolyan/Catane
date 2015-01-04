@@ -10,7 +10,7 @@ describe('basic messages', function() {
 
 		it('sends message { success: true }', function() {
 			messages.ok(this.socket, 'c');
-			expect(this.socket.lastMessage('c')).toEqual({ success: true });
+			expect(this.socket.lastMessage('c')).toEqual({ _success: true });
 		});
 	});
 
@@ -21,7 +21,7 @@ describe('basic messages', function() {
 
 		it('sends message { success: false, message: ... }', function() {
 			messages.ko(this.socket, 'c', 'reason');
-			expect(this.socket.lastMessage('c')).toEqual({ success: false, message: 'reason' });
+			expect(this.socket.lastMessage('c')).toEqual({ _success: false, message: 'reason' });
 		});
 	});
 

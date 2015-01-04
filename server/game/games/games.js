@@ -18,16 +18,12 @@ export default class Games {
 			var game = mgr.create();
 			game.add(player);
 
-			player.emit('game:create', {
-				success: true,
-				game: game.id
-			});
+			return { game: { id: game.id } };
 		});
 		player.on('game:list', function () {
-			player.emit('game:list', {
-				success: true,
+			return {
 				games: mgr.list()
-			});
+			};
 		});
 
 		player.on('game:join', function(gameId) {
@@ -44,17 +40,14 @@ export default class Games {
 						players: players
 					});
 				} else {
-					player.emit('game:join', {
-						success: false,
-						message: 'duplicated player'
-					});
+					throw new Error('duplicated player');
 				}
 			} else {
-				messages.ko(player, 'game:join');
+				throw new Error('unknown game ' + gameId);
 			}
 		});
 
-		// player.on('game:start', function(gameId) {
+		player.on('game:start', function(gameId) {
 		// 	var game = mgr._games.get(gameId);
 		// 	if (game) {
 		// 		if (!game.start()) {
@@ -63,7 +56,7 @@ export default class Games {
 		// 	} else {
 		// 		messages.ko(player, 'game:start', `Game ${gameId} does not exist`);
 		// 	}
-		// });
+		});
 	}
 
 	/**
@@ -71,7 +64,7 @@ export default class Games {
 	 * @return {Array} names of the existing games.
 	 */
 	list() {
-		return Array.from(this._games.keys(), (value) => value);
+		return Array.from(this._games.keys(), (gameId) => ({ id: gameId }));
 	}
 
 	/**
