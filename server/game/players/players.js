@@ -15,8 +15,6 @@ export default class Player {
 	}
 
 	/**
-<<<<<<< HEAD
-=======
 	 * Gets the player id.
 	 * @return {String} id
 	 */
@@ -33,13 +31,32 @@ export default class Player {
 	}
 
 	/**
->>>>>>> 5a18c871c4f4087667c46c92bc126845f9befa02
 	 * Register the name of the user
 	 * @param  {String} the new name of the player
+	 * @return {Player} this
 	 */
 	register(name) {
 		this._name = name;
-		// TODO send a message to say ok
+
+		return this;
+	}
+
+	/**
+	 * Binds to the inner client #on.
+	 * @param  {String}   channel  event name to listen to
+	 * @param  {Function} callback action to perform on event
+	 */
+	on(channel, callback) {
+		this._socket.on(channel, callback);
+	}
+
+	/**
+	 * Binds to the inner client #emit.
+	 * @param  {String}   channel event name to listen to
+	 * @param  {Object} 	message content to send
+	 */
+	emit(channel, message) {
+		this._socket.emit(channel, message);
 	}
 
 }
