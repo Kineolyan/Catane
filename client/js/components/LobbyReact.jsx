@@ -1,6 +1,6 @@
 'use strict';
 
-/* 
+/*
   React component containing the lobby to choose the same
 */
 
@@ -35,7 +35,7 @@ var LobbyReact = React.createClass({
         <button onClick={this.createGame}>Create game</button>
       </div>
     );
-  }, 
+  },
 
   createGame() {
     Socket.emit('game:create');
@@ -49,13 +49,13 @@ var LobbyReact = React.createClass({
   initSocket() {
     Socket.on('game:create', (response) => {
       console.log(response);
-      if(response.success) {
+      if(response._success) {
         this.props.onGameChosen(response.game);
       }
     });
 
     Socket.on('game:list', (response) => {
-      if(response.success) {
+      if(response._success) {
         this.setState({gameAvailables: response.games});
       }
     });

@@ -1,6 +1,6 @@
 'use strict';
 
-/* 
+/*
   React component containing the whole game interface
 */
 var React = require('react');
@@ -15,7 +15,7 @@ var PlayerReact = React.createClass({
     };
   },
 
-  componentDidMount() { 
+  componentDidMount() {
     this.initSocket();
     this.triggerChangeName();
   },
@@ -24,7 +24,7 @@ var PlayerReact = React.createClass({
     return (
       <div className={'player'}>
         <div className={'name'}>
-          {this.state.name} ({this.props.id}) 
+          {this.state.name} ({this.props.id})
           <button onClick={this.triggerChangeName}>Modifier</button>
         </div>
       </div>
@@ -37,11 +37,11 @@ var PlayerReact = React.createClass({
     if(this.tmpName) {
       Socket.emit('player:nickname', this.tmpName);
     }
-  }, 
+  },
 
   initSocket() {
     Socket.on('player:nickname', (response) => {
-      if(response.success) {
+      if(response._success) {
         this.setState({name: this.tmpName});
         this.props.onChange(Globals.step.chooseLobby);
       }
