@@ -17,24 +17,24 @@ export default class Server {
 	}
 
   /**
-   * Connects a client to the server.
+   * Connects a socket to the server.
    * @param  {Socket} socket with client connection
    */
-	connect(client) {
-		var player = new Player(client, this._nextPlayerId().toString());
-		this.players[client] = player;
+	connect(socket) {
+		var player = new Player(socket, this._nextPlayerId().toString());
+		this.players[socket] = player;
 		console.log(`[Server] ${player.name} is connected`);
-		client.emit('init', { message: 'welcome', name: player.name, id: player.id });
+		socket.emit('init', { message: 'welcome', name: player.name, id: player.id });
 
 		for (let resource of this._resources) {
 			resource.register(player);
 		}
 	}
 
-	disconnect(client) {
-		var player = this.players[client] || { name: 'Unknown' };
+	disconnect(socket) {
+		var player = this.players[socket] || { name: 'Unknown' };
 
 		console.log(`[Server] ${player.name} is disconnected`);
-		delete this._players[client];
+		delete this._players[socket];
 	}
 }

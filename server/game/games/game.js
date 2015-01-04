@@ -6,6 +6,7 @@ export default class Game {
 	constructor(id) {
 		this._id = id;
 		this._players = new Set();
+		this._started = false;
 	}
 
 	/**
@@ -46,5 +47,12 @@ export default class Game {
 	 */
 	emit(channel, message) {
 		this._players.forEach(player => player.emit(channel, message));
+	}
+
+	start() {
+		if (this._started) { throw new Error(`Game ${this._id} already started`); }
+		if (this._players.size < 2) { throw new Error(`Not enough players in the game (${this._players.size})`); }
+
+		this._started = true;
 	}
 }

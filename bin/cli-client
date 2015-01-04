@@ -7,6 +7,11 @@ var util = require('util');
 
 var socket;
 var channel;
+var CHANNELS = [ // Channels to listen
+		'init',
+		'player:nickname',
+		'game:create', 'game:list', 'game:players', 'game:join'
+	];
 
 var cmds = {
 	nickname: new_cmd(/^\/nickname (.+)$/, function(args) {
@@ -90,11 +95,7 @@ function createSocket() {
 		std_in();
 	});
 
-	[ // Channels to listen
-		'std',
-		'player:nickname',
-		'game:create', 'game:list', 'game:players'
-	].forEach(function(channel) {
+	CHANNELS.forEach(function(channel) {
 		socket.on(channel, printMessageOf(channel));
 	});
 
@@ -102,5 +103,11 @@ function createSocket() {
 }
 
 function send(message, c) {
+	if (CHANNELS.indexOf(c) < 0) {
+		// Add channel if missing
+		CHANNELS.push(c);
+		socket.on(c, printMessageOf(c));
+	}
+
 	socket.emit(c || channel, message);
 }

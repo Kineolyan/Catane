@@ -34,13 +34,14 @@ describe('Server', function() {
 	describe('disconnection of a client', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
-			this.server.connect(this.client);
+			this.socket = this.client.toSocket();
+			this.server.connect(this.socket);
 
-			this.server.disconnect(this.client);
+			this.server.disconnect(this.socket);
 		});
 
 		it('removes client from the list', function() {
-			expect(this.server.players).not.toHaveKey(this.client);
+			expect(this.server.players).not.toHaveKey(this.socket);
 		});
 	});
 

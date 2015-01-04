@@ -43,4 +43,36 @@ describe('Game', function() {
 			expect(players).toEqual([ this.player ]);
 		});
 	});
+
+	describe('#start', function() {
+		beforeEach(function() {
+			this.clients = [ new MockSocket() ];
+			this.players = [ new Player(this.clients[0], 1) ];
+
+			expect(this.game.add(this.players[0])).toBe(true);
+		});
+
+		describe('with enough players', function() {
+			beforeEach(function() {
+				this.clients.push(new MockSocket());
+				this.players.push(new Player(this.clients[1], 2));
+
+				expect(this.game.add(this.players[1])).toBe(true);
+				this.game.start();
+			});
+
+			describe('started multiple times', function() {
+				it('throws an Error', function() {
+					expect(() => this.game.start()).toThrowError(/already started/i);
+				});
+			});
+
+		});
+
+		describe('with not enough players', function() {
+			it('fails with Error', function() {
+				expect(() => this.game.start()).toThrowError(/not enough players/i);
+			});
+		});
+	});
 });

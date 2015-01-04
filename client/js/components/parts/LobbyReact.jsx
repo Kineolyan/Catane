@@ -40,7 +40,7 @@ var LobbyReact = React.createClass({
    */
   render() {
     var games = this.state.gameAvailables.map((game) => {
-      return (<li key={game} data-id={game} onClick={this.chooseGame}>{game}</li>);
+        return (<li key={game.id} data-id={game.id} onClick={this.chooseGame}>{game.id}</li>);
     });
 
     return (
@@ -65,6 +65,7 @@ var LobbyReact = React.createClass({
    * @param  {Event} the click event
    */
   chooseGame(event) {
+    console.log(event.currentTarget.dataset.id);
     this.tmpId = parseInt(event.currentTarget.dataset.id, 10);
     Socket.emit(Globals.socket.gameJoin, this.tmpId);
   },
@@ -76,23 +77,17 @@ var LobbyReact = React.createClass({
 
     //game create
     Socket.on(Globals.socket.gameCreate, (response) => {
-      if(response.success) {
         this.props.onGameChosen(response.game);
-      }
     });
 
     //list of game
     Socket.on(Globals.socket.gameList, (response) => {
-      if(response.success) {
         this.setState({gameAvailables: response.games});
-      }
     });
 
     //game chosen
-    Socket.on(Globals.socket.gameJoin, (response) => {
-      if(response.success) {
+    Socket.on(Globals.socket.gameJoin, () => {
         this.props.onGameChosen(this.tmpId);
-      }
     });
   },
 

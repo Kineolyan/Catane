@@ -85,11 +85,9 @@ var PlayerReact = React.createClass({
    * Init the socket receiver for the game
    */
   initSocket() {
-    Socket.on(Globals.socket.playerNickname, (response) => {
-      if(response.success) {
+    Socket.on(Globals.socket.playerNickname, () => {
         this.setState({name: this.tmpName});
         this.props.onChange(Globals.step.chooseLobby);
-      }
     });
   },
 

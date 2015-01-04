@@ -17,13 +17,13 @@ describe('Games', function() {
 	describe('#register', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
-			this.player = new Player(this.client, 0);
+			this.player = new Player(this.client.toSocket(), 0);
 			this.games.register(this.player);
 		});
 
 		// Channels listened
 		[
-			'game:create', 'game:list', 'game:join'
+			'game:create', 'game:list', 'game:join', 'game:start'
 		].forEach(function(channel) {
 			it(`makes client listen to "${channel}"`, function() {
 				expect(this.client).toBeListeningTo(channel);
@@ -37,8 +37,8 @@ describe('Games', function() {
 			for (let i = 0; i < 3; i+= 1) { this.gamesList.push(this.games.create()); }
 		});
 
-		it('lists 3 games', function() {
-			var gameIds = Array.from(this.gamesList, (game) => game.id);
+		it('returns 3 games', function() {
+			var gameIds = Array.from(this.gamesList, (game) => ({ id: game.id }));
 			expect(this.games.list()).toEqual(gameIds);
 		});
 	});
@@ -46,7 +46,7 @@ describe('Games', function() {
 	describe('with a client and games', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
-			this.player = new Player(this.client, 1);
+			this.player = new Player(this.client.toSocket(), 1);
 			this.games.register(this.player);
 
 			let lastGame;
@@ -67,7 +67,8 @@ describe('Games', function() {
 
 			it('sends id of the game', function() {
 				var message = this.client.lastMessage('game:create');
-				expect(message.game.toString()).toMatch(/^[0-9]+$/);
+				// TODO Change for .toBeAnInt()
+				expect(message.game.id.toString()).toMatch(/^[0-9]+$/);
 			});
 		});
 
@@ -90,7 +91,7 @@ describe('Games', function() {
 
 				it('receives success on "game:join"', function() {
 					var message = this.client.lastMessage('game:join');
-					expect(message.success).toEqual(true);
+					expect(message._success).toEqual(true);
 				});
 
 				it('receives the list of players', function() {
@@ -101,7 +102,7 @@ describe('Games', function() {
 				describe('with another player', function() {
 					beforeEach(function() {
 						this.anotherClient = new MockSocket();
-						this.anotherPlayer = new Player(this.anotherClient, 2);
+						this.anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
 						this.games.register(this.anotherPlayer);
 
 						this.anotherClient.receive('game:join', this.lastGameId);
@@ -131,13 +132,69 @@ describe('Games', function() {
 
 					it('sends error message', function() {
 						var message = this.client.lastMessage('game:join');
-						expect(message.success).toBe(false);
+						expect(message._success).toBe(false);
 						expect(message.message).toMatch(/duplicated player/i);
 					});
 				});
 			});
+		});
+
+		describe('->game:start', function() {
+			beforeEach(function() {
+				this.client.receive('game:join', this.lastGameId);
+			});
+
+			describe('with enough players', function() {
+				beforeEach(function() {
+					this.anotherClient = new MockSocket();
+					this.anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
+
+					this.games.register(this.anotherPlayer);
+					this.anotherClient.receive('game:join', this.lastGameId);
+
+					this.client.receive('game:start', this.lastGameId);
+				});
+
+				it('sends ok', function() {
+					var message = this.client.lastMessage('game:start');
+					expect(message._success).toBe(true);
+				});
+
+				it('sends error if started twice', function() {
+					this.client.receive('game:start', this.lastGameId);
+
+					var response = this.client.lastMessage('game:start');
+					expect(response._success).toBe(false);
+					expect(response.message).toMatch(/already started/i);
+				});
+			});
+
+			describe('with wrong id', function() {
+				beforeEach(function() {
+					this.client.receive('game:start', -1);
+				});
+
+				it('sends an error', function() {
+					var response = this.client.lastMessage('game:start');
+					expect(response._success).toBe(false);
+					expect(response.message).toMatch(/unknown game/i);
+				});
+			});
+
+			describe('without enough players', function() {
+				beforeEach(function() {
+					this.client.receive('game:start', this.lastGameId);
+				});
+
+				it('sends an error', function() {
+					var response = this.client.lastMessage('game:start');
+					expect(response._success).toBe(false);
+					expect(response.message).toMatch(/not enough players/i);
+				});
+			});
 
 		});
+
 
 	});
 

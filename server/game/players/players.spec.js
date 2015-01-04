@@ -8,7 +8,7 @@ describe('Player', function() {
 
 	describe('on creation', function() {
 		beforeEach(function() {
-			this.player = new Player(this.socket, '1');
+			this.player = new Player(this.socket.toSocket(), '1');
 		});
 
 		it('registers on player:nickname', function () {
@@ -26,7 +26,7 @@ describe('Player', function() {
 
 	describe('#register', function() {
 		beforeEach(function() {
-			this.player = new Player(this.socket);
+			this.player = new Player(this.socket.toSocket());
 			this.player.register('Olivier');
 		});
 
@@ -37,7 +37,7 @@ describe('Player', function() {
 
 	describe('->player:nickname', function() {
 		beforeEach(function() {
-			this.player = new Player(this.socket);
+			this.player = new Player(this.socket.toSocket());
 			this.socket.receive('player:nickname', 'Olivier');
 		});
 
@@ -46,7 +46,8 @@ describe('Player', function() {
 		});
 
 		it('sends success', function() {
-			expect(this.socket.lastMessage('player:nickname')).toEqual({ success: true });
+			var message = this.socket.lastMessage('player:nickname');
+			expect(message._success).toEqual(true);
 		});
 	});
 
