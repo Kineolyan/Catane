@@ -10,6 +10,12 @@ var Globals = require('../libs/globals');
 
 var LobbyReact = React.createClass({
 
+
+
+  propTypes: {
+    onGameChosen: React.PropTypes.func.isRequired
+  },
+
   /**
    * Get the initial state of the component
    * @return {Object} gameAvailables {Array} 
@@ -25,7 +31,6 @@ var LobbyReact = React.createClass({
    */
   componentDidMount() {
     this.initSocket();
-
     Socket.emit(Globals.socket.gameList);
   },
 
@@ -35,7 +40,7 @@ var LobbyReact = React.createClass({
    */
   render() {
     var games = this.state.gameAvailables.map((game) => {
-      return (<li key={game} data-id={game} onClick={this.choseGame}>{game}</li>);
+      return (<li key={game} data-id={game} onClick={this.chooseGame}>{game}</li>);
     });
 
     return (
@@ -59,26 +64,44 @@ var LobbyReact = React.createClass({
    * Callback when we choose a game
    * @param  {Event} the click event
    */
-  choseGame(event) {
-    var id = event.currentTarget.dataset.id;
-    this.props.onGameChosen(id);
+  chooseGame(event) {
+    this.tmpId = parseInt(event.currentTarget.dataset.id, 10);
+    Socket.emit(Globals.socket.gameJoin, this.tmpId);
   },
 
   /**
    * Init the socket receiver for the game
    */
   initSocket() {
+
+    //game create
     Socket.on(Globals.socket.gameCreate, (response) => {
       if(response.success) {
         this.props.onGameChosen(response.game);
       }
     });
 
+    //list of game
     Socket.on(Globals.socket.gameList, (response) => {
       if(response.success) {
         this.setState({gameAvailables: response.games});
       }
     });
+
+    //game chosen
+    Socket.on(Globals.socket.gameJoin, (response) => {
+      if(response.success) {
+        this.props.onGameChosen(this.tmpId);
+      }
+    });
+  },
+
+  /**
+   * When the component is destroyed
+   */
+  componentWillUnmount() {
+    Socket.removeAllListeners(Globals.socket.gameList);
+    Socket.removeAllListeners(Globals.socket.gameCreate);
   }
 });
 
