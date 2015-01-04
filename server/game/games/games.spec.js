@@ -23,7 +23,7 @@ describe('Games', function() {
 
 		// Channels listened
 		[
-			'game:create', 'game:list', 'game:join'
+			'game:create', 'game:list', 'game:join', 'game:start'
 		].forEach(function(channel) {
 			it(`makes client listen to "${channel}"`, function() {
 				expect(this.client).toBeListeningTo(channel);

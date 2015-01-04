@@ -53,6 +53,17 @@ export default class Games {
 				messages.ko(player, 'game:join');
 			}
 		});
+
+		// player.on('game:start', function(gameId) {
+		// 	var game = mgr._games.get(gameId);
+		// 	if (game) {
+		// 		if (!game.start()) {
+		// 			messages.ko(player, 'game:start', `Game ${gameId} already started`);
+		// 		}
+		// 	} else {
+		// 		messages.ko(player, 'game:start', `Game ${gameId} does not exist`);
+		// 	}
+		// });
 	}
 
 	/**
