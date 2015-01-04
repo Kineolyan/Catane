@@ -23,21 +23,30 @@ var GameReact = React.createClass({
   },
 
   /**
-   * Get the initial state of the component
-   * @param  {String} the new name of the player
+   * Change the minamal step where the game should be
+   * @param  {Globals.step} the minamal step 
    */
-   
+
   setMinimalStep(step) {
     if(this.state.step <= step) {
       this.setState({step: step});
     }
   },
 
+  /**
+   * Start the game with the selected game 
+   * @param  {Int} the game id
+   */
   chooseGame(game) {
     this.setMinimalStep(Globals.step.inLobby);
     this.setState({game:game});
   },
 
+
+  /**
+   * Render the whole interface of the game
+   * @return {React.Element} the rendered element
+   */
   render() {
     return (
       <div>
@@ -49,13 +58,16 @@ var GameReact = React.createClass({
     );
   },
 
+  /**
+   * Render the lobby to choose and create a game
+   * @return {React.Element} the rendered element
+   */
   renderChooseLobby() {
     if(this.state.step <= Globals.step.inLobby && this.state.step > Globals.step.init) {
       return (<Lobby onGameChosen={this.chooseGame} />);
     }
   }
 
-  
 });
 
 module.exports = GameReact;

@@ -6,12 +6,12 @@
 
 //declare socket first
 var Socket = require('./libs/socket');
-
+var Globals = require('./libs/globals');
 
 var React = require('react');
 var GameReact = require('./parts/GameReact'); // need to specify the jsx extension
 
-Socket.on('init', function(data) {
+Socket.on(Globals.socket.init, function(data) {
     console.log('game start !');
     React.render(<GameReact init={data}/>, document.getElementById('content'));
 });

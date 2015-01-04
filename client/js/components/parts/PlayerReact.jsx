@@ -9,17 +9,28 @@ var Socket = require('../libs/socket');
 
 var PlayerReact = React.createClass({
 
+  /**
+   * Get the initial state of the component
+   * @return {Object} name {String} 
+   */
   getInitialState() {
     return {
       name: this.props.initialName
     };
   },
 
+  /**
+   * Triggered when the component is rendered, initialize the componenent
+   */
   componentDidMount() { 
     this.initSocket();
     this.triggerChangeName();
   },
 
+  /**
+   * Render the player interface
+   * @return {React.Element} the rendered element
+   */
   render() {
     return (
       <div className={'player'}>
@@ -31,15 +42,22 @@ var PlayerReact = React.createClass({
     );
   },
 
+  /**
+   * Ask to change the name
+   */
   triggerChangeName() {
     this.tmpName = window.prompt('What\'s your name ?');
 
     if(this.tmpName) {
-      Socket.emit('player:nickname', this.tmpName);
+      Socket.emit(Globals.socket.playerNickname, this.tmpName);
     }
   }, 
 
+  /**
+   * Init the socket receiver for the game
+   */
   initSocket() {
+
     Socket.on('player:nickname', (response) => {
       if(response.success) {
         this.setState({name: this.tmpName});
