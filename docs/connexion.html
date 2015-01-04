@@ -34,8 +34,10 @@
     Title: Créer une partie
     participant Game
     participant Serveur
+    participant All
     Game->Serveur: ws/game:create
     Serveur->Game: ws/game:create\n{ _success: true, game: { id: game_id } }
+    Server->All: ws/game:list\n{ _success: true, games: [{ id: game_id }, ...] }
   </div>
 
   <div class="diagram">
