@@ -44,27 +44,38 @@ PATHS.docs.libs = pathItem('libs');
 PATHS.specs = pathItem('specs');
 PATHS.specs.matchers = pathItem('matchers');
 
-/* --  Build tasks -- */
+/* -- Actions -- */
 
-gulp.task('build:js', function() {
+/** BUild all js transpiling from ES6 to ES5 */
+function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
     .pipe(cached('js'))
     .pipe(remember('js'))
     .pipe(traceur({ modules:'commonjs' }))
     .pipe(gulp.dest(PATHS.build.server()));
-});
+}
+
+/** Performs all unit tests */
+function testUnit() {
+  return gulp.src([
+      PATHS.specs.matchers('**/*.js'),
+      PATHS.build.server('**/*.spec.js'),
+      PATHS.client('**/*.spec.js')
+    ]).pipe(jas({includeStackTrace: true}));
+}
+
+/* --  Build tasks -- */
+
+gulp.task('build:js', buildJs);
 
 // Special task to order properly tasks
-gulp.task('watch:js:test', ['build:js'], function() {
-  gulp.run('test:unit');
-});
+gulp.task('watch:js:test', ['build:js'], testUnit);
 
 gulp.task('watch:js', function() {
-  gulp.watch(PATHS.server('**/*.js'), ['watch:js:test']);
+  gulp.watch(PATHS.server('**/*.js'), ['build:js', 'watch:js:test']);
 });
 
 gulp.task('build:sass', function () {
-
   return gulp.src([
         PATHS.client('**/*.scss'),
         PATHS.client.scssLib('**/*.scss')
@@ -76,7 +87,6 @@ gulp.task('build:sass', function () {
       .pipe(gulp.dest(PATHS.client()));
 });
 
-
 gulp.task('build:jsx', function() {
   return gulp.src(PATHS.client.js('components/*.jsx'))
       .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
@@ -84,29 +94,21 @@ gulp.task('build:jsx', function() {
       .pipe(gulp.dest(PATHS.client.js('compiled')));
 });
 
-
 gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
-
   var b = browserify('./' + PATHS.client.js('compiled/main.js'))
   var stream = b.bundle()
     .pipe(source('main.js')) // the output filename
     .pipe(gulp.dest(PATHS.build.client('js'))); // the output directory
   return stream;
-
 });
 
 gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
-
 
 /* -- Watcher -- */
 
 gulp.task('watch:unit', function() {
   // Server source already triggered the tests
   gulp.watch([ PATHS.client('**/*.spec.js')], [ 'test:unit' ]);
-});
-
-gulp.task('watch:js', function() {
-  gulp.watch(PATHS.server('**/*.js'), [ 'build:js', 'test:unit' ]);
 });
 
 gulp.task('watch:jsx', function() {
@@ -117,17 +119,9 @@ gulp.task('watch', ['watch:js', 'watch:unit', 'watch:jsx']);
 
 /* -- Test task -- */
 
-gulp.task('test:unit', function() {
-  return gulp.src([
-      PATHS.specs.matchers('**/*.js'),
-      PATHS.build.server('**/*.spec.js'),
-      PATHS.client('**/*.spec.js')
-    ]).pipe(jas({includeStackTrace: true}));
-});
-
+gulp.task('test:unit', testUnit);
 
 gulp.task('test:lint', ['build:jsx'], function() {
-
   return gulp.src([
   		PATHS.bin('*.js'),
   		PATHS.client('**/*.js'),
@@ -136,7 +130,6 @@ gulp.task('test:lint', ['build:jsx'], function() {
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'));
-
 });
 
 gulp.task('test', ['test:unit', 'test:lint']);
