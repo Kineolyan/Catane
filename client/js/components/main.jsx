@@ -5,11 +5,11 @@
 */
 
 //declare socket first
-var Socket = require('./socket');
+var Socket = require('./libs/socket');
 
 
 var React = require('react');
-var GameReact = require('./GameReact'); // need to specify the jsx extension
+var GameReact = require('./parts/GameReact'); // need to specify the jsx extension
 
 Socket.on('init', function(data) {
     console.log('game start !');

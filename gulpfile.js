@@ -78,7 +78,7 @@ gulp.task('build:sass', function () {
 
 
 gulp.task('build:jsx', function() {
-  return gulp.src(PATHS.client.js('components/*.jsx'))
+  return gulp.src(PATHS.client.js('components/**/*.jsx'))
       .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
       .pipe(react({harmony: true}))
       .pipe(gulp.dest(PATHS.client.js('compiled')));
@@ -110,7 +110,7 @@ gulp.task('watch:js', function() {
 });
 
 gulp.task('watch:jsx', function() {
-  gulp.watch(PATHS.client.js('components/*.jsx'), ['build:browserify']);
+  gulp.watch(PATHS.client.js('components/**/*.jsx'), ['build:browserify']);
 });
 
 gulp.task('watch', ['watch:js', 'watch:unit', 'watch:jsx']);

@@ -7,10 +7,14 @@
 var Player = require('./PlayerReact');
 var Lobby = require('./LobbyReact');
 var React = require('react');
-var Globals = require('./globals');
+var Globals = require('../libs/globals');
 
 var GameReact = React.createClass({
 
+   /**
+   * Get the initial state of the component
+   * @return {Object} Step {Globals.step} game {int}
+   */
   getInitialState() {
     return {
       step: Globals.step.init,
@@ -18,6 +22,11 @@ var GameReact = React.createClass({
     };
   },
 
+  /**
+   * Get the initial state of the component
+   * @param  {String} the new name of the player
+   */
+   
   setMinimalStep(step) {
     if(this.state.step <= step) {
       this.setState({step: step});

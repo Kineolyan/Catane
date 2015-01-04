@@ -5,7 +5,7 @@
 */
 
 var React = require('react');
-var Socket = require('./socket');
+var Socket = require('../libs/socket');
 
 var LobbyReact = React.createClass({
 
