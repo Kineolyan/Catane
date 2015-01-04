@@ -137,8 +137,64 @@ describe('Games', function() {
 					});
 				});
 			});
+		});
+
+		describe('->game:start', function() {
+			beforeEach(function() {
+				this.client.receive('game:join', this.lastGameId);
+			});
+
+			describe('with enough players', function() {
+				beforeEach(function() {
+					this.anotherClient = new MockSocket();
+					this.anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
+
+					this.games.register(this.anotherPlayer);
+					this.anotherClient.receive('game:join', this.lastGameId);
+
+					this.client.receive('game:start', this.lastGameId);
+				});
+
+				it('sends ok', function() {
+					var message = this.client.lastMessage('game:start');
+					expect(message._success).toBe(true);
+				});
+
+				it('sends error if started twice', function() {
+					this.client.receive('game:start', this.lastGameId);
+
+					var response = this.client.lastMessage('game:start');
+					expect(response._success).toBe(false);
+					expect(response.message).toMatch(/already started/i);
+				});
+			});
+
+			describe('with wrong id', function() {
+				beforeEach(function() {
+					this.client.receive('game:start', -1);
+				});
+
+				it('sends an error', function() {
+					var response = this.client.lastMessage('game:start');
+					expect(response._success).toBe(false);
+					expect(response.message).toMatch(/unknown game/i);
+				});
+			});
+
+			describe('without enough players', function() {
+				beforeEach(function() {
+					this.client.receive('game:start', this.lastGameId);
+				});
+
+				it('sends an error', function() {
+					var response = this.client.lastMessage('game:start');
+					expect(response._success).toBe(false);
+					expect(response.message).toMatch(/not enough players/i);
+				});
+			});
 
 		});
+
 
 	});
 

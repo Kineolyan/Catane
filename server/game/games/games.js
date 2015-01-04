@@ -48,14 +48,13 @@ export default class Games {
 		});
 
 		player.on('game:start', function(gameId) {
-		// 	var game = mgr._games.get(gameId);
-		// 	if (game) {
-		// 		if (!game.start()) {
-		// 			messages.ko(player, 'game:start', `Game ${gameId} already started`);
-		// 		}
-		// 	} else {
-		// 		messages.ko(player, 'game:start', `Game ${gameId} does not exist`);
-		// 	}
+			var game = mgr._games.get(gameId);
+			if (game) {
+				game.start();
+				return true;
+			} else {
+				throw new Error(`Unknown game ${gameId}`);
+			}
 		});
 	}
 
