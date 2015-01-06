@@ -30,28 +30,6 @@
     Serveur->Game: ws/player:nickname\n{ _success: true }
   </div>
 
-  <div class="diagram">
-    Title: Créer une partie
-    participant Game
-    participant Serveur
-    participant All
-    Game->Serveur: ws/game:create
-    Serveur->Game: ws/game:create\n{ _success: true, game: { id: game_id } }
-    Server->All: ws/game:list\n{ _success: true, games: [{ id: game_id }, ...] }
-  </div>
-
-  <div class="diagram">
-    Title: Rejoindre une partie
-    participant Game
-    participant Serveur
-    participant All
-    Game->Serveur: ws/game:list
-    Serveur->Game: ws/game:list\n{ _success: true, games: [{ id: game_id }, ...] }
-    Game->Serveur: ws/game:join\ngame_id
-    Serveur->Game: ws/game:join\n{ _success: true }
-    Serveur->All: ws/game:players\n{ players: [{ name: "player name", id: "id" }, ..]}
-  </div>
-
   <script src="libs/jquery.min.js"></script>
   <script src="libs/underscore-min.js"></script>
   <script src="libs/raphael-min.js"></script>
