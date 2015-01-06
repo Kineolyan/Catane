@@ -26,8 +26,11 @@
     Title: Configuration du joueur
     participant Game
     participant Serveur
+    participant Others
     Game->Serveur: ws/player:nickname\n"new name"
     Serveur->Game: ws/player:nickname\n{ _success: true }
+    Note left of Others: Notifie les autres membres de la partie
+    Serveur->Others: { players: [{ id: .., name: .. }] }
   </div>
 
   <script src="libs/jquery.min.js"></script>
