@@ -28,4 +28,8 @@ export default class Socket {
 	emit(channel, message) {
 		this._socket.emit(channel, message);
 	}
+
+	broadcast(channel, message) {
+		this._socket.broadcast.emit(channel, message);
+	}
 }

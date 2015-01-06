@@ -59,4 +59,8 @@ export default class Player {
 		this._socket.emit(channel, message);
 	}
 
+	broadcast(channel, message) {
+		this._socket.broadcast(channel, message);
+	}
+
 }

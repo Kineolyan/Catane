@@ -1,5 +1,18 @@
 import Socket from './sockets';
 
+var sockets = [];
+
+function createBroadcast(caller) {
+	return {
+		emit: function(channel, message) {
+			for (let socket of sockets) {
+				if (socket === caller) { continue; }
+				socket.emit(channel, message);
+			}
+		}
+	};
+}
+
 /**
  * Class mocking a socket from Socket.IO.
  */
@@ -7,6 +20,9 @@ export class MockSocket {
 	constructor() {
 		this._messages = {};
 		this._channels = {};
+
+		sockets.push(this);
+		this._broadcast = createBroadcast(this);
 	}
 
 	/**
@@ -70,6 +86,10 @@ export class MockSocket {
 		var messages = this.messages(channel);
 
 		return messages[messages.length - 1];
+	}
+
+	get broadcast() {
+		return this._broadcast;
 	}
 
 	toSocket() {

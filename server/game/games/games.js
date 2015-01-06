@@ -18,6 +18,10 @@ export default class Games {
 			var game = mgr.create();
 			game.add(player);
 
+			player.broadcast('game:list', {
+				_success: true,
+				games: mgr.list()
+			});
 			return { game: { id: game.id } };
 		});
 		player.on('game:list', function () {
@@ -36,7 +40,7 @@ export default class Games {
 					// Sends updated list of players
 					var players = Array.from(game.players, (player) => ({ name: player.name, id: player.id }));
 					game.emit('game:players', {
-						success: true,
+						_success: true,
 						players: players
 					});
 				} else {

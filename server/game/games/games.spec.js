@@ -58,6 +58,10 @@ describe('Games', function() {
 
 		describe('->game:create', function() {
 			beforeEach(function() {
+				this.anotherClient = new MockSocket();
+				this.anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
+				this.games.register(this.anotherPlayer);
+
 				this.client.receive('game:create', null);
 			});
 
@@ -67,8 +71,13 @@ describe('Games', function() {
 
 			it('sends id of the game', function() {
 				var message = this.client.lastMessage('game:create');
-				// TODO Change for .toBeAnInt()
-				expect(message.game.id.toString()).toMatch(/^[0-9]+$/);
+				expect(message.game.id).toBeAnInteger();
+			});
+
+			it('notifies the other players', function() {
+				var gameId = this.client.lastMessage('game:create').game.id;
+				var message = this.anotherClient.lastMessage('game:list');
+				expect(Array.from(message.games, (game) => game.id)).toContain(gameId);
 			});
 		});
 
