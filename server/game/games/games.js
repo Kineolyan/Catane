@@ -14,7 +14,8 @@ export default class Games {
 	 */
 	register(player) {
 		var mgr = this;
-		player.on('game:create', function() {
+
+		player.on('game:create', () => {
 			var game = mgr.create();
 			game.add(player);
 
@@ -24,30 +25,46 @@ export default class Games {
 			});
 			return { game: { id: game.id } };
 		});
-		player.on('game:list', function () {
-			return {
-				games: mgr.list()
-			};
-		});
 
-		player.on('game:join', function(gameId) {
-			var game = mgr._games.get(gameId);
+		player.on('game:list', () => ({ games: mgr.list() }) );
+
+		player.on('game:join', gameId => {
+			var game = this._games.get(gameId);
 			if (game) {
+				if (game === player.game) {
+					throw new Error('Duplicated player in game ' + game.id);
+				}
+
+				if (undefined !== player.game) {
+					let leavedGame = player.game;
+					leavedGame.remove(player);
+
+					this.broadcastPlayers(leavedGame);
+				}
+
 				if (game.add(player)) {
 					// Notifies of success
 					messages.ok(player, 'game:join');
 
-					// Sends updated list of players
-					var players = Array.from(game.players, (player) => ({ name: player.name, id: player.id }));
-					game.emit('game:players', {
-						_success: true,
-						players: players
-					});
+					this.broadcastPlayers(game);
 				} else {
-					throw new Error('duplicated player');
+					throw new Error(`Failed to add player ${player.id} to game ${game.id}`);
 				}
 			} else {
 				throw new Error('unknown game ' + gameId);
+			}
+		});
+
+		player.on('game:quit', () => {
+			var game = player.game;
+			if (game) {
+				game.remove(player);
+
+				this.broadcastPlayers(game);
+
+				return true;
+			} else {
+				throw new Error(`Player ${player.id} belongs to no game`);
 			}
 		});
 
@@ -79,6 +96,19 @@ export default class Games {
 		this._games.set(game.id, game);
 
 		return game;
+	}
+
+	/**
+	 * Broadcasts players list to all players of a game.
+	 * @param  {Players} game players of the game to consider
+	 */
+	broadcastPlayers(game) {
+		var players = Array.from(game.players, (player) => ({ name: player.name, id: player.id }));
+		var message = {
+			_success: true,
+			players: players
+		};
+		game.players.forEach(player => player.emit('game:players', message));
 	}
 
 }

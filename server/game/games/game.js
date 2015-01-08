@@ -41,6 +41,16 @@ export default class Game {
 		}
 	}
 
+	remove(player) {
+		if (this._players.has(player)) {
+			this._players.delete(player);
+			player.game = undefined;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * Emits the message on the channel to all players of the game.
 	 * @param  {String} channel name of the event

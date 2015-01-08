@@ -49,11 +49,14 @@ export class MockSocket {
 	 * This will call the registered callback if any or throw.
 	 * @param  {String} channel
 	 * @param  {Object} message
+	 * @return {Object} last message received on the channel
 	 */
 	receive(channel, message) {
 		var cbk = this._channels[channel];
 		if (cbk) {
 			cbk(message);
+
+			return this.lastMessage(channel);
 		} else {
 			throw 'No listener for channel ' + channel;
 		}
