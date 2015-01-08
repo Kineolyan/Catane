@@ -42,6 +42,10 @@ describe('Game', function() {
 			var players = Array.from(this.game.players, (player) => player);
 			expect(players).toEqual([ this.player ]);
 		});
+
+		it('sets the player game to itself', function() {
+			expect(this.player.game).toBe(this.game);
+		});
 	});
 
 	describe('#start', function() {

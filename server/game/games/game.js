@@ -34,6 +34,7 @@ export default class Game {
 	add(player) {
 		if (!this._players.has(player)) {
 			this._players.add(player);
+			player.game = this;
 			return true;
 		} else {
 			return false;
