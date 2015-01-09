@@ -88,4 +88,12 @@ export default class Player {
 		this._socket.broadcast(channel, message);
 	}
 
+	/**
+	 * Sends a message to all other connected players
+	 * @param  {String} channel event name to listen to
+	 * @param  {Object} message content to send
+	 */
+	all(channel, message) {
+		this._socket.all(channel, message);
+	}
 }

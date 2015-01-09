@@ -1,6 +1,7 @@
 export default class Socket {
-	constructor(socket) {
+	constructor(socket, world) {
 		this._socket = socket;
+		this._world = world;
 	}
 
 	on(channel, cbk) {
@@ -31,5 +32,9 @@ export default class Socket {
 
 	broadcast(channel, message) {
 		this._socket.broadcast.emit(channel, message);
+	}
+
+	all(channel, message) {
+		this._world.emit(channel, message);
 	}
 }
