@@ -267,6 +267,40 @@ describe('Games', function() {
 			});
 		});
 
+		describe('clean games if empty', function() {
+			describe('on game:quit', function() {
+				beforeEach(function() {
+					// Join the game ...
+					this.client.receive('game:join', this.lastGameId);
+					// ... to quit it
+					this.client.receive('game:quit');
+				});
+
+				it('gets updated list without the game', function() {
+					var message = this.client.lastMessage('game:list');
+					var games = Array.from(message.games, game => game.id);
+
+					expect(games).not.toContain(this.lastGameId);
+				});
+			});
+
+			describe('on game:join', function() {
+				beforeEach(function() {
+					// Join the game ...
+					this.client.receive('game:join', this.lastGameId);
+					// ... to change to another
+					this.client.receive('game:join', this.games.list()[0].id);
+				});
+
+				it('gets updated list without the game', function() {
+					var message = this.client.lastMessage('game:list');
+					var games = Array.from(message.games, game => game.id);
+
+					expect(games).not.toContain(this.lastGameId);
+				});
+			});
+		});
+
 	});
 
 });
