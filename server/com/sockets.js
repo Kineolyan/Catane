@@ -1,7 +1,12 @@
 export default class Socket {
-	constructor(socket, world) {
+	constructor(id, socket, world) {
+		this._id = id;
 		this._socket = socket;
 		this._world = world;
+	}
+
+	get id() {
+		return this._id;
 	}
 
 	on(channel, cbk) {

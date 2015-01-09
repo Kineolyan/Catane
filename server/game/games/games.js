@@ -56,6 +56,16 @@ export default class Games {
 	}
 
 	/**
+	 * Unregisters a player from the games manager
+	 * @param  {Player} player player to unregister
+	 */
+	unregister(player) {
+		if (player.game) {
+			this.quit(player.game, player);
+		}
+	}
+
+	/**
 	 * Lists the id of all games.
 	 * @return {Array} names of the existing games.
 	 */
@@ -82,7 +92,7 @@ export default class Games {
 	destroy(game) {
 		if (game.players.size === 0) {
 			this._games.delete(game.id);
-			console.log(`[Server] New game created ${game.id}`);
+			console.log(`[Server] Game ${game.id} destroyed`);
 		} else {
 			throw new Error(`Game ${game.id} still has ${game.players.size} players`);
 		}

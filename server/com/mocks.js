@@ -1,6 +1,8 @@
 import Socket from './sockets';
+import { idGenerator } from '../game/util';
 
 var SOCKETS = [];
+var socketId = idGenerator();
 
 function createBroadcast(caller) {
 	return {
@@ -104,6 +106,6 @@ export class MockSocket {
 	}
 
 	toSocket() {
-		return new Socket(this, WORLD);
+		return new Socket(socketId(), this, WORLD);
 	}
 }

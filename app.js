@@ -32,8 +32,11 @@ exports.appServer = function() {
 	 */
 	var server = require('http').Server(app);
 	var io = require('socket.io')(server);
+	var socketId = 0;
 	io.on('connection', function(s) {
-		var socket = new Socket(s, io.sockets);
+		socketId += 1;
+		var sid = socketId;
+		var socket = new Socket(sid, s, io.sockets);
 		catane.connect(socket);
 
 		socket.on('disconnect', function() {
