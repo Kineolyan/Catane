@@ -5,6 +5,15 @@ process.stdin.resume();
 process.stdin.setEncoding('utf8');
 var util = require('util');
 
+function parseArg(value) {
+	var number = parseFloat(value);
+	if (!isNaN(number)) {
+		return number;
+	} else {
+		return value;
+	}
+}
+
 var socket;
 var channel;
 var CHANNELS = [ // Channels to listen
@@ -38,7 +47,7 @@ var cmds = {
 		socket.on(chan, printMessageOf(chan));
 	}),
 	send: new_cmd(/^\/send ?(.*)$/, function(args) {
-		send(args[1]);
+		send(parseArg(args[1].trim()));
 	})
 };
 
