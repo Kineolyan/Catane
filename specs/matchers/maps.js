@@ -2,14 +2,16 @@
 
 (function() {
 
+var n_util = require('util');
+
 var mapMatchers = {
-	toHaveKey: function() {
+	toHaveKey: function(util, equalityTesters) {
 		return {
 			compare: function(actual, expectedKey) {
 				var result = { pass: (expectedKey in actual) };
-				result.message = 'Expecting ' + actual
+				result.message = 'Expecting ' + n_util.inspect(actual)
 					+ (result.pass === true ? ' not' : '')
-					+ ' to have key ' + expectedKey;
+					+ ' to have key ' + n_util.inspect(expectedKey);
 
 				return result;
 			}
@@ -19,9 +21,9 @@ var mapMatchers = {
 		return {
 			compare: function(actual, expectedKeys) {
 				var result = { pass: util.equals(Object.keys(actual), expectedKeys, equalityTesters) };
-				result.message = 'Expecting ' + actual
+				result.message = 'Expecting ' + n_util.inspect(actual)
 					+ (result.pass === true ? ' not' : '')
-					+ ' to have all keys ' + expectedKeys;
+					+ ' to have all keys ' + n_util.inspect(expectedKeys);
 
 				return result;
 			}

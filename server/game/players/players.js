@@ -7,9 +7,10 @@ export default class Player {
 		this._socket = socket;
 		this._id = id;
 		this._name = `Player ${id}`;
+		this._game = undefined;
 
 		socket.on('player:nickname', function(name) {
-			player.register(name);
+			player.name = name;
 			messages.ok(player._socket, 'player:nickname');
 		});
 	}
@@ -33,12 +34,31 @@ export default class Player {
 	/**
 	 * Register the name of the user
 	 * @param  {String} the new name of the player
-	 * @return {Player} this
+	 * @return {String} the name set
 	 */
-	register(name) {
+	set name(name) {
 		this._name = name;
 
-		return this;
+		return name;
+	}
+
+	/**
+	 * Gest the game the player belongs to.
+	 * @return {Game} the game
+	 */
+	get game() {
+		return this._game;
+	}
+
+	/**
+	 * Sets the game the player has joined
+	 * @param  {Game} the joined game
+	 * @return {Player} this
+	 */
+	set game(game) {
+		this._game = game;
+
+		return game;
 	}
 
 	/**
@@ -59,4 +79,21 @@ export default class Player {
 		this._socket.emit(channel, message);
 	}
 
+	/**
+	 * Broadcasts a message to all other players
+	 * @param  {String} channel on which sends the message
+	 * @param  {Object} message to send
+	 */
+	broadcast(channel, message) {
+		this._socket.broadcast(channel, message);
+	}
+
+	/**
+	 * Sends a message to all other connected players
+	 * @param  {String} channel event name to listen to
+	 * @param  {Object} message content to send
+	 */
+	all(channel, message) {
+		this._socket.all(channel, message);
+	}
 }

@@ -1,4 +1,27 @@
 import Socket from './sockets';
+import { idGenerator } from '../game/util';
+
+var SOCKETS = [];
+var socketId = idGenerator();
+
+function createBroadcast(caller) {
+	return {
+		emit: function(channel, message) {
+			for (let socket of SOCKETS) {
+				if (socket === caller) { continue; }
+				socket.emit(channel, message);
+			}
+		}
+	};
+}
+
+const WORLD = {
+	emit: function(channel, message) {
+		for(let socket of SOCKETS) {
+			socket.emit(channel, message);
+		}
+	}
+};
 
 /**
  * Class mocking a socket from Socket.IO.
@@ -7,6 +30,9 @@ export class MockSocket {
 	constructor() {
 		this._messages = {};
 		this._channels = {};
+
+		SOCKETS.push(this);
+		this._broadcast = createBroadcast(this);
 	}
 
 	/**
@@ -33,11 +59,14 @@ export class MockSocket {
 	 * This will call the registered callback if any or throw.
 	 * @param  {String} channel
 	 * @param  {Object} message
+	 * @return {Object} last message received on the channel
 	 */
 	receive(channel, message) {
 		var cbk = this._channels[channel];
 		if (cbk) {
 			cbk(message);
+
+			return this.lastMessage(channel);
 		} else {
 			throw 'No listener for channel ' + channel;
 		}
@@ -72,7 +101,11 @@ export class MockSocket {
 		return messages[messages.length - 1];
 	}
 
+	get broadcast() {
+		return this._broadcast;
+	}
+
 	toSocket() {
-		return new Socket(this);
+		return new Socket(socketId(), this, WORLD);
 	}
 }

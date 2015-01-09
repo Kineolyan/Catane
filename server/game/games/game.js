@@ -34,6 +34,17 @@ export default class Game {
 	add(player) {
 		if (!this._players.has(player)) {
 			this._players.add(player);
+			player.game = this;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	remove(player) {
+		if (this._players.has(player)) {
+			this._players.delete(player);
+			player.game = undefined;
 			return true;
 		} else {
 			return false;

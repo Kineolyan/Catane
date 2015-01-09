@@ -72,7 +72,10 @@ gulp.task('build:js', buildJs);
 gulp.task('watch:js:test', ['build:js'], testUnit);
 
 gulp.task('watch:js', function() {
-  gulp.watch(PATHS.server('**/*.js'), ['build:js', 'watch:js:test']);
+  gulp.watch([
+      PATHS.server('**/*.js'),
+      PATHS.specs('**/*.js')
+    ], ['build:js', 'watch:js:test']);
 });
 
 gulp.task('build:sass', function () {

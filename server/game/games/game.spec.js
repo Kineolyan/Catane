@@ -42,6 +42,36 @@ describe('Game', function() {
 			var players = Array.from(this.game.players, (player) => player);
 			expect(players).toEqual([ this.player ]);
 		});
+
+		it('sets the player game to itself', function() {
+			expect(this.player.game).toBe(this.game);
+		});
+	});
+
+	describe('#remove', function() {
+		beforeEach(function() {
+			this.client = new MockSocket();
+			this.player = new Player(this.client, 1);
+
+			expect(this.game.add(this.player)).toBe(true);
+			this.result = this.game.remove(this.player);
+		});
+
+		it('returns true', function() {
+			expect(this.result).toBe(true);
+		});
+
+		it('has no more players anymore', function() {
+			expect(this.game.players).toHaveSize(0);
+		});
+
+		it('resets the player game to null', function() {
+			expect(this.player.game).toBeUndefined();
+		});
+
+		it('returns false when removing unexisting item', function() {
+			expect(this.game.remove(1)).toBe(false);
+		});
 	});
 
 	describe('#start', function() {

@@ -24,10 +24,10 @@ describe('Player', function() {
 		});
 	});
 
-	describe('#register', function() {
+	describe('#name', function() {
 		beforeEach(function() {
 			this.player = new Player(this.socket.toSocket());
-			this.player.register('Olivier');
+			this.player.name = 'Olivier';
 		});
 
 		it('sets name', function() {
