@@ -14,6 +14,7 @@ var browserify = require('browserify');
 var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
+var nodemon = require('gulp-nodemon');
 
 // var refresh = require('gulp-livereload');
 // var livereload = require('tiny-lr');
@@ -57,11 +58,13 @@ function buildJs() {
 
 /** Performs all unit tests */
 function testUnit() {
+
   return gulp.src([
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
       PATHS.client('**/*.spec.js')
     ]).pipe(jas({includeStackTrace: true}));
+  
 }
 
 /* --  Build tasks -- */
@@ -117,6 +120,10 @@ gulp.task('watch:jsx', function() {
 
 gulp.task('watch', ['watch:js', 'watch:unit', 'watch:jsx']);
 
+//watch + server
+
+gulp.task('develop', ['watch', 'server']);
+
 /* -- Test task -- */
 
 gulp.task('test:unit', testUnit);
@@ -126,7 +133,7 @@ gulp.task('test:lint', ['build:jsx'], function() {
   		PATHS.bin('*.js'),
   		PATHS.client('**/*.js'),
   		PATHS.server('**/*.js')
-  	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
+  	])//.pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'));
@@ -182,6 +189,15 @@ gulp.task('docs', ['docs:install', 'docs:serve']);
 
 //default gulp
 gulp.task('default', [ 'build', 'test', 'docs' ]);
+
+
+/* -- Launch server -- */
+gulp.task('server', function() {
+  nodemon({ script: 'bin/catane', ext: 'html js jsx', ignore: ['./build/**', './client/js/compiled/**'], stderr: false, stdout: false})
+    .on('crash', function() {
+      console.log('Server already launched, just failing');
+    });
+});
 
 /**
  * Master task to rebuild all the project
