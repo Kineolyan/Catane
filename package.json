@@ -40,14 +40,13 @@
   "dependencies": {
     "express": "^4.10.6",
     "gulp": "^3.8.10",
+    "gulp-6to5": "^2.0.0",
     "gulp-cached": "^1.0.1",
     "gulp-livereload": "^3.0.2",
     "gulp-remember": "^0.2.2",
     "gulp-sass": "^1.2.4",
-    "gulp-traceur": "^0.15.0",
     "request": "^2.51.0",
     "socket.io": "^1.2.1",
-    "socket.io-client": "^1.2.1",
-    "traceur": "0.0.79"
+    "socket.io-client": "^1.2.1"
   }
 }
