@@ -1,17 +1,12 @@
 'use strict';
 
 exports.appServer = function() {
+	// Requiring this polyfill to have a fully ES6 environment (Map, Symbol, ...)
+	require("gulp-6to5/node_modules/6to5/register");
 
-	require('traceur/bin/traceur-runtime');
-	var $__server__, $__socket__;
-	var Server = (
-		$__server__ = require("./build/server/server"),
-		$__server__ && $__server__.__esModule && $__server__ || {default: $__server__}
-	).default;
-	var Socket = (
-		$__socket__ = require("./build/server/com/sockets"),
-		$__socket__ && $__socket__.__esModule && $__socket__ || {default: $__socket__}
-	).default;
+	var Server = require("./build/server/server");
+	var Socket = require("./build/server/com/sockets");
+	var idGenerator = require("./build/server/game/util").idGenerator;
 
 	var catane = new Server();
 
@@ -32,10 +27,9 @@ exports.appServer = function() {
 	 */
 	var server = require('http').Server(app);
 	var io = require('socket.io')(server);
-	var socketId = 0;
+	var socketId = idGenerator();
 	io.on('connection', function(s) {
-		socketId += 1;
-		var sid = socketId;
+		var sid = socketId();
 		var socket = new Socket(sid, s, io.sockets);
 		catane.connect(socket);
 
