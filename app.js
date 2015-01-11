@@ -4,9 +4,15 @@ exports.appServer = function() {
 	// Requiring this polyfill to have a fully ES6 environment (Map, Symbol, ...)
 	require("gulp-6to5/node_modules/6to5/register");
 
+	// Create environment
+	var logging = require('./build/server/util/log/logger');
+	global.logger = logging.createLogger();
+
+	// Create application
 	var Server = require("./build/server/server");
 	var Socket = require("./build/server/com/sockets");
-	var idGenerator = require("./build/server/game/util").idGenerator;
+	var cUtil = require("./build/server/game/util");
+	var idGenerator = cUtil.idGenerator;
 
 	var catane = new Server();
 
