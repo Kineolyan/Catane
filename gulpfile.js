@@ -58,7 +58,8 @@ function buildJs() {
 /** Performs all unit tests */
 function testUnit() {
   return gulp.src([
-      './node_modules/gulp-6to5/node_modules/6to5/register.js',
+      // './node_modules/gulp-6to5/node_modules/6to5/register.js',
+      PATHS.specs('env.js'),
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
       PATHS.client('**/*.spec.js')

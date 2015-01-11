@@ -2,6 +2,8 @@ import Player from './game/players/players';
 import Games from './game/games/games';
 import { idGenerator } from './game/util';
 
+const logger = global.logger;
+
 export default class Server {
 	constructor() {
 		this._players = {};
@@ -23,7 +25,7 @@ export default class Server {
 	connect(socket) {
 		var player = new Player(socket, this._nextPlayerId().toString());
 		this.players[socket.id] = player;
-		console.log(`[Server] ${player.name} is connected`);
+		logger.log(`[Server] ${player.name} is connected`);
 		socket.emit('init', { message: 'welcome', name: player.name, id: player.id });
 
 		for (let resource of this._resources) {
@@ -41,7 +43,7 @@ export default class Server {
 			player = { name: 'Unknown' };
 		}
 
-		console.log(`[Server] ${player.name} is disconnected`);
+		logger.log(`[Server] ${player.name} is disconnected`);
 		delete this._players[socket.id];
 	}
 }

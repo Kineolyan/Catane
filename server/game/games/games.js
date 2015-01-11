@@ -2,6 +2,8 @@ import Game from './game';
 import { idGenerator } from '../util';
 import { messages } from '../../com/messages';
 
+const logger = global.logger;
+
 export default class Games {
 	constructor() {
 		this._games = new Map();
@@ -80,7 +82,7 @@ export default class Games {
 	create() {
 		var game = new Game(this.nextGameId());
 		this._games.set(game.id, game);
-		console.log(`[Server] New game created ${game.id}`);
+		logger.log(`[Server] New game created ${game.id}`);
 
 		return game;
 	}
@@ -92,7 +94,7 @@ export default class Games {
 	destroy(game) {
 		if (game.players.size === 0) {
 			this._games.delete(game.id);
-			console.log(`[Server] Game ${game.id} destroyed`);
+			logger.log(`[Server] Game ${game.id} destroyed`);
 		} else {
 			throw new Error(`Game ${game.id} still has ${game.players.size} players`);
 		}
@@ -127,7 +129,6 @@ export default class Games {
 
 	quit(game, player) {
 		if (game.remove(player)) {
-			console.log(`game ${game.id} with ${game.players.size} players`);
 			if (game.players.size > 0) {
 				this.broadcastPlayers(game);
 			} else {
