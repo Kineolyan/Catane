@@ -8,7 +8,7 @@ var cached = require('gulp-cached');
 var remember = require('gulp-remember');
 var jas = require('gulp-jasmine');
 var jshint = require('gulp-jshint');
-var traceur = require('gulp-traceur');
+var to5 = require('gulp-6to5');
 var react = require('gulp-react');
 var browserify = require('browserify');
 var notify = require('gulp-notify');
@@ -52,7 +52,7 @@ function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
     .pipe(cached('js'))
     .pipe(remember('js'))
-    .pipe(traceur({ modules:'commonjs' }))
+    .pipe(to5())
     .pipe(gulp.dest(PATHS.build.server()));
 }
 
@@ -60,11 +60,17 @@ function buildJs() {
 function testUnit() {
 
   return gulp.src([
+      './node_modules/gulp-6to5/node_modules/6to5/register.js',
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
       PATHS.client('**/*.spec.js')
     ]).pipe(jas({includeStackTrace: true}));
   
+}
+
+function cleanCache() {
+  // Clear all caches to perform a full actions
+  cached.caches = {};
 }
 
 /* --  Build tasks -- */
@@ -75,7 +81,10 @@ gulp.task('build:js', buildJs);
 gulp.task('watch:js:test', ['build:js'], testUnit);
 
 gulp.task('watch:js', function() {
-  gulp.watch(PATHS.server('**/*.js'), ['build:js', 'watch:js:test']);
+  gulp.watch([
+      PATHS.server('**/*.js'),
+      PATHS.specs('**/*.js')
+    ], ['build:js', 'watch:js:test']);
 });
 
 gulp.task('build:sass', function () {
@@ -181,7 +190,6 @@ gulp.task('docs:install', function() {
 });
 
 gulp.task('docs:serve', function() {
-
 	// Somehow provide a way to navigate through documentation
 });
 
@@ -189,7 +197,6 @@ gulp.task('docs', ['docs:install', 'docs:serve']);
 
 //default gulp
 gulp.task('default', [ 'build', 'test', 'docs' ]);
-
 
 /* -- Launch server -- */
 gulp.task('server', function() {
@@ -199,17 +206,19 @@ gulp.task('server', function() {
     });
 });
 
+gulp.task('clean:cache', cleanCache);
+
+gulp.task('clean', [ 'clean:cache' ]);
+
+
 /**
  * Master task to rebuild all the project
  * Named in hommage to 'Legend of Korra'
  * This will perform all actions to build and test the application.
  */
 gulp.task('do_the_thing', function() {
-  // Clear all caches to perform a full actions
-  cached.caches = {};
-
   var runSequence = require('run-sequence');
-  runSequence('build', 'test', 'docs:install', function() {
+  runSequence('clean', 'build', 'test', 'docs:install', function() {
     console.log('All things are done Sir :)');
   });
 });

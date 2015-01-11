@@ -23,7 +23,7 @@ describe('Games', function() {
 
 		// Channels listened
 		[
-			'game:create', 'game:list', 'game:join', 'game:start'
+			'game:create', 'game:list', 'game:join', 'game:start', 'game:quit'
 		].forEach(function(channel) {
 			it(`makes client listen to "${channel}"`, function() {
 				expect(this.client).toBeListeningTo(channel);
@@ -58,6 +58,10 @@ describe('Games', function() {
 
 		describe('->game:create', function() {
 			beforeEach(function() {
+				this.anotherClient = new MockSocket();
+				this.anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
+				this.games.register(this.anotherPlayer);
+
 				this.client.receive('game:create', null);
 			});
 
@@ -67,8 +71,13 @@ describe('Games', function() {
 
 			it('sends id of the game', function() {
 				var message = this.client.lastMessage('game:create');
-				// TODO Change for .toBeAnInt()
-				expect(message.game.id.toString()).toMatch(/^[0-9]+$/);
+				expect(message.game.id).toBeAnInteger();
+			});
+
+			it('notifies the other players', function() {
+				var gameId = this.client.lastMessage('game:create').game.id;
+				var message = this.anotherClient.lastMessage('game:list');
+				expect(Array.from(message.games, (game) => game.id)).toContain(gameId);
 			});
 		});
 
@@ -125,6 +134,39 @@ describe('Games', function() {
 					});
 				});
 
+				describe('when player already joined a game', function() {
+					beforeEach(function() {
+						this.leavedClient = new MockSocket();
+						var leavedPlayer = new Player(this.leavedClient.toSocket(), 2);
+						this.games.register(leavedPlayer);
+						this.leavedClient.receive('game:join', this.lastGameId);
+
+						var firstGameId = this.games.list()[0].id;
+
+						this.joinedClient = new MockSocket();
+						var joinedPlayer = new Player(this.joinedClient.toSocket(), 3);
+						this.games.register(joinedPlayer);
+						this.joinedClient.receive('game:join', firstGameId);
+
+						// Already in this.lastGameId, join the new game
+						this.client.receive('game:join', firstGameId);
+					});
+
+					it('updates list of players of the leaved game', function() {
+						var message = this.leavedClient.lastMessage('game:players');
+						var players = Array.from(message.players, player => player.id);
+
+						expect(players).not.toContain(this.player.id);
+					});
+
+					it('udpate list of players for the new game', function() {
+						var message = this.joinedClient.lastMessage('game:players');
+						var players = Array.from(message.players, player => player.id);
+
+						expect(players).toContain(this.player.id);
+					});
+				});
+
 				describe('with duplicates', function() {
 					beforeEach(function() {
 						this.client.receive('game:join', this.lastGameId);
@@ -136,6 +178,37 @@ describe('Games', function() {
 						expect(message.message).toMatch(/duplicated player/i);
 					});
 				});
+			});
+		});
+
+		describe('->game:quit', function() {
+			beforeEach(function() {
+				this.client.receive('game:join', this.lastGameId);
+
+				this.anotherClient = new MockSocket();
+				var anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
+				this.games.register(anotherPlayer);
+				this.anotherClient.receive('game:join', this.lastGameId);
+
+				// Quit the game
+				this.client.receive('game:quit');
+			});
+
+			it('returns a success', function() {
+				var message = this.client.lastMessage('game:quit');
+				expect(message._success).toBe(true);
+			});
+
+			it('update the list of players in the game', function() {
+				var message = this.anotherClient.lastMessage('game:players');
+				var players = Array.from(message.players, player => player.id);
+				expect(players).not.toContain(this.player.id);
+			});
+
+			it('sends error if the player does not belong to the game', function() {
+				var response = this.client.receive('game:quit');
+				expect(response._success).toBe(false);
+				expect(response.message).toMatch(/no game/i);
 			});
 		});
 
@@ -192,9 +265,41 @@ describe('Games', function() {
 					expect(response.message).toMatch(/not enough players/i);
 				});
 			});
-
 		});
 
+		describe('clean games if empty', function() {
+			describe('on game:quit', function() {
+				beforeEach(function() {
+					// Join the game ...
+					this.client.receive('game:join', this.lastGameId);
+					// ... to quit it
+					this.client.receive('game:quit');
+				});
+
+				it('gets updated list without the game', function() {
+					var message = this.client.lastMessage('game:list');
+					var games = Array.from(message.games, game => game.id);
+
+					expect(games).not.toContain(this.lastGameId);
+				});
+			});
+
+			describe('on game:join', function() {
+				beforeEach(function() {
+					// Join the game ...
+					this.client.receive('game:join', this.lastGameId);
+					// ... to change to another
+					this.client.receive('game:join', this.games.list()[0].id);
+				});
+
+				it('gets updated list without the game', function() {
+					var message = this.client.lastMessage('game:list');
+					var games = Array.from(message.games, game => game.id);
+
+					expect(games).not.toContain(this.lastGameId);
+				});
+			});
+		});
 
 	});
 

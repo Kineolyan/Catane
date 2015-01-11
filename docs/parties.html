@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Gestions des parties</title>
+</head>
+<body>
+  <div class="diagram">
+    Title: Créer une partie
+    participant Game
+    participant Serveur
+    participant All
+    Game->Serveur: ws/game:create
+    Serveur->Game: ws/game:create\n{ _success: true, game: { id: game_id } }
+    Note left of All: Updates list of games
+    Serveur->All: ws/game:list\n{ _success: true, games: [{ id: game_id }, ...] }
+  </div>
+
+  <div class="diagram">
+    Title: Lister les parties
+    participant Game
+    participant Serveur
+    Game->Serveur: ws/game:list
+    Serveur->Game: ws/game:list\n{ _success: true, games: [{ id: game_id }, ...] }
+  </div>
+
+  <div class="diagram">
+    Title: Rejoindre une partie
+    participant Game
+    participant Serveur
+    participant All
+    Game->Serveur: ws/game:join\ngame_id
+    Serveur->Game: ws/game:join\n{ _success: true }
+    Note left of All: Notifies players of the new game\nand players of the game leaved\nif the player already joined an other game.
+    Serveur->All: ws/game:players\n{ players: [{ name: "player name", id: "id" }, ..]}
+  </div>
+
+  <div class="diagram">
+    Title: Quitter une partie
+    participant Game
+    participant Serveur
+    participant All
+    Game->Serveur: ws/game:quit
+    Serveur->Game: ws/game:quit\n{ _success: true }
+    Note left of All: Notifies players of the leaved game
+    Serveur->All: ws/game:players\n{ players: [{ name: "player name", id: "id" }, ..]}
+    Note right of Serveur: destroy the game if no more players\nUpdate list of games
+    Serveur->All: ws/game:list\n{ games: [..] }
+  </div>
+
+  <script src="libs/jquery.min.js"></script>
+  <script src="libs/underscore-min.js"></script>
+  <script src="libs/raphael-min.js"></script>
+  <script src="libs/sequence-diagram-min.js"></script>
+  <script>
+    $(".diagram").sequenceDiagram({theme: 'simple'});
+  </script>
+</body>
+</html>

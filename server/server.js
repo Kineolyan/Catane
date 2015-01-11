@@ -22,7 +22,7 @@ export default class Server {
    */
 	connect(socket) {
 		var player = new Player(socket, this._nextPlayerId().toString());
-		this.players[socket] = player;
+		this.players[socket.id] = player;
 		console.log(`[Server] ${player.name} is connected`);
 		socket.emit('init', { message: 'welcome', name: player.name, id: player.id });
 
@@ -32,9 +32,16 @@ export default class Server {
 	}
 
 	disconnect(socket) {
-		var player = this.players[socket] || { name: 'Unknown' };
+		var player = this.players[socket.id];
+		if (player) {
+			for (let resource of this._resources) {
+				resource.unregister(player);
+			}
+		} else {
+			player = { name: 'Unknown' };
+		}
 
 		console.log(`[Server] ${player.name} is disconnected`);
-		delete this._players[socket];
+		delete this._players[socket.id];
 	}
 }
