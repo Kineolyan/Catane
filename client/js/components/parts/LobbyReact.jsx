@@ -40,7 +40,7 @@ var LobbyReact = React.createClass({
    */
   render() {
     var games = this.state.gameAvailables.map((game) => {
-        return (<li key={game.id} data-id={game.id} onClick={this.chooseGame}>{game.id}</li>);
+        return (<li className={'game-elem'} key={game.id} data-id={game.id} onClick={this.chooseGame}>{game.id}</li>);
     });
 
     return (
@@ -48,7 +48,7 @@ var LobbyReact = React.createClass({
         <ul>
           {games}
         </ul>
-        <button onClick={this.createGame}>Create game</button>
+        <button ref="createGame" onClick={this.createGame}>Create game</button>
       </div>
     );
   }, 

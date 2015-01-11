@@ -7,4 +7,5 @@ global.navigator = global.window.navigator;// jshint ignore:line
 jasmine.getEnv().defaultTimeoutInterval = 1000;
 
 
+
 module.exports = jsdom;

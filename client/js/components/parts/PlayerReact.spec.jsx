@@ -16,15 +16,15 @@ describe('A player', () => {
     this.player = utils.renderIntoDocument(<Player id={2} initialName='tom' canChangeName={true} onChange={this.change}/>);
   });
 
-  it('to have a name', () => {
+  it('should have a name', () => {
       expect(this.player.getName()).toEqual('tom');
   });
 
-  it('to have an id', () => {
+  it('should  have an id', () => {
       expect(this.player.getId()).toEqual(2);
   });
 
-  it('can change name and change step', (done) => {
+  it('can change name if specified and then change step', (done) => {
     spyOn(window, 'prompt').and.returnValue("jean");
 
     utils.Simulate.click(this.player.refs.modify.getDOMNode());
@@ -34,5 +34,6 @@ describe('A player', () => {
       done();
     }, 300);
   });
+
 
 });
