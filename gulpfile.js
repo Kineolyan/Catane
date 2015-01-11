@@ -142,7 +142,7 @@ gulp.task('test:lint', ['build:jsx'], function() {
   		PATHS.bin('*.js'),
   		PATHS.client('**/*.js'),
   		PATHS.server('**/*.js')
-  	])//.pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
+  	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'));
