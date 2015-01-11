@@ -6,10 +6,11 @@ var socket = require('socket.io-client')('http://localhost:3000');
 var sockets = {
   on(event, callback) {
     socket.on(event, (response) => {
-        if(response.success === false) {
+
+        if(response._success === false) {
           window.alert('Error :' + response.message);
         } else {
-          callback(response);
+            callback(response);
         }
       });
   },

@@ -65,7 +65,6 @@ var LobbyReact = React.createClass({
    * @param  {Event} the click event
    */
   chooseGame(event) {
-    console.log(event.currentTarget.dataset.id);
     this.tmpId = parseInt(event.currentTarget.dataset.id, 10);
     Socket.emit(Globals.socket.gameJoin, this.tmpId);
   },

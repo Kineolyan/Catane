@@ -71,9 +71,7 @@ var RoomReact = React.createClass({
    */
   initSocket() {
     Socket.on(Globals.socket.gamePlayers, (response) => {
-      if(response.success) {
         this.setState({players: response.players});
-      }
     });
   }
 });
