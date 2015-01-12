@@ -48,7 +48,7 @@ var RoomReact = React.createClass({
     }
 
     playersRendered = players.map((player) => {
-      return (<li key={player.id}>{player.name}</li>);
+      return (<li className={'player-elem'} key={player.id}>{player.name}</li>);
     });
 
     return (
@@ -71,9 +71,7 @@ var RoomReact = React.createClass({
    */
   initSocket() {
     Socket.on(Globals.socket.gamePlayers, (response) => {
-      if(response.success) {
         this.setState({players: response.players});
-      }
     });
   }
 });

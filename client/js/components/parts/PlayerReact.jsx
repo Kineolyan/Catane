@@ -41,7 +41,7 @@ var PlayerReact = React.createClass({
   render() {
     var btn;
     if(this.props.canChangeName) {
-      btn = <button onClick={this.triggerChangeName}>Modifier</button>;
+      btn = <button ref="modify" onClick={this.triggerChangeName}>Modifier</button>;
     }
     return (
       <div className={'player'}>

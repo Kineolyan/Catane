@@ -14,6 +14,7 @@ var browserify = require('browserify');
 var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
+var nodemon = require('gulp-nodemon');
 
 // var refresh = require('gulp-livereload');
 // var livereload = require('tiny-lr');
@@ -57,13 +58,15 @@ function buildJs() {
 
 /** Performs all unit tests */
 function testUnit() {
+
   return gulp.src([
       // './node_modules/gulp-6to5/node_modules/6to5/register.js',
       PATHS.specs('env.js'),
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
       PATHS.client('**/*.spec.js')
-    ]).pipe(jas({includeStackTrace: true}));
+    ]).pipe(jas({includeStackTrace: true, verbose: true}));
+  
 }
 
 function cleanCache() {
@@ -101,6 +104,7 @@ gulp.task('build:jsx', function() {
   return gulp.src(PATHS.client.js('components/**/*.jsx'))
       .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
       .pipe(react({harmony: true}))
+      .pipe(plumber.stop())
       .pipe(gulp.dest(PATHS.client.js('compiled')));
 });
 
@@ -115,21 +119,19 @@ gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
 gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
 /* -- Watcher -- */
-
-gulp.task('watch:unit', function() {
-  // Server source already triggered the tests
-  gulp.watch([ PATHS.client('**/*.spec.js')], [ 'test:unit' ]);
-});
-
 gulp.task('watch:jsx', function() {
   gulp.watch(PATHS.client.js('components/**/*.jsx'), ['build:browserify']);
 });
 
-gulp.task('watch', ['watch:js', 'watch:unit', 'watch:jsx']);
+gulp.task('watch', ['watch:js', 'watch:jsx']);
+
+//watch + server
+
+gulp.task('develop', ['watch', 'server']);
 
 /* -- Test task -- */
 
-gulp.task('test:unit', testUnit);
+gulp.task('test:unit', ['server'], testUnit);
 
 gulp.task('test:lint', ['build:jsx'], function() {
   return gulp.src([
@@ -139,7 +141,8 @@ gulp.task('test:lint', ['build:jsx'], function() {
   	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
     .pipe(jshint())
     .pipe(jshint.reporter('default'))
-    .pipe(jshint.reporter('fail'));
+    .pipe(jshint.reporter('fail'))
+    .pipe(plumber.stop());
 });
 
 gulp.task('test', ['test:unit', 'test:lint']);
@@ -192,9 +195,27 @@ gulp.task('docs', ['docs:install', 'docs:serve']);
 //default gulp
 gulp.task('default', [ 'build', 'test', 'docs' ]);
 
+/* -- Launch server -- */
+gulp.task('server', function(done) {
+  var isDone = false;
+
+  nodemon({ script: 'bin/catane', ignore: [PATHS.docs('libs/*')], stderr: false, stdout: false})
+    .on('start', function() {
+      if(!isDone) {
+        isDone = true;
+        done();
+      }
+    })
+    .on('crash', function() {
+      console.log('Server already launched, just failing');
+    });  
+
+});
+
 gulp.task('clean:cache', cleanCache);
 
 gulp.task('clean', [ 'clean:cache' ]);
+
 
 /**
  * Master task to rebuild all the project
