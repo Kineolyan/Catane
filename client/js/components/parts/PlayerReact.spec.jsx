@@ -1,4 +1,3 @@
-
 require('../libs/test');
 
 var React = require('react/addons');
@@ -10,6 +9,7 @@ var Player = require('./PlayerReact');
 describe('A player', () => {
 
   beforeEach(() => {
+
     this.change = () => {};
     spyOn(this, 'change');
 
@@ -35,5 +35,7 @@ describe('A player', () => {
     }, 300);
   });
 
-
+  afterEach(() => {
+    React.unmountComponentAtNode(this.player.getDOMNode().parent);
+  });
 });

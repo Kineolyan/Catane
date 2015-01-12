@@ -9,6 +9,7 @@ var Lobby = require('./LobbyReact');
 describe('A lobby', () => {
 
   beforeEach(() => {
+
     this.chooseGame = () => {};
     spyOn(this, 'chooseGame');
 
@@ -41,5 +42,7 @@ describe('A lobby', () => {
     });
   });
 
-
+  afterEach(() => {
+    React.unmountComponentAtNode(this.lobby.getDOMNode().parent);
+  });
 });
