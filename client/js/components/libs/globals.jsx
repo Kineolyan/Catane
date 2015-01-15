@@ -21,7 +21,7 @@ GLOBABLS.socket = {
   gameList: 'game:list',
   gameJoin: 'game:join',
   gamePlayers: 'game:players',
-  
+  gameStart: 'game:start',
   playerNickname: 'player:nickname'
 };
 

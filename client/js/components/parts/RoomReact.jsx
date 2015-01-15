@@ -11,6 +11,8 @@ var RoomReact = React.createClass({
 
   propTypes: {
     player: React.PropTypes.any.isRequired,
+    game: React.PropTypes.any.isRequired,
+    onStart: React.PropTypes.func.isRequired
   },
 
   /**
@@ -37,7 +39,8 @@ var RoomReact = React.createClass({
   render() {
 
     var playersRendered,
-        players = this.state.players;
+        players = this.state.players,
+        startButton;
 
     //include himself if no players in the room 
     if(players.length === 0) {
@@ -51,6 +54,10 @@ var RoomReact = React.createClass({
       return (<li className={'player-elem'} key={player.id}>{player.name}</li>);
     });
 
+    if(players.length >= 2) {
+      startButton = <button ref="startButton" onClick={this.start}>Start</button>;
+    }
+
     return (
       <div className={'room'}>
         <div>
@@ -62,16 +69,30 @@ var RoomReact = React.createClass({
         <ul>
           {playersRendered}
         </ul>
+        {startButton}
       </div>
     );
+  },
+
+  /**
+   * Start button
+   */
+  start() {
+    Socket.emit(Globals.socket.gameStart, this.props.game.id);
   },
 
   /**
    * Init the socket receiver for the game
    */
   initSocket() {
+    //list of players
     Socket.on(Globals.socket.gamePlayers, (response) => {
         this.setState({players: response.players});
+    });
+
+    //gameStarted
+    Socket.on(Globals.socket.gameStart, () => {
+        this.props.onStart();
     });
   }
 });
