@@ -9,6 +9,11 @@ var Lobby = require('./LobbyReact');
 var React = require('react');
 var Globals = require('../libs/globals');
 var Room = require('./RoomReact');
+var reactBoostrap = require('react-bootstrap');
+var Jumbotron = reactBoostrap.Jumbotron;
+var Grid = reactBoostrap.Grid;
+var Row = reactBoostrap.Row;
+var Col = reactBoostrap.Col;
 
 var GameReact = React.createClass({
 
@@ -75,13 +80,25 @@ var GameReact = React.createClass({
   render() {
     return (
       <div>
-        <Player ref="player" onChange={this.setMinimalStep} initialName={this.props.init.name} 
-                id={parseInt(this.props.init.id, 10)} 
-                canChangeName={Globals.step.inStep(this.state.step, Globals.step.chooseLobby, Globals.step.init)}/>
+        <Grid>
+          <Row>
+            <Col md={4} mdOffset={4}>
+              <Jumbotron>
+                <Player ref="player" onChange={this.setMinimalStep} initialName={this.props.init.name} 
+                        id={parseInt(this.props.init.id, 10)} 
+                        canChangeName={Globals.step.inStep(this.state.step, Globals.step.chooseLobby, Globals.step.init)}/>
 
-        {this.renderChooseLobby()}
-        {this.renderInLobby()}
+                {this.renderChooseLobby()}
+                {this.renderInLobby()}
+
+              </Jumbotron>
+
+            </Col>
+        
+          </Row>
+        </Grid>
         {this.renderGame()}
+
       </div>
     );
   },

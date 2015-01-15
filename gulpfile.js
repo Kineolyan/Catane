@@ -90,14 +90,14 @@ gulp.task('watch:js', function() {
 
 gulp.task('build:sass', function () {
   return gulp.src([
-        PATHS.client('**/*.scss'),
+        PATHS.client('components/*.scss'),
         PATHS.client.scssLib('**/*.scss')
       ]).pipe(cached('scss'))
   		.pipe(remember('scss'))
   		.pipe(sass({
   			includePaths: [ PATHS.client.scssLib() ]
   		}))
-      .pipe(gulp.dest(PATHS.client()));
+      .pipe(gulp.dest(PATHS.build.client('css')));
 });
 
 gulp.task('build:jsx', function() {
