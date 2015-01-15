@@ -75,9 +75,19 @@ var GameReact = React.createClass({
 
         {this.renderChooseLobby()}
         {this.renderInLobby()}
-
+        {this.renderGame()}
       </div>
     );
+  },
+
+  /**
+   * Render the game to be played
+   * @return {React.Element} the rendered element
+   */
+  renderGame() {
+    if(Globals.step.inStep(this.state.step, Globals.step.started, Globals.step.started)) {
+      return (<div>:)</div>);
+    }
   },
 
   /**
@@ -85,7 +95,7 @@ var GameReact = React.createClass({
    * @return {React.Element} the rendered element
    */
   renderChooseLobby() {
-    if(Globals.step.inStep(this.state.step, Globals.step.chooseLobby, Globals.step.init)) {
+    if(Globals.step.inStep(this.state.step, Globals.step.chooseLobby, Globals.step.chooseLobby)) {
       return (<Lobby onGameChosen={this.chooseGame} />);
     }
   },
@@ -95,7 +105,7 @@ var GameReact = React.createClass({
    * @return {React.Element} the rendered element
    */
   renderInLobby() {
-    if(Globals.step.inStep(this.state.step, Globals.step.inLobby, Globals.step.chooseLobby)) {
+    if(Globals.step.inStep(this.state.step, Globals.step.inLobby, Globals.step.inLobby)) {
       return (<Room game={this.state.game} player={this.refs.player} onStart={this.startGame}/>);
     }
   }

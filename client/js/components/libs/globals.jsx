@@ -9,8 +9,9 @@ GLOBABLS.step = {
   chooseLobby: 1,
   inLobby: 2,
   started: 3,
+  ended: 4,
   inStep(step, max, min) {
-    return (step > min && step <= max);
+    return (step >= min && step <= max);
   }
 };
 
