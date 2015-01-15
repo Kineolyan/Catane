@@ -31,7 +31,6 @@ var PlayerReact = React.createClass({
    */
   componentDidMount() { 
     this.initSocket();
-    this.triggerChangeName();
   },
 
   /**
