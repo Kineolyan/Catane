@@ -29,7 +29,7 @@ var GameReact = React.createClass({
   getInitialState() {
     return {
       step: Globals.step.init,
-      game: 0
+      game: {}
     };
   },
 
@@ -55,10 +55,16 @@ var GameReact = React.createClass({
 
   /**
    * Start the game with the selected game 
-   * @param  {Int} the game id
   */
   startGame() {
     this.setMinimalStep(Globals.step.started);
+  },
+
+ /**
+   * Start the game with the selected game 
+  */
+  leaveRoom() {
+    this.setState({step: Globals.step.chooseLobby, game: {}});
   },
 
 
@@ -106,7 +112,7 @@ var GameReact = React.createClass({
    */
   renderInLobby() {
     if(Globals.step.inStep(this.state.step, Globals.step.inLobby, Globals.step.inLobby)) {
-      return (<Room game={this.state.game} player={this.refs.player} onStart={this.startGame}/>);
+      return (<Room game={this.state.game} player={this.refs.player} onStart={this.startGame} onLeave={this.leaveRoom}/>);
     }
   }
 

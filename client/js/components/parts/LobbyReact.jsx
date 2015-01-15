@@ -82,13 +82,11 @@ var LobbyReact = React.createClass({
 
     //list of game
     Socket.on(Globals.socket.gameList, (response) => {
-      console.log(response);
         this.setState({gameAvailables: response.games});
     });
 
     //game chosen
     Socket.on(Globals.socket.gameJoin, () => {
-      console.log(this.tmpGame);
         this.props.onGameChosen(this.tmpGame);
     });
   },
@@ -99,6 +97,7 @@ var LobbyReact = React.createClass({
   componentWillUnmount() {
     Socket.removeAllListeners(Globals.socket.gameList);
     Socket.removeAllListeners(Globals.socket.gameCreate);
+    Socket.removeAllListeners(Globals.socket.gameJoin);
   }
 });
 

@@ -12,7 +12,9 @@ var RoomReact = React.createClass({
   propTypes: {
     player: React.PropTypes.any.isRequired,
     game: React.PropTypes.any.isRequired,
-    onStart: React.PropTypes.func.isRequired
+    onStart: React.PropTypes.func,
+    onLeave: React.PropTypes.func
+
   },
 
   /**
@@ -70,6 +72,7 @@ var RoomReact = React.createClass({
           {playersRendered}
         </ul>
         {startButton}
+        <button ref="leaveButton" onClick={this.leave}>Leave Room</button>
       </div>
     );
   },
@@ -82,6 +85,13 @@ var RoomReact = React.createClass({
   },
 
   /**
+   * Leave button
+   */
+  leave() {
+    Socket.emit(Globals.socket.gameQuit);
+  },
+
+  /**
    * Init the socket receiver for the game
    */
   initSocket() {
@@ -90,10 +100,24 @@ var RoomReact = React.createClass({
         this.setState({players: response.players});
     });
 
-    //gameStarted
+    //game started
     Socket.on(Globals.socket.gameStart, () => {
         this.props.onStart();
     });
+
+    //game leave
+    Socket.on(Globals.socket.gameQuit, () => {
+        this.props.onLeave();
+    });
+  },
+
+  /**
+   * When the component is destroyed
+   */
+  componentWillUnmount() {
+    Socket.removeAllListeners(Globals.socket.gamePlayers);
+    Socket.removeAllListeners(Globals.socket.gameStart);
+    Socket.removeAllListeners(Globals.socket.gameQuit);
   }
 });
 
