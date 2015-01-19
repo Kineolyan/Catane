@@ -4,8 +4,8 @@
   React component containing the whole game interface
 */
 var React = require('react');
-var Globals = require('../libs/globals');
-var Socket = require('../libs/socket');
+var Globals = require('../../libs/globals');
+var Socket = require('../../libs/socket');
 
 var RoomReact = React.createClass({
 

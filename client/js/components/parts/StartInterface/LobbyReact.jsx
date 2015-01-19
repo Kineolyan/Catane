@@ -5,8 +5,8 @@
 */
 
 var React = require('react');
-var Socket = require('../libs/socket');
-var Globals = require('../libs/globals');
+var Socket = require('../../libs/socket');
+var Globals = require('../../libs/globals');
 
 var LobbyReact = React.createClass({
 

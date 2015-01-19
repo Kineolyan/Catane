@@ -1,4 +1,4 @@
-require('../libs/test');
+require('../../libs/test');
 
 var React = require('react/addons');
 var utils = React.addons.TestUtils;
