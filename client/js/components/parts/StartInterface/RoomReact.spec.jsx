@@ -13,8 +13,10 @@ describe('A room', () => {
     this.change = () => {};
     spyOn(this, 'change');
 
+
     this.player = utils.renderIntoDocument(<Player id={2} initialName='tom' canChangeName={true} onChange={this.change}/>);
     this.room = utils.renderIntoDocument(<Room game={{id: 3,name: 'game'}} player={this.player} onStart={this.change}/>);
+
   });
 
   it('should have an initial player ', () => {

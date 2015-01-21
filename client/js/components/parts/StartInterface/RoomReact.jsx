@@ -65,7 +65,7 @@ var RoomReact = React.createClass({
                      </Button>);
 
     } else {
-      playersRendered.push(<li>Waiting for more players...</li>);
+      playersRendered.push(<li key={'waiting'}>Waiting for more players...</li>);
     }
 
     return (

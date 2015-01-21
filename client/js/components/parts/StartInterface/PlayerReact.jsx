@@ -11,11 +11,18 @@ var Glyphicon = require('react-bootstrap').Glyphicon;
 
 var PlayerReact = React.createClass({
 
+  //init props
   propTypes: {
     initialName: React.PropTypes.string.isRequired,
     id: React.PropTypes.number.isRequired,
     onChange: React.PropTypes.func,
     canChangeName: React.PropTypes.bool.isRequired
+  },
+
+  getDefaultProps() {
+    return {
+      game: {}
+    };
   },
 
   /**
@@ -27,6 +34,8 @@ var PlayerReact = React.createClass({
       name: this.props.initialName
     };
   },
+
+
 
   /**
    * Triggered when the component is rendered, initialize the componenent
