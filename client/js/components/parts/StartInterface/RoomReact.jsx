@@ -6,6 +6,9 @@
 var React = require('react');
 var Globals = require('../../libs/globals');
 var Socket = require('../../libs/socket');
+var Button = require('react-bootstrap').Button;
+var Glyphicon = require('react-bootstrap').Glyphicon;
+var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 
 var RoomReact = React.createClass({
 
@@ -53,26 +56,31 @@ var RoomReact = React.createClass({
     }
 
     playersRendered = players.map((player) => {
-      return (<li className={'player-elem'} key={player.id}>{player.name}</li>);
+      return (<li className={'player-elem'} key={player.id}><Glyphicon glyph="user" /> {player.name}</li>);
     });
 
     if(players.length >= 2) {
-      startButton = <button ref="startButton" onClick={this.start}>Start</button>;
+      startButton = (<Button bsSize={'small'} className={'pull-right'} bsStyle={'success'} ref="startButton" onClick={this.start}>
+                        Start <Glyphicon glyph="arrow-right" />
+                     </Button>);
+
+    } else {
+      playersRendered.push(<li>Waiting for more players...</li>);
     }
 
     return (
       <div className={'room'}>
-        <div>
-          Room #{this.props.game}
-        </div>
-        <div>
-          Players
-        </div>
-        <ul>
+        
+        <ul className={'list-info'}>
           {playersRendered}
         </ul>
-        {startButton}
-        <button ref="leaveButton" onClick={this.leave}>Leave Room</button>
+
+        <ButtonToolbar className={'pull-right'}>
+          {startButton}
+          <Button bsSize="small" bsStyle="info" ref="leaveButton" onClick={this.leave}>
+            Leave Game #{this.props.game.id} <Glyphicon glyph="arrow-left" />
+          </Button>
+        </ButtonToolbar>
       </div>
     );
   },

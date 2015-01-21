@@ -89,7 +89,8 @@ var StartInterface = React.createClass({
               <Jumbotron>
                 <Player ref="player" onChange={this.setMinimalStep} initialName={this.props.init.name} 
                         id={parseInt(this.props.init.id, 10)} 
-                        canChangeName={Globals.step.inStep(this.state.step, Globals.step.inLobby, Globals.step.init)}/>
+                        canChangeName={Globals.step.inStep(this.state.step, Globals.step.inLobby, Globals.step.init)}
+                        game={this.state.game} />
 
                 {this.renderChooseLobby()}
                 {this.renderInLobby()}

@@ -94,8 +94,7 @@ gulp.task('build:sass', function () {
   return gulp.src([
         PATHS.client.components('*.scss'),
         PATHS.client.scssLib('**/*.scss')
-      ]).pipe(cached('scss'))
-  		.pipe(remember('scss'))
+      ])
   		.pipe(sass({
   			includePaths: [ PATHS.client.scssLib() ]
   		}))

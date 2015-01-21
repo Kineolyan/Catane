@@ -6,6 +6,8 @@
 var React = require('react');
 var Globals = require('../../libs/globals');
 var Socket = require('../../libs/socket');
+var Button = require('react-bootstrap').Button;
+var Glyphicon = require('react-bootstrap').Glyphicon;
 
 var PlayerReact = React.createClass({
 
@@ -38,17 +40,26 @@ var PlayerReact = React.createClass({
    * @return {React.Element} the rendered element
    */
   render() {
-    var btn;
+    var btn, 
+        room;
     if(this.props.canChangeName) {
-      btn = <button ref="modify" onClick={this.triggerChangeName}>Modifier</button>;
+      btn = (<Button bsSize="small" className={'pull-right'} ref="modify" onClick={this.triggerChangeName}>
+                Change <Glyphicon glyph="pencil" />
+            </Button>);
     }
+
+    if(this.props.game.id) {
+      room = <span>/ Room #{this.props.game.id}</span>;
+    }
+
     return (
-      <div className={'player'}>
-        <div className={'name'}>
-          {this.state.name} ({this.props.id})
+      <div className={'player clearfix'}>
+        <div className={'name pull-left'}>
+          {this.state.name} {room}
           
-          {btn}
         </div>
+        {btn}
+
       </div>
     );
   },

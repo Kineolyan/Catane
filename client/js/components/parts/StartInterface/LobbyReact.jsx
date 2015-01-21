@@ -7,6 +7,8 @@
 var React = require('react');
 var Socket = require('../../libs/socket');
 var Globals = require('../../libs/globals');
+var Button = require('react-bootstrap').Button;
+var Glyphicon = require('react-bootstrap').Glyphicon;
 
 var LobbyReact = React.createClass({
 
@@ -41,15 +43,25 @@ var LobbyReact = React.createClass({
   render() {
     var index = 0;
     var games = this.state.gameAvailables.map((game) => {
-        return (<li className={'game-elem'} key={game.id} data-index={index} onClick={this.chooseGame}>{game.id}</li>);
+        return (<li className={'game-elem'} key={game.id} data-index={index} onClick={this.chooseGame}>
+                  Join Game {game.id} <Glyphicon glyph="arrow-right" />
+                </li>);
     });
 
+    //no games availables
+    if(games.length === 0) {
+      games = <div>No games availables. Create one to start !</div>;
+    }
+
     return (
-      <div>
-        <ul>
+      <div className={'lobby'}>
+        <ul className={'list-info'}>
           {games}
         </ul>
-        <button ref="createGame" onClick={this.createGame}>Create game</button>
+        <Button className={'pull-right'} bsSize="small" bsStyle="success" ref="createGame" onClick={this.createGame}>
+          Create game <Glyphicon glyph="plus-sign" />
+        </Button>
+        
       </div>
     );
   }, 

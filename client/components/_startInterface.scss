@@ -1,10 +1,43 @@
 .start-interface {
   
+  position: relative;
+  top: 100px;
 
 
+  .player {
+    border: {
+      bottom: 1px solid lightgray;
+    }
+
+    padding-bottom: 5px;
+  }
+
+  .name {
+    padding-top: 6px;
+  }
 
   .game-elem {
     cursor: pointer;
+    
+  }
+
+  .list-info {
+    width: 100%;
+    background-color: #f4f4f4;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: {
+      left: 5px;
+      right: 5px;
+      top:15px;
+      bottom: 15px;
+    }
+
+    list-style: none;
+  }
+
+  .lobby, .room {
+    margin-top: 10px;
   }
 }
 
