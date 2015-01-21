@@ -1,10 +1,8 @@
 @import 'vars';
+@import 'startInterface';
 
 body {
   color: $body_color;
   background-color: #fff;
 }
 
-.game-elem {
-  cursor: pointer;
-}

@@ -37,6 +37,8 @@ PATHS.build = pathItem('build');
 PATHS.build.server = pathItem('server');
 PATHS.build.client = pathItem('client');
 PATHS.client.scssLib = pathItem('scss_lib');
+PATHS.client.components = pathItem('components');
+
 PATHS.client.js = pathItem('js');
 PATHS.server = pathItem('server');
 PATHS.specs = pathItem('specs');
@@ -90,7 +92,7 @@ gulp.task('watch:js', function() {
 
 gulp.task('build:sass', function () {
   return gulp.src([
-        PATHS.client('components/*.scss'),
+        PATHS.client.components('*.scss'),
         PATHS.client.scssLib('**/*.scss')
       ]).pipe(cached('scss'))
   		.pipe(remember('scss'))
@@ -123,7 +125,11 @@ gulp.task('watch:jsx', function() {
   gulp.watch(PATHS.client.js('components/**/*.jsx'), ['build:browserify']);
 });
 
-gulp.task('watch', ['watch:js', 'watch:jsx']);
+gulp.task('watch:sass', function() {
+  gulp.watch(PATHS.client.components('*.scss'), ['build:sass']);
+});
+
+gulp.task('watch', ['watch:js', 'watch:jsx', 'watch:sass']);
 
 //watch + server
 

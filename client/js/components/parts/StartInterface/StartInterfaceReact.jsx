@@ -82,7 +82,7 @@ var StartInterface = React.createClass({
    */
   render() {
     return (
-      <div>
+      <div className={'start-interface'}>
         <Grid>
           <Row>
             <Col md={4} mdOffset={4}>
