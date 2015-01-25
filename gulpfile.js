@@ -101,12 +101,14 @@ gulp.task('build:sass', function () {
       .pipe(gulp.dest(PATHS.build.client('css')));
 });
 
-gulp.task('build:jsx', function() {
-  return gulp.src(PATHS.client.js('components/**/*.jsx'))
+gulp.task('build:jsx', function(done) {
+  gulp.src(PATHS.client.js('components/**/*.jsx'))
       .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
       .pipe(react({harmony: true}))
       .pipe(plumber.stop())
       .pipe(gulp.dest(PATHS.client.js('compiled')));
+
+  done();
 });
 
 gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
@@ -138,8 +140,8 @@ gulp.task('develop', ['watch', 'server']);
 
 gulp.task('test:unit', ['server'], testUnit);
 
-gulp.task('test:lint', ['build:jsx'], function() {
-  return gulp.src([
+gulp.task('test:lint', ['build:jsx'], function(done) {
+  gulp.src([
   		PATHS.bin('*.js'),
   		PATHS.client('**/*.js'),
   		PATHS.server('**/*.js')
@@ -148,6 +150,8 @@ gulp.task('test:lint', ['build:jsx'], function() {
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'))
     .pipe(plumber.stop());
+
+  done();
 });
 
 gulp.task('test', ['test:unit', 'test:lint']);

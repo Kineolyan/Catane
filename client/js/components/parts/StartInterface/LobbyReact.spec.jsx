@@ -10,17 +10,20 @@ describe('A lobby', () => {
 
   beforeEach(() => {
 
-    this.chooseGame = () => {};
-    spyOn(this, 'chooseGame');
+    this.choose = () => {};
+    spyOn(this, 'choose');
 
-    this.lobby = utils.renderIntoDocument(<Lobby onGameChosen={this.chooseGame} />);
+
+    this.lobby = utils.renderIntoDocument(<Lobby onGameChosen={this.choose} />);
+
     spyOn(this.lobby, 'chooseGame');
+
   });
 
   it('should be able to create a game', (done) => {
       utils.Simulate.click(this.lobby.refs.createGame.getDOMNode());
       setTimeout(() => {
-        expect(this.chooseGame).toHaveBeenCalledWith({id : jasmine.any(Number) });
+        expect(this.choose).toHaveBeenCalledWith(jasmine.any(Object));
         done();
       }, 300);
   });
