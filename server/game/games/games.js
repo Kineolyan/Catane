@@ -50,7 +50,9 @@ export default class Games {
 			var game = this._games.get(gameId);
 			if (game) {
 				game.start();
-				return true;
+
+				// do not return, already done by start
+				return undefined;
 			} else {
 				throw new Error(`Unknown game ${gameId}`);
 			}

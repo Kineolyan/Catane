@@ -240,6 +240,25 @@ describe('Games', function() {
 					expect(response._success).toBe(false);
 					expect(response.message).toMatch(/already started/i);
 				});
+
+				describe('board definition', function() {
+					beforeEach(function() {
+						var message = this.client.lastMessage('game:start');
+						this.board = message.board;
+					});
+
+					it('contains all board elements', function() {
+						expect(this.board).toHaveKeys([ 'tiles' ]);
+					});
+
+					it('describes tiles', function() {
+						var tile = this.board.tiles[0];
+
+						expect(tile).toHaveKeys([ 'x', 'y', 'resource' ]);
+						expect(tile.x).toBeAnInteger();
+						expect(tile.y).toBeAnInteger();
+					});
+				});
 			});
 
 			describe('with wrong id', function() {
