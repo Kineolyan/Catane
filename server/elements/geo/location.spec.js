@@ -1,4 +1,4 @@
-import Location from './point';
+import Location from './location';
 
 describe('Location', function() {
 	describe('constructor', function() {
