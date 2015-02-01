@@ -19,7 +19,7 @@ var channel;
 var CHANNELS = [ // Channels to listen
 		'init',
 		'player:nickname',
-		'game:create', 'game:list', 'game:players', 'game:join'
+		'game:create', 'game:list', 'game:players', 'game:join', 'game:start'
 	];
 
 var cmds = {
