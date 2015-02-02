@@ -28,4 +28,5 @@ GLOBABLS.socket = {
   playerNickname: 'player:nickname'
 };
 
+
 module.exports = GLOBABLS;

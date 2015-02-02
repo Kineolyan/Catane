@@ -6,8 +6,7 @@
 
 var React = require('react');
 var Surface = require('react-art').Surface;
-//var Shape = require('react-art').Shape;
-//var Group = require('react-art').Group;
+var MapReact = require('./MapReact');
 
 var GameInterfaceReact = React.createClass({
 
@@ -29,11 +28,10 @@ var GameInterfaceReact = React.createClass({
    * @return {React.Element} the rendered element
    */
   render() {
-
     return (
       <div>
-        <Surface width={this.state.width} height={this.state.height}>
-          
+        <Surface x={140} y={140} width={this.state.width} height={this.state.height}>
+          <MapReact initBoard={this.props.board} />
         </Surface>
       </div>
     );

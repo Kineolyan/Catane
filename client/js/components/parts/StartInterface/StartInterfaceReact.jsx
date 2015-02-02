@@ -63,9 +63,9 @@ var StartInterface = React.createClass({
   /**
    * Start the game with the selected game 
   */
-  startGame() {
+  startGame(board) {
     this.setMinimalStep(Globals.step.started);
-    this.props.onStart(this.state.game);
+    this.props.onStart(board);
   },
 
  /**

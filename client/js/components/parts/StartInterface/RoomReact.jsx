@@ -109,8 +109,8 @@ var RoomReact = React.createClass({
     });
 
     //game started
-    Socket.on(Globals.socket.gameStart, () => {
-        this.props.onStart();
+    Socket.on(Globals.socket.gameStart, (response) => {
+        this.props.onStart(response.board);
     });
 
     //game leave
