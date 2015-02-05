@@ -1,8 +1,12 @@
 import Tile from '../../geo/tile';
+import City from '../../geo/city';
+
+const CITY_POSITIONS = [ [0, 1], [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1] ];
 
 export class RoundGenerator {
 	constructor(nbRings) {
 		this._tiles = new Map();
+		this._cities = new Map();
 
 		this.generate(nbRings);
 	}
@@ -13,7 +17,11 @@ export class RoundGenerator {
 		}
 	}
 
-	forEachCity() {}
+	forEachCity(cbk) {
+		for (let city of this._cities.values()) {
+			cbk(city);
+		}
+	}
 
 	forEachPath() {}
 
@@ -58,6 +66,13 @@ export class RoundGenerator {
 		var tileHash = tile.location.hashCode();
 
 		if (!this._tiles.has(tileHash)) {
+			for (let [cityX, cityY] of CITY_POSITIONS) {
+				let city = new City(x + cityX, y + cityY);
+				tile.addCity(city);
+
+				this._cities.set(city.location.hashCode(), city);
+			}
+
 			this._tiles.set(tileHash, tile);
 
 			return tile;

@@ -15,4 +15,10 @@ describe('Location', function() {
 		});
 	});
 
+	describe('hashCode', function() {
+		it('identifies clearly a location', function() {
+			expect(new Location(3, 2).hashCode()).toEqual(203);
+		});
+	});
+
 });
