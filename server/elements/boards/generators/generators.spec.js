@@ -85,6 +85,17 @@ describe('The predefined generators', function() {
 				});
 			});
 		});
+
+		describe('generated paths', function() {
+			beforeEach(function() {
+				this.paths = [];
+				this.generator.forEachPath( path => this.paths.push(path) );
+			});
+
+			it('has 30 items', function() {
+				expect(this.paths).toHaveLength(30);
+			});
+		});
 	});
 
 });

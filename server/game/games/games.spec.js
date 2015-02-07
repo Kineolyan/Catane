@@ -241,14 +241,14 @@ describe('Games', function() {
 					expect(response.message).toMatch(/already started/i);
 				});
 
-				ddescribe('board definition', function() {
+				describe('board definition', function() {
 					beforeEach(function() {
 						var message = this.client.lastMessage('game:start');
 						this.board = message.board;
 					});
 
 					it('contains all board elements', function() {
-						expect(this.board).toHaveKeys([ 'tiles', 'cities' ]);
+						expect(this.board).toHaveKeys([ 'tiles', 'cities', 'paths' ]);
 					});
 
 					it('describes tiles', function() {
@@ -266,6 +266,16 @@ describe('Games', function() {
 						expect(tile).toHaveKeys([ 'x', 'y' ]);
 						expect(tile.x).toBeAnInteger();
 						expect(tile.y).toBeAnInteger();
+					});
+
+					it('describes paths', function() {
+						var path = this.board.paths[0];
+
+						expect(path).toHaveKeys([ 'from', 'to' ]);
+						expect(path.from.y).toBeAnInteger();
+						expect(path.from.x).toBeAnInteger();
+						expect(path.to.y).toBeAnInteger();
+						expect(path.to.x).toBeAnInteger();
 					});
 				});
 			});

@@ -15,4 +15,8 @@ export default class Location {
 	hashCode() {
 		return this._x + 100 * this._y;
 	}
+
+	toString() {
+		return `(${this._x}, ${this._y})`;
+	}
 }
