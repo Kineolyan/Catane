@@ -1,8 +1,14 @@
 import Tile from '../../geo/tile';
+import City from '../../geo/city';
+import Path from '../../geo/path';
+
+const CITY_POSITIONS = [ [0, 1], [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1] ];
 
 export class RoundGenerator {
 	constructor(nbRings) {
 		this._tiles = new Map();
+		this._cities = new Map();
+		this._paths = new Map();
 
 		this.generate(nbRings);
 	}
@@ -13,9 +19,17 @@ export class RoundGenerator {
 		}
 	}
 
-	forEachCity() {}
+	forEachCity(cbk) {
+		for (let city of this._cities.values()) {
+			cbk(city);
+		}
+	}
 
-	forEachPath() {}
+	forEachPath(cbk) {
+		for (let path of this._paths.values()) {
+			cbk(path);
+		}
+	}
 
 	/**
 	 * Generates all the content once for all.
@@ -58,11 +72,42 @@ export class RoundGenerator {
 		var tileHash = tile.location.hashCode();
 
 		if (!this._tiles.has(tileHash)) {
+			let firstCity = null;
+			let lastCity = null;
+			for (let [cityX, cityY] of CITY_POSITIONS) {
+				let city = this.createCity(x + cityX, y + cityY);
+				tile.addCity(city);
+
+				if (firstCity === null) {
+					firstCity = city;
+					lastCity = city;
+				} else {
+					this.createPath(lastCity, city);
+					lastCity = city;
+				}
+			}
+			// Build path from the last to the first city
+			this.createPath(lastCity, firstCity);
+
 			this._tiles.set(tileHash, tile);
 
 			return tile;
 		} else {
 			return null;
 		}
+	}
+
+	createCity(x, y) {
+		var city = new City(x, y);
+		this._cities.set(city.location.hashCode(), city);
+
+		return city;
+	}
+
+	createPath(from, to) {
+		var path = new Path(from.location, to.location);
+		this._paths.set(path.hashCode(), path);
+
+		return path;
 	}
 }

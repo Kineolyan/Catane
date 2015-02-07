@@ -248,7 +248,7 @@ describe('Games', function() {
 					});
 
 					it('contains all board elements', function() {
-						expect(this.board).toHaveKeys([ 'tiles' ]);
+						expect(this.board).toHaveKeys([ 'tiles', 'cities', 'paths' ]);
 					});
 
 					it('describes tiles', function() {
@@ -257,6 +257,25 @@ describe('Games', function() {
 						expect(tile).toHaveKeys([ 'x', 'y', 'resource' ]);
 						expect(tile.x).toBeAnInteger();
 						expect(tile.y).toBeAnInteger();
+						expect(tile.resource).toMatch(/tuile/i);
+					});
+
+					it('describes cities', function() {
+						var tile = this.board.cities[0];
+
+						expect(tile).toHaveKeys([ 'x', 'y' ]);
+						expect(tile.x).toBeAnInteger();
+						expect(tile.y).toBeAnInteger();
+					});
+
+					it('describes paths', function() {
+						var path = this.board.paths[0];
+
+						expect(path).toHaveKeys([ 'from', 'to' ]);
+						expect(path.from.y).toBeAnInteger();
+						expect(path.from.x).toBeAnInteger();
+						expect(path.to.y).toBeAnInteger();
+						expect(path.to.x).toBeAnInteger();
 					});
 				});
 			});
