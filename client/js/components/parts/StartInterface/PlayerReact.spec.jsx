@@ -32,7 +32,7 @@ describe('A player', () => {
       expect(this.player.getName()).toEqual('jean');
       expect(this.change).toHaveBeenCalled();
       done();
-    }, 300);
+    }, 500);
   });
 
   afterEach(() => {

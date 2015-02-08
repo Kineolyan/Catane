@@ -7,7 +7,10 @@
 var React = require('react');
 var Group = require('react-art').Group;
 var MapHelper = require('../../libs/map');
+
 var Tile = require('./TileReact');
+var City = require('./CityReact');
+var Path = require('./PathReact');
 
 var MapReact = React.createClass({
 
@@ -20,7 +23,7 @@ var MapReact = React.createClass({
    */
   getInitialState() {
     return {
-      board: new MapHelper(this.props.initBoard, 60)
+      board: new MapHelper(this.props.initBoard)
     };
   },
 
@@ -31,12 +34,22 @@ var MapReact = React.createClass({
    */
   render() {
     var tiles = this.state.board.tiles.map((elem) => {
-      return <Tile key={elem.x + ',' + elem.y} tile={elem} />;
+      return <Tile key={elem.key} tile={elem} />;
+    });
+    
+    var paths = this.state.board.paths.map((elem) => {
+      return <Path key={elem.key} path={elem} />;
+    });
+
+    var cities = this.state.board.cities.map((elem) => {
+      return <City key={elem.key} city={elem} />;
     });
 
     return (
       <Group x={350} y={180}>
         {tiles}
+        {paths}
+        {cities}
       </Group>
     );
   }

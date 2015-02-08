@@ -25,7 +25,7 @@ describe('A lobby', () => {
       setTimeout(() => {
         expect(this.choose).toHaveBeenCalledWith(jasmine.any(Object));
         done();
-      }, 300);
+      }, 500);
   });
 
   it('should render the list of game and be able to choose one', (done) => {

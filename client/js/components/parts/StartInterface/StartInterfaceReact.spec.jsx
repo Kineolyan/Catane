@@ -37,8 +37,8 @@ describe('The start interface', () => {
         this.game.setMinimalStep(Globals.step.inLobby);
         expect(this.game.state.step).toEqual(Globals.step.started);
         done();
-      }, 200);
-    }, 200);
+      }, 500);
+    }, 500);
 
     
   });

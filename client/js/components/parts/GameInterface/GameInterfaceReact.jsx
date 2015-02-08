@@ -31,12 +31,12 @@ var GameInterfaceReact = React.createClass({
     return (
       <div>
         <Surface x={140} y={140} width={this.state.width} height={this.state.height}>
-          <MapReact initBoard={this.props.board} />
+            <MapReact initBoard={this.props.board} />
         </Surface>
       </div>
     );
   }
-
+        
 
 });
 

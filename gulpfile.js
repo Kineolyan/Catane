@@ -111,7 +111,7 @@ gulp.task('build:jsx', function(done) {
   done();
 });
 
-gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
+gulp.task('build:browserify', ['test:lint'], function(){
   var b = browserify('./' + PATHS.client.js('compiled/main.js'))
   var stream = b.bundle()
     .pipe(source('main.js')) // the output filename
