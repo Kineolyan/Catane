@@ -3,8 +3,14 @@
 
 const DICE_DISTRIBUTION = [ 11, 3, 6, 5, 4, 9, 10, 8, 4, 11, 12, 9, 10, 8, 3, 6, 2, 5 ];
 
-function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex ;
+/**
+ * Creates a new array with given values in randome order
+ * @param  {[Array]} values values to randomize
+ * @return {[Array]} array of values in random order
+ */
+function shuffle(values) {
+  var currentIndex = values.length, randomIndex ;
+  var array = [];
 
   // While there remain elements to shuffle...
   while (0 !== currentIndex) {
@@ -14,9 +20,8 @@ function shuffle(array) {
     currentIndex -= 1;
 
     // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
+    array[currentIndex] = values[randomIndex];
+    array[randomIndex] = values[currentIndex];
   }
 
   return array;
