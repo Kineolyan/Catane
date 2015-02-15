@@ -23,7 +23,7 @@ var MapReact = React.createClass({
    */
   getInitialState() {
     return {
-      board: new MapHelper(this.props.initBoard)
+      board: this.props.initBoard
     };
   },
 
@@ -33,20 +33,22 @@ var MapReact = React.createClass({
    * @return {React.Element} the rendered element
    */
   render() {
-    var tiles = this.state.board.tiles.map((elem) => {
+    var board = new MapHelper(this.state.board, this.props.margin);
+
+    var tiles = board.tiles.map((elem) => {
       return <Tile key={elem.key} tile={elem} />;
     });
     
-    var paths = this.state.board.paths.map((elem) => {
+    var paths = board.paths.map((elem) => {
       return <Path key={elem.key} path={elem} />;
     });
 
-    var cities = this.state.board.cities.map((elem) => {
+    var cities = board.cities.map((elem) => {
       return <City key={elem.key} city={elem} />;
     });
 
     return (
-      <Group x={350} y={180}>
+      <Group x={this.props.width / 2} y={this.props.height / 2}>
         {tiles}
         {paths}
         {cities}

@@ -22,6 +22,18 @@ var GameInterfaceReact = React.createClass({
     };
   },
 
+  handleResize() {
+    this.setState({width: window.innerWidth, height: window.innerHeight});
+  },
+
+  componentDidMount() {
+    window.addEventListener('resize', this.handleResize);
+  },
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
+  },
+
 
   /**
    * Render the whole interface of the game
@@ -30,8 +42,8 @@ var GameInterfaceReact = React.createClass({
   render() {
     return (
       <div>
-        <Surface x={140} y={140} width={this.state.width} height={this.state.height}>
-            <MapReact initBoard={this.props.board} />
+        <Surface x={0} y={0} width={this.state.width} height={this.state.height}>
+            <MapReact initBoard={this.props.board} width={this.state.width} height={this.state.height} margin={50}/>
         </Surface>
       </div>
     );

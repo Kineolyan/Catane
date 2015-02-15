@@ -5,7 +5,7 @@
   One vertex of a tile
 */
 var React = require('react');
-var Circle = require('../../../../../node_modules/react-art/shapes/circle');
+var Circle = require('react-art/shapes/circle');
 var Group = require('react-art').Group;
 
 var CityReact = React.createClass({
