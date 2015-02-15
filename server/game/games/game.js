@@ -76,7 +76,8 @@ export default class Game {
 			description.tiles.push({
 				x: tile.location.x,
 				y: tile.location.y,
-				resource: tile.resource
+				resource: tile.resource,
+				diceValue: tile.diceValue
 			});
 		}
 		for (let city of this._board.cities) {

@@ -12,11 +12,18 @@ describe('The predefined generators', function() {
 			beforeEach(function() {
 				this.tiles = [];
 
-				this.generator.forEachTile( tile => this.tiles.push(new Location(tile.location.x, tile.location.y)) );
+				this.generator.forEachTile( tile => this.tiles.push(tile) );
+				this.tileLocations = this.tiles.map(function(tile) { return tile.location.hashCode(); });
 			});
 
 			it('has 7 items', function() {
 				expect(this.tiles).toHaveLength(7);
+			});
+
+			it('gives a number to each tail', function(){
+				this.tiles.forEach(function(tile) {
+					expect(tile.diceValue).toBeAnInteger();
+				});
 			});
 
 			[
@@ -25,7 +32,7 @@ describe('The predefined generators', function() {
 				var [x, y] = location;
 
 				it(`contains location(${x}, ${y})`, function() {
-					expect(this.tiles).toContain(new Location(x, y));
+					expect(this.tileLocations).toContain(new Location(x, y).hashCode());
 				});
 			});
 		});

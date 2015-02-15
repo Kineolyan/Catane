@@ -254,10 +254,14 @@ describe('Games', function() {
 					it('describes tiles', function() {
 						var tile = this.board.tiles[0];
 
-						expect(tile).toHaveKeys([ 'x', 'y', 'resource' ]);
+						expect(tile).toHaveKeys([ 'x', 'y', 'resource', 'diceValue' ]);
 						expect(tile.x).toBeAnInteger();
 						expect(tile.y).toBeAnInteger();
+
 						expect(tile.resource).toMatch(/tuile/i);
+
+						expect(tile.diceValue).toBeAnInteger();
+						expect(tile.diceValue).toBeBetween(2, 12);
 					});
 
 					it('describes cities', function() {
