@@ -7,9 +7,12 @@ var typeMatchers = {
 	toBeAnInteger: function() {
 		return {
 			compare: function(actual) {
-				var result = { pass: actual === parseInt(actual.toString()) };
+				var result = { pass: (typeof actual === 'number') ?
+						actual == parseInt(actual) :
+						actual === parseInt(actual.toString())
+				};
 				result.message = 'Expecting ' + actual
-					+ (result.pass === true ? ' not' : '')
+					+ (result.pass ? ' not' : '')
 					+ ' to be an integer';
 
 				return result;
