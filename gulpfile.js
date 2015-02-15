@@ -204,8 +204,16 @@ gulp.task('default', [ 'build', 'test', 'docs' ]);
 gulp.task('server', function(done) {
   var isDone = false;
 
-  nodemon({ script: 'bin/catane', ignore: [PATHS.docs('libs/*')], stderr: false, stdout: false})
-    .on('start', function() {
+  nodemon({
+    script: 'bin/catane',
+    ignore: [
+      PATHS.docs('libs/*'),
+      PATHS.specs('**/*'),
+      PATHS('**/*.spec.js')
+    ],
+    stderr: false,
+    stdout: false
+  }).on('start', function() {
       if(!isDone) {
         isDone = true;
         done();
