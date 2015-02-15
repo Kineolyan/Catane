@@ -79,7 +79,9 @@ describe('The predefined generators', function() {
 
 						it(`associates city (${cx}, ${cy}) to tile (${tx}, ${ty})`, function() {
 							var tile = this.tiles.get(tileLocation.hashCode());
-							expect(tile.cities).toContain(city);
+							var tileCities = tile.cities.map(function(c) { return c.location.hashCode(); });
+
+							expect(tileCities).toContain(city.location.hashCode());
 						});
 					});
 				});

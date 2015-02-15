@@ -54,7 +54,7 @@ function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
     .pipe(cached('js'))
     .pipe(remember('js'))
-    .pipe(to5())
+    .pipe(to5({ sourceRoot: PATHS.server() }))
     .pipe(gulp.dest(PATHS.build.server()));
 }
 
@@ -68,7 +68,7 @@ function testUnit() {
       PATHS.build.server('**/*.spec.js'),
       PATHS.client('**/*.spec.js')
     ]).pipe(jas({includeStackTrace: true, verbose: true}));
-  
+
 }
 
 function cleanCache() {
@@ -213,7 +213,7 @@ gulp.task('server', function(done) {
     })
     .on('crash', function() {
       console.log('Server already launched, just failing');
-    });  
+    });
 
 });
 
