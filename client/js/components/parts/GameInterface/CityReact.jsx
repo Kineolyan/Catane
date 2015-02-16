@@ -2,7 +2,7 @@
 
 
 /*
-  One vertex of a tile
+  One city of the game
 */
 var React = require('react');
 var Circle = require('react-art/shapes/circle');

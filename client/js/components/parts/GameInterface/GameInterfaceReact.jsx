@@ -22,6 +22,10 @@ var GameInterfaceReact = React.createClass({
     };
   },
 
+  /**
+   * Resize event
+   */
+
   handleResize() {
     this.setState({width: window.innerWidth, height: window.innerHeight});
   },
@@ -29,11 +33,6 @@ var GameInterfaceReact = React.createClass({
   componentDidMount() {
     window.addEventListener('resize', this.handleResize);
   },
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize);
-  },
-
 
   /**
    * Render the whole interface of the game
@@ -47,7 +46,12 @@ var GameInterfaceReact = React.createClass({
         </Surface>
       </div>
     );
+  },
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
   }
+
         
 
 });

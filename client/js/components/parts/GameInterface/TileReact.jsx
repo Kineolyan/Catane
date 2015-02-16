@@ -23,7 +23,6 @@ var TileReact = React.createClass({
 
     return (
       <Group>
-
         <Shape d={path} 
                fill='#f3f3f3'
                stroke='#FFFFFF'

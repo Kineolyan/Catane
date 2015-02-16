@@ -1,7 +1,14 @@
 'use strict';
 
 var unitSize = 60;
+/**
+ * Map helpher, transforming hexa coordinate to orthogonal. 
+ */
 var MapHelpher = function(board, margin) {
+  if(!board.tiles) {
+    return {};
+  }
+  
   unitSize = getSize(board.tiles, window.innerHeight, window.innerWidth, margin);
 
   this.tiles = [];
@@ -27,7 +34,14 @@ var MapHelpher = function(board, margin) {
   }
 };
 
-//Size finder
+/**
+ * Get the size of one edge of a tiles
+ * @param {Array} tiles of the game
+ * @param {Integer} width of the map
+ * @param {Integer} height of the map
+ * @param {Integer} top and bottom margin of the map
+ * @return {Integer} the size of one edge
+ */
 function getSize(tiles, width, height, margin) {
   var min = {
     x: 0,
@@ -38,7 +52,7 @@ function getSize(tiles, width, height, margin) {
     y: 0
   };
 
-  var tmpWidth, tmpHeight, tmp, size;
+  var tmpWidth = 0, tmpHeight = 0, tmp = 0, size = 0;
 
   for(var i = 0; i < tiles.length; i += 1) {
     var t = tiles[i];
@@ -58,7 +72,6 @@ function getSize(tiles, width, height, margin) {
   tmpHeight = parseInt((height - margin) / ((max.y - min.y)), 10);
 
   tmp = convert(tmpWidth, tmpHeight, 1);
-  console.log(tmp);
   if(tmp.x < tmp.y) {
     size = tmp.x;
   } else {
@@ -69,6 +82,13 @@ function getSize(tiles, width, height, margin) {
 
 }
 
+/**
+ * Get the size of one edge of a tiles
+ * @param {Integer} x in hexacoordinate
+ * @param {Integer} y in hexacoordinate
+ * @param {Integer} size of the coordinate
+ * @return {Object} new position in the orthogonal coordinate
+ */
 function convert(x, y, sz) {
   var size = typeof sz !== 'undefined' ? sz : unitSize;
 
@@ -78,7 +98,7 @@ function convert(x, y, sz) {
   };
 }
 
-//Map objects
+//Abstract class for a map element
 var index = 0;
 var MapElement = function (element) {
   this.x = element.x;
@@ -90,10 +110,7 @@ var MapElement = function (element) {
   index += 1;
 };
 
-
-
-
-
+//A tile with orthogonal coordinate and vertex
 var Tile = function(tile) {
   MapElement.call(this, tile);
 
@@ -111,12 +128,14 @@ var Tile = function(tile) {
 Tile.prototype = Object.create(MapElement.prototype);
 Tile.prototype.constructor = Tile;
 
+//A city with orthogonal coordinate
 var City = function(city) {
   MapElement.call(this, city);
 };
 City.prototype = Object.create(MapElement.prototype);
 City.prototype.constructor = City;
 
+//A path with orthogonal coordinate
 var Path = function(path) {
   MapElement.call(this, {x: path.from.x, y: path.from.y});
 
@@ -128,7 +147,6 @@ var Path = function(path) {
 };
 Path.prototype = Object.create(MapElement.prototype);
 Path.prototype.constructor = Path;
-
 
 
 module.exports = MapHelpher;
