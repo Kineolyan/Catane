@@ -6,6 +6,7 @@ export default class Tile {
 		this._location = new Location(x, y);
 		this._resource = resource;
 		this._cities = [];
+		this._diceValue = undefined;
 	}
 
 	get location() {
@@ -18,6 +19,14 @@ export default class Tile {
 
 	get cities() {
 		return this._cities;
+	}
+
+	get diceValue() {
+		return this._diceValue;
+	}
+
+	set diceValue(value) {
+		this._diceValue = value;
 	}
 
 	addCity(city) {

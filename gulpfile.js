@@ -54,7 +54,7 @@ function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
     .pipe(cached('js'))
     .pipe(remember('js'))
-    .pipe(to5())
+    .pipe(to5({ sourceRoot: PATHS.server() }))
     .pipe(gulp.dest(PATHS.build.server()));
 }
 
@@ -68,7 +68,7 @@ function testUnit() {
       PATHS.build.server('**/*.spec.js'),
       PATHS.client('**/*.spec.js')
     ]).pipe(jas({includeStackTrace: true, verbose: true}));
-  
+
 }
 
 function cleanCache() {
@@ -208,8 +208,16 @@ gulp.task('default', [ 'build', 'test', 'docs' ]);
 gulp.task('server', function(done) {
   var isDone = false;
 
-  nodemon({ script: 'bin/catane', ignore: [PATHS.docs('libs/*')], stderr: false, stdout: false})
-    .on('start', function() {
+  nodemon({
+    script: 'bin/catane',
+    ignore: [
+      PATHS.docs('libs/*'),
+      PATHS.specs('**/*'),
+      PATHS('**/*.spec.js')
+    ],
+    stderr: false,
+    stdout: false
+  }).on('start', function() {
       if(!isDone) {
         isDone = true;
         done();
@@ -217,7 +225,7 @@ gulp.task('server', function(done) {
     })
     .on('crash', function() {
       console.log('Server already launched, just failing');
-    });  
+    });
 
 });
 

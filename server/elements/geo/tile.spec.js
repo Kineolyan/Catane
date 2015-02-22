@@ -19,6 +19,10 @@ describe('Tile', function() {
 		it('has no cities', function() {
 			expect(this.tile.cities).toBeEmpty();
 		});
+
+		it('has no dice value', function() {
+			expect(this.tile.diceValue).not.toBeDefined();
+		});
 	});
 
 	describe('cities management', function() {
@@ -33,5 +37,17 @@ describe('Tile', function() {
 			expect(this.tile.cities).toEqual([ this.city ]);
 		});
 	});
+
+	describe('#diceValue', function() {
+		beforeEach(function() {
+			this.tile = new Tile(2, 1, 'tuile');
+		});
+
+		it('can set the dice value', function() {
+			this.tile.diceValue = 12;
+			expect(this.tile.diceValue).toEqual(12);
+		});
+	});
+
 
 });

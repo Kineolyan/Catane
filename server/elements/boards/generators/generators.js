@@ -1,6 +1,8 @@
+import Location from '../../geo/location';
 import Tile from '../../geo/tile';
 import City from '../../geo/city';
 import Path from '../../geo/path';
+import { catane } from './dices';
 
 const CITY_POSITIONS = [ [0, 1], [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1] ];
 
@@ -9,6 +11,7 @@ export class RoundGenerator {
 		this._tiles = new Map();
 		this._cities = new Map();
 		this._paths = new Map();
+		this._diceValues = catane();
 
 		this.generate(nbRings);
 	}
@@ -72,6 +75,9 @@ export class RoundGenerator {
 		var tileHash = tile.location.hashCode();
 
 		if (!this._tiles.has(tileHash)) {
+			// Give the tail its dice value
+			tile.diceValue = this._diceValues.next().value;
+
 			let firstCity = null;
 			let lastCity = null;
 			for (let [cityX, cityY] of CITY_POSITIONS) {
@@ -98,8 +104,14 @@ export class RoundGenerator {
 	}
 
 	createCity(x, y) {
-		var city = new City(x, y);
-		this._cities.set(city.location.hashCode(), city);
+		var cityHash = new Location(x, y).hashCode();
+		var city;
+		if (this._cities.has(cityHash)) {
+			city = this._cities.get(cityHash);
+		} else {
+			city = new City(x, y);
+			this._cities.set(cityHash, city);
+		}
 
 		return city;
 	}
