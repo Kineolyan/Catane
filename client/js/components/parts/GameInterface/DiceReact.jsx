@@ -68,7 +68,7 @@ var DiceReact = React.createClass({
         margin = size + 10,
         color = this.state.rolling ? '#FBF896' : '#D1FFA3';
     return (
-      <Group x={this.props.x} y={this.props.y} onClick={this.launch}>
+      <Group x={this.props.x} y={this.props.y} onClick={this.launch} cursor="pointer">
         
         <Rectangle width={size} height={size} stroke="black" fill={color} />
         <Text y={size / 4} x={size / 2} fill="black" alignment="center" font={{'font-size': size / 2 + 'px'}}>
