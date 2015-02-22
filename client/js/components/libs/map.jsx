@@ -101,8 +101,8 @@ function convert(x, y, sz) {
 //Abstract class for a map element
 var index = 0;
 var MapElement = function (element) {
-  this.x = element.x;
-  this.y = element.y;
+  Object.assign(this, element);
+  this.unitSize = unitSize;
   this.key = this.x + ',' + this.y + ',' + index;
 
   this.ortho = convert(this.x, this.y);
@@ -118,12 +118,13 @@ var Tile = function(tile) {
 
   //vertex
   this.vertex = [];
-  this.vertex.push(convert(this.x, this.y - 1));
-  this.vertex.push(convert(this.x + 1, this.y - 1));
-  this.vertex.push(convert(this.x + 1, this.y));
-  this.vertex.push(convert(this.x, this.y + 1));
-  this.vertex.push(convert(this.x - 1, this.y + 1));
-  this.vertex.push(convert(this.x - 1, this.y));
+  this.vertex.push(convert(0, - 1));
+  this.vertex.push(convert(1, - 1));
+  this.vertex.push(convert(1, 0));
+  this.vertex.push(convert(0, 1));
+  this.vertex.push(convert(- 1, 1));
+  this.vertex.push(convert(- 1, 0));
+
 };
 Tile.prototype = Object.create(MapElement.prototype);
 Tile.prototype.constructor = Tile;

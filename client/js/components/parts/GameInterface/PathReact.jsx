@@ -21,7 +21,7 @@ var PathReact = React.createClass({
     var p = this.props.path,
         path = new Path();
 
-    path.moveTo(p.from.ortho.x, p.from.ortho.y);
+    path.moveTo(p.ortho.x, p.ortho.y);
     path.lineTo(p.to.ortho.x, p.to.ortho.y);
     path.close();
 
@@ -31,6 +31,7 @@ var PathReact = React.createClass({
                stroke='#000000'
                strokeWidth={this.props.thickness}
               />
+        
       </Group>
       );
   }

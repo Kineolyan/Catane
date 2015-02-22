@@ -7,10 +7,6 @@ if(typeof global.window === 'undefined') {
   jasmine.getEnv().defaultTimeoutInterval = 1000;
 }
 
-var React = require('react/addons');
-var utils = React.addons.TestUtils;
-
-
 var tests = module.exports = {
   jsdom: jsdom,
   getRenderedElements(inst, type) {
@@ -18,9 +14,10 @@ var tests = module.exports = {
       return [];
     }
 
-    var ret = utils.isCompositeComponentWithType(inst,type) ? [inst] : [];
+    var ret = inst._currentElement.type === type.type ? [inst] : [];
 
     if(inst._renderedComponent) {
+      //console.log('here');
         ret = ret.concat(tests.getRenderedElements(inst._renderedComponent, type));
     } else if(inst._renderedChildren) {
         for(var i in inst._renderedChildren) {
