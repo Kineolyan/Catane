@@ -42,7 +42,7 @@ var GameInterfaceReact = React.createClass({
     return (
       <div>
         <Surface x={0} y={0} width={this.state.width} height={this.state.height}>
-            <MapReact initBoard={this.props.board} width={this.state.width} height={this.state.height} margin={50}/>
+            <MapReact ref="map" initBoard={this.props.board} width={this.state.width} height={this.state.height} margin={50}/>
         </Surface>
       </div>
     );
