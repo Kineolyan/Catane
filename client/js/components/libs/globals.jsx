@@ -24,8 +24,13 @@ GLOBABLS.socket = {
   gamePlayers: 'game:players',
   gameStart: 'game:start',
   gameQuit: 'game:quit',
+  playerNickname: 'player:nickname',
+  mapDice: 'map:dice'
+};
 
-  playerNickname: 'player:nickname'
+GLOBABLS.map = {};
+GLOBABLS.map.resources = {
+  tuile: 'tuile'
 };
 
 
