@@ -62,6 +62,19 @@ var typeMatchers = {
 				return result;
 			}
 		}
+	},
+	toBeAString: function() {
+		return {
+			compare: function(actual) {
+				var result = { pass: typeof actual === 'string' };
+
+				result.message = 'Expecting ' + actual
+					+ (result.pass === true ? ' not' : '')
+					+ ' to be a string';
+
+				return result;
+			}
+		}
 	}
 };
 

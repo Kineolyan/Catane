@@ -3,6 +3,7 @@ import Tile from '../../geo/tile';
 import City from '../../geo/city';
 import Path from '../../geo/path';
 import { catane } from './dices';
+import { RandomResources } from './resources';
 
 const CITY_POSITIONS = [ [0, 1], [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1] ];
 
@@ -12,6 +13,7 @@ export class RoundGenerator {
 		this._cities = new Map();
 		this._paths = new Map();
 		this._diceValues = catane();
+		this._resources = (new RandomResources(6 * nbRings * (nbRings + 1) + 1))[Symbol.iterator]();
 
 		this.generate(nbRings);
 	}
@@ -38,7 +40,7 @@ export class RoundGenerator {
 	 * Generates all the content once for all.
 	 */
 	generate(nbRings) {
-		var previousRing = [ this.createTile(0, 0, 'tuile') ];
+		var previousRing = [ this.createTile(0, 0) ];
 		for (let ring = 2; ring <= nbRings; ring += 1) {
 			let newRing = [];
 			for (let tile of previousRing) {
@@ -60,7 +62,7 @@ export class RoundGenerator {
 		].forEach(function(location) {
 			var [x, y] = location;
 
-			var tile = this.createTile(center.location.x + x, center.location.y + y, 'tuile');
+			var tile = this.createTile(center.location.x + x, center.location.y + y);
 
 			if (tile !== null) {
 				newTiles.push(tile);
@@ -70,13 +72,16 @@ export class RoundGenerator {
 		return newTiles;
 	}
 
-	createTile(x, y, resource) {
-		var tile = new Tile(x, y, resource);
+	createTile(x, y) {
+		var tile = new Tile(x, y);
 		var tileHash = tile.location.hashCode();
 
 		if (!this._tiles.has(tileHash)) {
-			// Give the tail its dice value
-			tile.diceValue = this._diceValues.next().value;
+			// Give the tile its resource and dice value
+			tile.resource = this._resources.next().value;
+			if (tile.resource !== 'desert') {
+				tile.diceValue = this._diceValues.next().value;
+			}
 
 			let firstCity = null;
 			let lastCity = null;

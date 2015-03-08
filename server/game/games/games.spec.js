@@ -258,7 +258,7 @@ describe('Games', function() {
 						expect(tile.x).toBeAnInteger();
 						expect(tile.y).toBeAnInteger();
 
-						expect(tile.resource).toMatch(/tuile/i);
+						expect(tile.resource).toBeIn([ 'desert', 'tuile', 'bois', 'mouton', 'ble', 'caillou' ]);
 
 						expect(tile.diceValue).toBeAnInteger();
 						expect(tile.diceValue).toBeBetween(2, 12);
