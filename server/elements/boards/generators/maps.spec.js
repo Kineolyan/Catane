@@ -1,8 +1,8 @@
-import { RoundGenerator } from './generators';
+import { RoundGenerator } from './maps';
 import Location from '../../geo/location';
 import City from '../../geo/city';
 
-describe('The predefined generators', function() {
+describe('The predefined map generators', function() {
 	describe('RoundGenerator', function() {
 		beforeEach(function() {
 			this.generator = new RoundGenerator(2);

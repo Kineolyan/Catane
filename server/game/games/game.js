@@ -1,5 +1,5 @@
 import Board from '../../elements/boards/board';
-import { RoundGenerator } from '../../elements/boards/generators/generators';
+import { RoundGenerator } from '../../elements/boards/generators/maps';
 
 export default class Game {
 	/**
