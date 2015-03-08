@@ -1,10 +1,10 @@
 'use strict';
 
-var GLOBABLS = {};
+var GLOBALS = {};
 
 
-// Step const for the game 
-GLOBABLS.step = {
+// Step const for the game
+GLOBALS.step = {
   init: 0,
   chooseLobby: 1,
   inLobby: 2,
@@ -15,8 +15,8 @@ GLOBABLS.step = {
   }
 };
 
-// Step event for the game 
-GLOBABLS.socket = {
+// Step event for the game
+GLOBALS.socket = {
   init: 'init',
   gameCreate: 'game:create',
   gameList: 'game:list',
@@ -28,10 +28,10 @@ GLOBABLS.socket = {
   mapDice: 'map:dice'
 };
 
-GLOBABLS.map = {};
-GLOBABLS.map.resources = {
+GLOBALS.map = {};
+GLOBALS.map.resources = {
   tuile: 'tuile'
 };
 
 
-module.exports = GLOBABLS;
+module.exports = GLOBALS;
