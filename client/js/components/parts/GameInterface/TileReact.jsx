@@ -39,7 +39,7 @@ var TileReact = React.createClass({
         <Circle radius={circleRadius} fill="white" stroke="black" />
 
         <Text ref="value" y={-circleRadius/2} fill="black" alignment="center" font={{'font-size': circleRadius + 'px'}}>
-            {tile.diceValue + ''}
+            {tile.diceValue.toString()}
         </Text>
       </Group>
       );

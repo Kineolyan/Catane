@@ -10,13 +10,13 @@ var City = require('./CityReact');
 describe('A basic map', () => {
 
   beforeEach(() => {
-    this.board = { tiles:[ { x: 0, y: 0, resource: 'tuile' },
-                         { x: 1, y: 1, resource: 'tuile' },
-                         { x: 2, y: -1, resource: 'tuile' },
-                         { x: 1, y: -2, resource: 'tuile' },
-                         { x: -1, y: -1, resource: 'tuile' },
-                         { x: -2, y: 1, resource: 'tuile' },
-                         { x: -1, y: 2, resource: 'tuile' } ],
+    this.board = { tiles:[ { x: 0, y: 0, resource: 'tuile', diceValue: 1  },
+                         { x: 1, y: 1, resource: 'tuile', diceValue: 1  },
+                         { x: 2, y: -1, resource: 'tuile', diceValue: 1  },
+                         { x: 1, y: -2, resource: 'tuile', diceValue: 1  },
+                         { x: -1, y: -1, resource: 'tuile', diceValue: 1  },
+                         { x: -2, y: 1, resource: 'tuile', diceValue: 1  },
+                         { x: -1, y: 2, resource: 'tuile', diceValue: 1  } ],
                       cities: 
                        [ { x: 0, y: 1 },
                          { x: 1, y: 0 },
