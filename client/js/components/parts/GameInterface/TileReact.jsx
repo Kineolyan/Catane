@@ -46,10 +46,14 @@ var TileReact = React.createClass({
   },
 
   tileColor() {
-    switch(this.props.tile.resource) {
-      case Globals.map.resources.tuile:
-        return '#BF7E00';
+    var color = 'white',
+        tmpCol = Globals.map.resources[this.props.tile.resource];
+    
+    if(typeof tmpCol !== 'undefined') {
+      color = tmpCol;
     }
+
+    return color;
   }
 });
 
