@@ -146,7 +146,7 @@ gulp.task('test:unit:kill', ['test:unit'], function() {
 gulp.task('test:lint', function() {
   return gulp.src([
   		PATHS.bin('*.js'),
-  		PATHS.client('**/*.js'),
+  		PATHS.build.client('js/compiled/**/*.js'),
   		PATHS.server('**/*.js')
   	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
     .pipe(jshint())

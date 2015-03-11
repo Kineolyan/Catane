@@ -9,7 +9,7 @@ if(typeof global.window === 'undefined') {
 
 var tests = module.exports = {
   jsdom: jsdom,
-  getRenderedElements(inst, type) {
+  getRenderedElements(inst, type) { //get react sub elements
     if (!inst) {
       return [];
     }
@@ -17,7 +17,6 @@ var tests = module.exports = {
     var ret = inst._currentElement.type === type.type ? [inst] : [];
 
     if(inst._renderedComponent) {
-      //console.log('here');
         ret = ret.concat(tests.getRenderedElements(inst._renderedComponent, type));
     } else if(inst._renderedChildren) {
         for(var i in inst._renderedChildren) {

@@ -7,7 +7,7 @@ var MapHelper = require('../../libs/map');
 var Tile = require('./TileReact');
 
 
-describe('A basic map', () => {
+describe('A tile', () => {
 
   beforeEach(() => {
     this.data = new MapHelper({ tiles:[ { x: 0, y: 0, resource: 'tuile', diceValue: 1 }]});
