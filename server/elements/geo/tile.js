@@ -2,11 +2,18 @@ import Location from './location';
 
 export default class Tile {
 
-	constructor(x, y, resource) {
+	/**
+	 * Constructor
+	 * @param  {Integer} x x-coordinate
+	 * @param  {Integer} y y-coordinate
+	 * @param  {String} resource the resource
+	 * @param  {String} diceValue the dice value
+	 */
+	constructor(x, y, resource, diceValue) {
 		this._location = new Location(x, y);
 		this._resource = resource;
 		this._cities = [];
-		this._diceValue = undefined;
+		this._diceValue = diceValue;
 	}
 
 	get location() {
@@ -15,6 +22,10 @@ export default class Tile {
 
 	get resource() {
 		return this._resource;
+	}
+
+	set resource(value) {
+		this._resource = value;
 	}
 
 	get cities() {

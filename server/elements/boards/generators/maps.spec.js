@@ -1,8 +1,8 @@
-import { RoundGenerator } from './generators';
+import { RoundGenerator } from './maps';
 import Location from '../../geo/location';
 import City from '../../geo/city';
 
-describe('The predefined generators', function() {
+describe('The predefined map generators', function() {
 	describe('RoundGenerator', function() {
 		beforeEach(function() {
 			this.generator = new RoundGenerator(2);
@@ -20,9 +20,26 @@ describe('The predefined generators', function() {
 				expect(this.tiles).toHaveLength(7);
 			});
 
-			it('gives a number to each tail', function(){
+			it('gives a number to each tile but desert', function(){
 				this.tiles.forEach(function(tile) {
-					expect(tile.diceValue).toBeAnInteger();
+					if (tile.resource !== 'desert') {
+						expect(tile.diceValue).toBeAnInteger();
+					}
+				});
+			});
+
+			it('does not give a number to tile with desert', function(){
+				this.tiles.forEach(function(tile) {
+					if (tile.resource === 'desert') {
+						expect(tile.diceValue).toBeUndefined();
+					}
+				});
+			});
+
+			it('gives a number to each tile', function(){
+				var RESOURCES = [ 'desert', 'bois', 'mouton', 'ble', 'caillou', 'tuile' ];
+				this.tiles.forEach(function(tile) {
+					expect(tile.resource).toBeIn(RESOURCES);
 				});
 			});
 
