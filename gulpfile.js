@@ -36,8 +36,9 @@ PATHS.server = pathItem('server');
 PATHS.build = pathItem('build');
 PATHS.build.server = pathItem('server');
 PATHS.build.client = pathItem('client');
+
 PATHS.client.scssLib = pathItem('scss_lib');
-PATHS.client.components = pathItem('components');
+PATHS.client.components = pathItem('scss');
 
 PATHS.client.js = pathItem('js');
 PATHS.server = pathItem('server');
@@ -66,7 +67,7 @@ function testUnit() {
       PATHS.specs('env.js'),
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
-      PATHS.client('**/*.spec.js')
+      PATHS.build.client('**/*.spec.js')
     ]).pipe(jas({includeStackTrace: true, verbose: true}));
 
 }
@@ -106,11 +107,11 @@ gulp.task('build:jsx', function() {
       .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
       .pipe(react({harmony: true}))
       .pipe(plumber.stop())
-      .pipe(gulp.dest(PATHS.client.js('compiled')));
+      .pipe(gulp.dest(PATHS.build.client('js/compiled')));
 });
 
 gulp.task('build:browserify', ['build:jsx'], function(){
-  var b = browserify('./' + PATHS.client.js('compiled/main.js'))
+  var b = browserify('./' + PATHS.build.client('js/compiled/main.js'))
   var stream = b.bundle()
     .pipe(source('main.js')) // the output filename
     .pipe(gulp.dest(PATHS.build.client('js'))); // the output directory

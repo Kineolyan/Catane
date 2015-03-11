@@ -3,9 +3,6 @@ docs/libs/mermaid.js
 # Build folder
 build/
 
-#Compiled js for client
-client/js/compiled/
-
 # Logs
 logs
 *.log
