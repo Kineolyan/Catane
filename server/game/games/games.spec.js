@@ -240,6 +240,48 @@ describe('Games', function() {
 					expect(response._success).toBe(false);
 					expect(response.message).toMatch(/already started/i);
 				});
+
+				describe('board definition', function() {
+					beforeEach(function() {
+						var message = this.client.lastMessage('game:start');
+						this.board = message.board;
+					});
+
+					it('contains all board elements', function() {
+						expect(this.board).toHaveKeys([ 'tiles', 'cities', 'paths' ]);
+					});
+
+					it('describes tiles', function() {
+						var tile = this.board.tiles[0];
+
+						expect(tile).toHaveKeys([ 'x', 'y', 'resource', 'diceValue' ]);
+						expect(tile.x).toBeAnInteger();
+						expect(tile.y).toBeAnInteger();
+
+						expect(tile.resource).toBeIn([ 'desert', 'tuile', 'bois', 'mouton', 'ble', 'caillou' ]);
+
+						expect(tile.diceValue).toBeAnInteger();
+						expect(tile.diceValue).toBeBetween(2, 12);
+					});
+
+					it('describes cities', function() {
+						var tile = this.board.cities[0];
+
+						expect(tile).toHaveKeys([ 'x', 'y' ]);
+						expect(tile.x).toBeAnInteger();
+						expect(tile.y).toBeAnInteger();
+					});
+
+					it('describes paths', function() {
+						var path = this.board.paths[0];
+
+						expect(path).toHaveKeys([ 'from', 'to' ]);
+						expect(path.from.y).toBeAnInteger();
+						expect(path.from.x).toBeAnInteger();
+						expect(path.to.y).toBeAnInteger();
+						expect(path.to.x).toBeAnInteger();
+					});
+				});
 			});
 
 			describe('with wrong id', function() {

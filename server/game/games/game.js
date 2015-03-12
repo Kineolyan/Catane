@@ -1,3 +1,6 @@
+import Board from '../../elements/boards/board';
+import { RoundGenerator } from '../../elements/boards/generators/maps';
+
 export default class Game {
 	/**
 	 * Constructor
@@ -65,5 +68,31 @@ export default class Game {
 		if (this._players.size < 2) { throw new Error(`Not enough players in the game (${this._players.size})`); }
 
 		this._started = true;
+		this._board = new Board();
+		this._board.generate(new RoundGenerator(2));
+
+		var description = { tiles: [], cities: [], paths: [] };
+		for (let tile of this._board.tiles) {
+			description.tiles.push({
+				x: tile.location.x,
+				y: tile.location.y,
+				resource: tile.resource,
+				diceValue: tile.diceValue
+			});
+		}
+		for (let city of this._board.cities) {
+			description.cities.push({
+				x: city.location.x,
+				y: city.location.y,
+			});
+		}
+		for (let path of this._board.paths) {
+			description.paths.push({
+				from: { x: path.from.x, y: path.from.y },
+				to: { x: path.to.x, y: path.to.y }
+			});
+		}
+
+		this._players.forEach( player => player.emit('game:start', { _success: true, board: description }) );
 	}
 }

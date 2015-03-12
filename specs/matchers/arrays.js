@@ -20,11 +20,13 @@ var arrayMatchers = {
 	},
 	toHaveLength: function() {
 		return {
-			compare: function(actual, size) {
-				var result = { pass: actual.length === size };
-				result.message = 'Expecting ' + actual
+			compare: function(actual, length) {
+				var actualLength = actual.length;
+				var result = { pass: actualLength === length };
+				result.message = 'Expecting item'
 					+ (result.pass === true ? ' not' : '')
-					+ ' to have length of ' + size;
+					+ ' to have length of ' + length
+					+ '. Actual is ' + actualLength;
 
 				return result;
 			}
