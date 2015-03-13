@@ -26,21 +26,26 @@ var TileReact = React.createClass({
     }
 
     path += ' L ' + vertex[0].x + ' ' + vertex[0].y;
-    
 
+    var diceValue;
+    if (tile.diceValue) {
+      diceValue =
+        <Text ref="value" y={-circleRadius/2} fill="black" alignment="center" font={{'font-size': circleRadius + 'px'}}>
+            { tile.diceValue.toString() }
+        </Text>;
+    } else {
+      diceValue = <Text></Text>;
+    }
 
     return (
       <Group x={tile.ortho.x} y={tile.ortho.y}>
-        <Shape d={path} 
+        <Shape d={path}
                fill={color}
                stroke='#FFFFFF'
               />
 
         <Circle radius={circleRadius} fill="white" stroke="black" />
-
-        <Text ref="value" y={-circleRadius/2} fill="black" alignment="center" font={{'font-size': circleRadius + 'px'}}>
-            {tile.diceValue.toString()}
-        </Text>
+        { diceValue }
       </Group>
       );
   },
