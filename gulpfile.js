@@ -8,7 +8,7 @@ var cached = require('gulp-cached');
 var remember = require('gulp-remember');
 var jas = require('gulp-jasmine');
 var jshint = require('gulp-jshint');
-var to5 = require('gulp-6to5');
+var babel = require('gulp-babel');
 var react = require('gulp-react');
 var browserify = require('browserify');
 var notify = require('gulp-notify');
@@ -55,21 +55,18 @@ function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
     .pipe(cached('js'))
     .pipe(remember('js'))
-    .pipe(to5({ sourceRoot: PATHS.server() }))
+    .pipe(babel({ sourceRoot: PATHS.server() }))
     .pipe(gulp.dest(PATHS.build.server()));
 }
 
 /** Performs all unit tests */
 function testUnit() {
-
   return gulp.src([
-      // './node_modules/gulp-6to5/node_modules/6to5/register.js',
       PATHS.specs('env.js'),
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
       PATHS.build.client('**/*.spec.js')
     ]).pipe(jas({includeStackTrace: true, verbose: true}));
-
 }
 
 function cleanCache() {
@@ -122,8 +119,10 @@ gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
 /* -- Watcher -- */
 gulp.task('watch:jsx', function() {
-  gulp.watch(PATHS.client.js('components/**/*.jsx'), ['build:browserify']);
+  gulp.watch(PATHS.client.js('components/**/*.jsx'), ['watch:jsx:test']);
 });
+
+gulp.task('watch:jsx:test', ['build:browserify'], testUnit);
 
 gulp.task('watch:sass', function() {
   gulp.watch(PATHS.client.components('*.scss'), ['build:sass']);
@@ -137,6 +136,7 @@ gulp.task('develop', ['watch', 'server']);
 
 /* -- Test task -- */
 
+gulp.task('test:jsx', testUnit);
 gulp.task('test:unit', ['server'], testUnit);
 gulp.task('test:unit:kill', ['test:unit'], function() {
   process.exit();
