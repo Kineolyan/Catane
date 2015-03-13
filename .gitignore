@@ -2,6 +2,7 @@ docs/libs/mermaid.js
 
 # Build folder
 build/
+client/js/compiled/
 
 # Logs
 logs
@@ -33,3 +34,5 @@ npm-debug.log
 # Users Environment Variables
 .lock-wscript
 .DS_Store
+*.sublime-project
+*.sublime-workspace
