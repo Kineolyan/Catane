@@ -7,9 +7,9 @@ var Tile = require('./TileReact');
 var Path = require('./PathReact');
 var City = require('./CityReact');
 
-describe('A basic map', () => {
+describe('A basic map', function() {
 
-  beforeEach(() => {
+  beforeEach(function() {
     this.board = { tiles:[ { x: 0, y: 0, resource: 'tuile', diceValue: 1  },
                          { x: 1, y: 1, resource: 'tuile', diceValue: 1  },
                          { x: 2, y: -1, resource: 'tuile', diceValue: 1  },
@@ -17,7 +17,7 @@ describe('A basic map', () => {
                          { x: -1, y: -1, resource: 'tuile', diceValue: 1  },
                          { x: -2, y: 1, resource: 'tuile', diceValue: 1  },
                          { x: -1, y: 2, resource: 'tuile', diceValue: 1  } ],
-                      cities: 
+                      cities:
                        [ { x: 0, y: 1 },
                          { x: 1, y: 0 },
                          { x: 1, y: -1 },
@@ -42,7 +42,7 @@ describe('A basic map', () => {
                          { x: -3, y: 2 },
                          { x: -1, y: 3 },
                          { x: -2, y: 3 } ],
-                      paths: 
+                      paths:
                        [ { from: { x: 1, y: 0 }, to: { x: 0, y: 1 } },
                          { from: { x: 1, y: -1 }, to: { x: 1, y: 0 } },
                          { from: { x: 0, y: -1 }, to: { x: 1, y: -1 } },
@@ -78,15 +78,15 @@ describe('A basic map', () => {
 
   });
 
-  it('should render the tiles', () => {
+  it('should render the tiles', function() {
     expect(tests.getRenderedElements(this.map, Tile).length).toEqual(this.board.tiles.length);
   });
 
-  it('should render the cities', () => {
+  it('should render the cities', function() {
     expect(tests.getRenderedElements(this.map, City).length).toEqual(this.board.cities.length);
   });
 
-  it('should render the paths', () => {
+  it('should render the paths', function() {
     expect(tests.getRenderedElements(this.map, Path).length).toEqual(this.board.paths.length);
   });
 });

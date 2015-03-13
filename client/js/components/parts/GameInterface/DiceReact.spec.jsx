@@ -6,26 +6,26 @@ var Dice = require('./DiceReact');
 var Text = require('react-art').Text;
 var Rectangle = require('react-art/shapes/rectangle');
 
-describe('A dice', () => {
+xdescribe('A dice', function() {
 
-  beforeEach(() => {
+  beforeEach(function() {
     this.dice = utils.renderIntoDocument(<Dice startTime={10} />);
   });
 
-  it('should be able to roll and stop', (done) => {
+  it('should be able to roll and stop', function(done) {
     this.dice.result({first: 2, second: 3}, () => {
       expect(this.dice.state.rolling).toBeFalsy();
       done();
     });
-    
+
     expect(this.dice.state.rolling).toBeTruthy();
   });
 
-  it('should have two parts', () => {
+  it('should have two parts', function() {
     expect(tests.getRenderedElements(this.dice, Rectangle).length).toEqual(2);
   });
 
-  it('should render the correct value at start', () => {
+  it('should render the correct value at start', function() {
     var text1 = tests.getRenderedElements(this.dice, Text)[0].props.children;
     var text2 = tests.getRenderedElements(this.dice, Text)[1].props.children;
 
@@ -33,7 +33,7 @@ describe('A dice', () => {
     expect(text2).toEqual("1");
   });
 
-  it('should render the correct result after throwing', (done) => {
+  it('should render the correct result after throwing', function(done) {
     this.dice.result({first: 2, second: 3}, () => {
       var text1 = tests.getRenderedElements(this.dice, Text)[0].props.children;
       var text2 = tests.getRenderedElements(this.dice, Text)[1].props.children;

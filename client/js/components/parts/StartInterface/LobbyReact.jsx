@@ -1,6 +1,6 @@
 'use strict';
 
-/* 
+/*
   React component containing the lobby to choose the same
 */
 
@@ -11,16 +11,13 @@ var Button = require('react-bootstrap').Button;
 var Glyphicon = require('react-bootstrap').Glyphicon;
 
 var LobbyReact = React.createClass({
-
-
-
   propTypes: {
     onGameChosen: React.PropTypes.func.isRequired
   },
 
   /**
    * Get the initial state of the component
-   * @return {Object} gameAvailables {Array} 
+   * @return {Object} gameAvailables {Array}
    */
   getInitialState() {
     return {
@@ -58,13 +55,13 @@ var LobbyReact = React.createClass({
         <ul className={'list-info'}>
           {games}
         </ul>
-        <Button className={'pull-right'} bsSize="small" bsStyle="success" ref="createGame" onClick={this.createGame}>
+        <Button className={'pull-right'} bsSize="small" bsStyle="success" ref="createGameBtn" onClick={this.createGame}>
           Create game <Glyphicon glyph="plus-sign" />
         </Button>
-        
+
       </div>
     );
-  }, 
+  },
 
   /**
    * Ask to create a game

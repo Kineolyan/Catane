@@ -1,7 +1,7 @@
 'use strict';
 
-/* 
-  A tile of the map 
+/*
+  A tile of the map
 */
 
 var React = require('react');
@@ -48,7 +48,7 @@ var TileReact = React.createClass({
   tileColor() {
     var color = 'white',
         tmpCol = Globals.map.resources[this.props.tile.resource];
-    
+
     if(typeof tmpCol !== 'undefined') {
       color = tmpCol;
     }

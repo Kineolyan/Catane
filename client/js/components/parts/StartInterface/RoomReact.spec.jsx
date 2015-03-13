@@ -6,9 +6,9 @@ var Room = require('./RoomReact');
 var Player = require('./PlayerReact');
 
 
-describe('A room', () => {
+describe('A room', function() {
 
-  beforeEach(() => {
+  beforeEach(function() {
 
     this.change = () => {};
     spyOn(this, 'change');
@@ -19,15 +19,15 @@ describe('A room', () => {
 
   });
 
-  it('should have an initial player ', () => {
+  it('should have an initial player ', function() {
       expect(this.room.props.player.getId()).toEqual(2);
   });
 
-  it('should render the list of players', (done) => {
+  it('should render the list of players', function(done) {
     this.room.setState({players:[{
         id: 1, name: 'jean'
       }, {
-        id: 2, name: 'tom', 
+        id: 2, name: 'tom',
       }, {
         id: 3, name: 'marcel'
     }]}, () => {
@@ -36,15 +36,15 @@ describe('A room', () => {
     });
   });
 
-  it('shouldn\'t render start button when there are less than 2 player', () => {
+  it('shouldn\'t render start button when there are less than 2 player', function() {
     expect(this.room.refs.startButton).toBeUndefined();
   });
 
-  it('should render start button  when there 2 player or more', (done) => {
+  it('should render start button  when there 2 player or more', function(done) {
     this.room.setState({players:[{
         id: 1, name: 'jean'
       }, {
-        id: 2, name: 'tom', 
+        id: 2, name: 'tom',
       }, {
         id: 3, name: 'marcel'
     }]}, () => {
@@ -53,7 +53,7 @@ describe('A room', () => {
     });
   });
 
-  afterEach(() => {
+  afterEach(function() {
     React.unmountComponentAtNode(this.player.getDOMNode().parent);
     React.unmountComponentAtNode(this.room.getDOMNode().parent);
   });
