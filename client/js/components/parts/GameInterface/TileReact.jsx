@@ -30,11 +30,12 @@ var TileReact = React.createClass({
     var diceValue;
     if (tile.diceValue) {
       diceValue =
-        <Text ref="value" y={-circleRadius/2} fill="black" alignment="center" font={{'font-size': circleRadius + 'px'}}>
+        (<Group>
+          <Circle radius={circleRadius} fill="white" stroke="black" />
+          <Text ref="value" y={-circleRadius/2} fill="black" alignment="center" font={{'font-size': circleRadius + 'px'}}>
             { tile.diceValue.toString() }
-        </Text>;
-    } else {
-      diceValue = <Text></Text>;
+          </Text>
+        </Group>);
     }
 
     return (
@@ -44,7 +45,6 @@ var TileReact = React.createClass({
                stroke='#FFFFFF'
               />
 
-        <Circle radius={circleRadius} fill="white" stroke="black" />
         { diceValue }
       </Group>
       );

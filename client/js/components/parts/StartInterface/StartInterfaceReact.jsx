@@ -56,7 +56,7 @@ var StartInterface = React.createClass({
    */
   chooseGame(game) {
     this.setMinimalStep(Globals.step.inLobby);
-    this.setState({game:game});
+    this.setState({game: game});
   },
 
 

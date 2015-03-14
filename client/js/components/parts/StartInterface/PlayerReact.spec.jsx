@@ -22,9 +22,10 @@ describe('A player', function() {
   });
 
   it('can change name if specified and then change step', function(done) {
+    
     spyOn(window, 'prompt').and.returnValue("jean");
+    this.player.triggerChangeName();
 
-    utils.Simulate.click(this.player.refs.modify);
     setTimeout(() => {
       expect(this.player.getName()).toEqual('jean');
       expect(this.change).toHaveBeenCalled();

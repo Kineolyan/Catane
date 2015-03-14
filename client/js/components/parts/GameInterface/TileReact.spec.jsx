@@ -9,7 +9,7 @@ var Text = require('react-art').Text;
 
 var Globals = require('../../libs/globals');
 
-ddescribe('A tile', function() {
+describe('A tile', function() {
 
   beforeEach(function() {
     var data = new MapHelper({ tiles:[ { x: 0, y: 0, resource: 'tuile', diceValue: 1 }]});

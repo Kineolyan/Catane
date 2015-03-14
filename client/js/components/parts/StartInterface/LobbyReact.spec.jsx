@@ -20,7 +20,7 @@ describe('A lobby', function() {
     utils.Simulate.click(btn, { currentTarget: { dataset: 1 }});
 
     setTimeout(() => {
-      expect(this.choose).toHaveBeenCalledWith(1);
+      expect(this.choose).toHaveBeenCalledWith({id: 1});
       done();
     }, 500);
   });

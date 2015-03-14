@@ -9,7 +9,7 @@ if(typeof global.window === 'undefined') {
 
 var tests = module.exports = {
   jsdom: jsdom,
-  getRenderedElements(inst, type) { //get react sub elements
+  getRenderedElements(inst, type) { //get react sub elements as an array
     if (!inst) {
       return [];
     }

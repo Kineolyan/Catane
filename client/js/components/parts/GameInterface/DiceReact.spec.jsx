@@ -6,7 +6,7 @@ var Dice = require('./DiceReact');
 var Text = require('react-art').Text;
 var Rectangle = require('react-art/shapes/rectangle');
 
-xdescribe('A dice', function() {
+describe('A dice', function() {
 
   beforeEach(function() {
     this.dice = utils.renderIntoDocument(<Dice startTime={10} />);
