@@ -69,7 +69,7 @@ export default class Game {
 
 		this._started = true;
 		this._board = new Board();
-		this._board.generate(new RoundGenerator(2));
+		this._board.generate(new RoundGenerator(3));
 
 		var description = { tiles: [], cities: [], paths: [] };
 		for (let tile of this._board.tiles) {
