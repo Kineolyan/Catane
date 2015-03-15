@@ -5,6 +5,7 @@
 */
 
 var StartInterface = require('./StartInterface/StartInterfaceReact');
+var GameInterface = require('./GameInterface/GameInterfaceReact');
 var React = require('react');
 
 var GameReact = React.createClass({
@@ -18,11 +19,12 @@ var GameReact = React.createClass({
 
    /**
    * Get the initial state of the component
-   * @return {Object} Step {Globals.step} game {int}
+   * @return {Object} started {}
    */
   getInitialState() {
     return {
-      started: false
+      started: false,
+      board: {}
     };
   },
 
@@ -30,8 +32,8 @@ var GameReact = React.createClass({
    * Start the game
    */
 
-  start() {
-    this.setState({started:true});
+  start(board) {
+    this.setState({started:true, board: board});
   },
 
   /**
@@ -54,6 +56,8 @@ var GameReact = React.createClass({
   renderStart() {
     if(!this.state.started) {
         return (<StartInterface init={this.props.init} onStart={this.start} />);
+    } else {
+        return (<GameInterface board={this.state.board} />);
     }
   }
 

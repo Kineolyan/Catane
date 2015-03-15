@@ -13,7 +13,7 @@ export class RoundGenerator {
 		this._cities = new Map();
 		this._paths = new Map();
 		this._diceValues = catane();
-		this._resources = (new RandomResources(6 * nbRings * (nbRings + 1) + 1))[Symbol.iterator]();
+		this._resources = (new RandomResources(3 * nbRings * (nbRings - 1) + 1))[Symbol.iterator]();
 
 		this.generate(nbRings);
 	}

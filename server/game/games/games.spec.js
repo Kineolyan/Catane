@@ -260,8 +260,13 @@ describe('Games', function() {
 
 						expect(tile.resource).toBeIn([ 'desert', 'tuile', 'bois', 'mouton', 'ble', 'caillou' ]);
 
-						expect(tile.diceValue).toBeAnInteger();
-						expect(tile.diceValue).toBeBetween(2, 12);
+						// TODO test it more intensively
+						if (tile.resource === 'desert') {
+							expect(tile.diceValue).toBeUndefined();
+						} else {
+							expect(tile.diceValue).toBeAnInteger();
+							expect(tile.diceValue).toBeBetween(2, 12);
+						}
 					});
 
 					it('describes cities', function() {

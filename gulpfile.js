@@ -8,7 +8,7 @@ var cached = require('gulp-cached');
 var remember = require('gulp-remember');
 var jas = require('gulp-jasmine');
 var jshint = require('gulp-jshint');
-var to5 = require('gulp-6to5');
+var babel = require('gulp-babel');
 var react = require('gulp-react');
 var browserify = require('browserify');
 var notify = require('gulp-notify');
@@ -36,8 +36,9 @@ PATHS.server = pathItem('server');
 PATHS.build = pathItem('build');
 PATHS.build.server = pathItem('server');
 PATHS.build.client = pathItem('client');
+
 PATHS.client.scssLib = pathItem('scss_lib');
-PATHS.client.components = pathItem('components');
+PATHS.client.components = pathItem('scss');
 
 PATHS.client.js = pathItem('js');
 PATHS.server = pathItem('server');
@@ -54,21 +55,18 @@ function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
     .pipe(cached('js'))
     .pipe(remember('js'))
-    .pipe(to5({ sourceRoot: PATHS.server() }))
+    .pipe(babel({ sourceRoot: PATHS.server() }))
     .pipe(gulp.dest(PATHS.build.server()));
 }
 
 /** Performs all unit tests */
 function testUnit() {
-
   return gulp.src([
-      // './node_modules/gulp-6to5/node_modules/6to5/register.js',
       PATHS.specs('env.js'),
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
-      PATHS.client('**/*.spec.js')
+      PATHS.build.client('**/*.spec.js')
     ]).pipe(jas({includeStackTrace: true, verbose: true}));
-
 }
 
 function cleanCache() {
@@ -106,11 +104,11 @@ gulp.task('build:jsx', function() {
       .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
       .pipe(react({harmony: true}))
       .pipe(plumber.stop())
-      .pipe(gulp.dest(PATHS.client.js('compiled')));
+      .pipe(gulp.dest(PATHS.build.client('js/compiled')));
 });
 
-gulp.task('build:browserify', ['test:lint', 'build:jsx'], function(){
-  var b = browserify('./' + PATHS.client.js('compiled/main.js'))
+gulp.task('build:browserify', ['build:jsx'], function(){
+  var b = browserify('./' + PATHS.build.client('js/compiled/main.js'))
   var stream = b.bundle()
     .pipe(source('main.js')) // the output filename
     .pipe(gulp.dest(PATHS.build.client('js'))); // the output directory
@@ -121,8 +119,10 @@ gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
 /* -- Watcher -- */
 gulp.task('watch:jsx', function() {
-  gulp.watch(PATHS.client.js('components/**/*.jsx'), ['build:browserify']);
+  gulp.watch(PATHS.client.js('components/**/*.jsx'), ['watch:jsx:test']);
 });
+
+gulp.task('watch:jsx:test', ['build:browserify'], testUnit);
 
 gulp.task('watch:sass', function() {
   gulp.watch(PATHS.client.components('*.scss'), ['build:sass']);
@@ -136,12 +136,17 @@ gulp.task('develop', ['watch', 'server']);
 
 /* -- Test task -- */
 
+gulp.task('test:jsx', testUnit);
 gulp.task('test:unit', ['server'], testUnit);
+gulp.task('test:unit:kill', ['test:unit'], function() {
+  process.exit();
+});
 
-gulp.task('test:lint', ['build:jsx'], function() {
+
+gulp.task('test:lint', function() {
   return gulp.src([
   		PATHS.bin('*.js'),
-  		PATHS.client('**/*.js'),
+  		PATHS.build.client('js/compiled/**/*.js'),
   		PATHS.server('**/*.js')
   	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
     .pipe(jshint())
@@ -239,5 +244,6 @@ gulp.task('do_the_thing', function() {
   var runSequence = require('run-sequence');
   runSequence('clean', 'build', 'test', 'docs:install', function() {
     console.log('All things are done Sir :)');
+    process.exit();
   });
 });

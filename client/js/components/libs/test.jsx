@@ -7,4 +7,26 @@ if(typeof global.window === 'undefined') {
   jasmine.getEnv().defaultTimeoutInterval = 1000;
 }
 
-module.exports = jsdom;
+var tests = module.exports = {
+  jsdom: jsdom,
+  getRenderedElements(inst, type) { //get react sub elements as an array
+    if (!inst) {
+      return [];
+    }
+
+    var ret = inst._currentElement.type === type.type ? [inst] : [];
+
+    if(inst._renderedComponent) {
+        ret = ret.concat(tests.getRenderedElements(inst._renderedComponent, type));
+    } else if(inst._renderedChildren) {
+        for(var i in inst._renderedChildren) {
+          if(inst._renderedChildren.hasOwnProperty(i)) {
+            ret = ret.concat(tests.getRenderedElements(inst._renderedChildren[i], type));
+          }
+        }
+    }
+
+    return ret;
+  }
+};
+
