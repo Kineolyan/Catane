@@ -48,6 +48,16 @@
     Serveur->All: ws/game:list\n{ games: [..] }
   </div>
 
+  <div class="diagram">
+    Title: Dénmarrer une partie
+    participant Game
+    participant Serveur
+    participant All
+    Game->Serveur: ws/game:start\ngame_id
+    Note left of All: Notifies players of the game\nSee play documentation
+    Serveur->All: ws/game:start\n{ tiles: [...], cities: [...], paths: [...] }
+  </div>
+
   <script src="libs/jquery.min.js"></script>
   <script src="libs/underscore-min.js"></script>
   <script src="libs/raphael-min.js"></script>
