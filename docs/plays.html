@@ -33,6 +33,43 @@
     Serveur->All: ws/play:new-turn
   </div>
 
+  <div class="diagram">
+    Title: Ajout d'une colonie
+    participant Joueur
+    participant Serveur
+    participant All
+    Joueur->Serveur: ws/play:add:colony\n{colony: {x: 12, y: 34}}
+    Serveur->All:play:add:city\n{player: playerId, colony: {x: 12, y: 34}}
+  </div>
+
+  <div class="diagram">
+    Title: Ajout d'un chemin
+    participant Joueur
+    participant Serveur
+    participant All
+    Joueur->Serveur: ws/play:add:road\n{path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
+    Note right of Joueur: L'ordre from-to n'est pas important
+    Serveur->All:play:evolve:city\n{player: playerId, path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
+  </div>
+
+  <div class="diagram">
+    Title: Ajout d'une ville
+    participant Joueur
+    participant Serveur
+    participant All
+    Joueur->Serveur: ws/play:add:city\n{city: {x: 12, y: 34}}
+    Serveur->All:play:evolve:city\n{player: playerId, city: {x: 12, y: 34}}
+    Note left of Serveur: L'id du joueur est déjà connue
+  </div>
+  <div class="diagram">
+    Title: Déplacer les voleurs (carte développement ou 7)
+    participant Joueur
+    participant Serveur
+    participant All
+    Joueur->Serveur: ws/play:move:thief\n{tile: {x: 12, y: 34}}
+    Serveur->All: ws/play:move:thief\n{tile: {x: 12, y: 34}}
+  </div>
+
   <script src="libs/jquery.min.js"></script>
   <script src="libs/underscore-min.js"></script>
   <script src="libs/raphael-min.js"></script>
