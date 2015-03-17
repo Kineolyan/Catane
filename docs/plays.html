@@ -23,14 +23,14 @@
     participant Joueur
     participant Serveur
     participant All
-    Serveur->All: ws/play:new-turn\n{ player: &lt;current player&gt; }
+    Serveur->All: ws/play:turn:new\n{ player: &lt;current player&gt; }
     Joueur->Serveur: ws/play:roll-dice
     Serveur->All: ws/play:roll-dice\n{ diceValue: d, resources: [r1, ..] }
     Note left of All: Resources depend on the player
     Joueur->Serveur: Actions du joueur
-    Joueur->Serveur: ws/play:end-turn
+    Joueur->Serveur: ws/play:turn:end
     Note left of Serveur: On recommence au début du tour
-    Serveur->All: ws/play:new-turn
+    Serveur->All: ws/play:turn:new
   </div>
 
   <div class="diagram">
