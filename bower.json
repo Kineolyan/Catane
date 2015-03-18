@@ -1,0 +1,22 @@
+{
+  "name": "Catane",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Kineolyan/Catane",
+  "authors": [
+    "Pierrickouw",
+    "Kineolyan"
+  ],
+  "description": "Catane Css Manager",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.4"
+  }
+}
