@@ -2,6 +2,7 @@
 
 /* 
   React component containing the map interface
+  TODO: Add real graphics
 */
 
 var React = require('react');

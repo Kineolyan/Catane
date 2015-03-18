@@ -1,7 +1,8 @@
 'use strict';
 
 /* 
-  A tile of the map 
+  A tile of the map
+  TODO: Change to a static rolling CSS 3D Dice or a three.js with physics.  
 */
 
 var React = require('react');

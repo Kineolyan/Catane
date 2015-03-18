@@ -35,12 +35,13 @@ var MapHelpher = function(board, margin) {
 };
 
 /**
- * Get the size of one edge of a tiles
+ * Get the size of one edge of a tiles depending on the size of the screen
  * @param {Array} tiles of the game
  * @param {Integer} width of the map
  * @param {Integer} height of the map
  * @param {Integer} top and bottom margin of the map
  * @return {Integer} the size of one edge
+ * TODO: This function doesn't really works. 
  */
 function getSize(tiles, width, height, margin) {
   var min = {
