@@ -39,7 +39,7 @@
     participant Serveur
     participant All
     Joueur->Serveur: ws/play:add:colony\n{colony: {x: 12, y: 34}}
-    Serveur->All:play:add:city\n{player: playerId, colony: {x: 12, y: 34}}
+    Serveur->All:play:add:colony\n{player: playerId, colony: {x: 12, y: 34}}
   </div>
 
   <div class="diagram">
@@ -49,7 +49,7 @@
     participant All
     Joueur->Serveur: ws/play:add:road\n{path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
     Note right of Joueur: L'ordre from-to n'est pas important
-    Serveur->All:play:evolve:city\n{player: playerId, path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
+    Serveur->All:play:add:road\n{player: playerId, path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
   </div>
 
   <div class="diagram">
@@ -57,7 +57,7 @@
     participant Joueur
     participant Serveur
     participant All
-    Joueur->Serveur: ws/play:add:city\n{city: {x: 12, y: 34}}
+    Joueur->Serveur: ws/play:evolve:city\n{city: {x: 12, y: 34}}
     Serveur->All:play:evolve:city\n{player: playerId, city: {x: 12, y: 34}}
     Note left of Serveur: L'id du joueur est déjà connue
   </div>
