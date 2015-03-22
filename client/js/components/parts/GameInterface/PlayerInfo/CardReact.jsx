@@ -11,9 +11,21 @@ var Text  = require('react-art').Text;
 var CardReact = React.createClass({
 
   propTypes: {
-    type: React.PropTypes.string.isRequired
+    type: React.PropTypes.string.isRequired,
+    width: React.PropTypes.number,
+    height: React.PropTypes.number,
+    x: React.PropTypes.number,
+    y: React.PropTypes.number
   },
 
+  getDefaultProps() {
+    return {
+      x: 0,
+      y: 0, 
+      width: 40, 
+      height: 40
+    };
+  },
   /**
    * @return {React.Element} the rendered element
    */
