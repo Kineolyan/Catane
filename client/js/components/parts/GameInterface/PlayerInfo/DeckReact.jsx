@@ -39,15 +39,14 @@ var DeckReact = React.createClass({
     var deckLength = this.props.cards.length,
         index = 0,
         width = this.props.width,
-        height = this.props.height, 
-        addMargin = (deckLength - 1) * this.props.margin;
+        height = this.props.height;
 
     var cards = this.props.cards.map(e => {
       return <Card 
                 type={e.type} 
-                x={this.props.width * index + this.props.margin} 
+                x={this.props.width * index + index ? this.props.margin : 0} 
                 y={0}
-                width={(width + addMargin) / ( deckLength)}
+                width={width / (deckLength) - this.props.margin}
                 height={height} 
                 key={index += 1}/>;
     });
