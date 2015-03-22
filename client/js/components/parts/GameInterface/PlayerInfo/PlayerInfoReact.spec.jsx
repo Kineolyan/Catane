@@ -8,7 +8,6 @@ var Deck = require('./DeckReact');
 describe('A player in the game', function() {
 
   beforeEach(function() {
-//    var cards = [{type: Globals.map.resourceName.tuile}, {type: Globals.map.resourceName.bois}];
     this.player = utils.renderIntoDocument(<PlayerInfo />);
   });
 

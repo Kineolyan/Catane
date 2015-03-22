@@ -35,7 +35,7 @@ var PlayerInfoReact = React.createClass({
 
     return (
       <Group x={this.props.x} y={this.props.y}>
-        <Deck cards={this.state.cards} width={window.innerWidth / 2} height={40} margin={10} />
+        <Deck cards={this.state.cards} width={window.innerWidth / 2} height={40} />
       </Group>
     );
   }

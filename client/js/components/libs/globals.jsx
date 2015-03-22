@@ -39,12 +39,10 @@ GLOBALS.map.resources = {
 };
 
 GLOBALS.map.resourceName = {};
-var tmp = Object.keys(GLOBALS.map.resources);
-for(let k in tmp) {
-  if(tmp.hasOwnProperty(k)) {
-       GLOBALS.map.resourceName[k] = k;
-  }
-}
+Object.keys(GLOBALS.map.resources).forEach(e => {
+  GLOBALS.map.resourceName[e] = e;
+});
+
 
 
 module.exports = GLOBALS;

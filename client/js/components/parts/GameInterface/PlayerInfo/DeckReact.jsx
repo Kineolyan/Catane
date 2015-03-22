@@ -12,9 +12,23 @@ var DeckReact = React.createClass({
 
   propTypes: {
     cards: React.PropTypes.any.isRequired,
-    margin: React.PropTypes.number
+    margin: React.PropTypes.number,
+    width: React.PropTypes.number,
+    height: React.PropTypes.number,
+    x: React.PropTypes.number,
+    y: React.PropTypes.number
   },
 
+  getDefaultProps() {
+    return {
+      cards: [],
+      margin: 10,
+      width: 200,
+      height: 40,
+      x: 0,
+      y: 0
+    };
+  },
 
   /**
 
@@ -25,15 +39,17 @@ var DeckReact = React.createClass({
     var deckLength = this.props.cards.length,
         index = 0,
         width = this.props.width,
-        height = this.props.height;
+        height = this.props.height, 
+        addMargin = (deckLength - 1) * this.props.margin;
 
     var cards = this.props.cards.map(e => {
       return <Card 
                 type={e.type} 
-                x={this.props.width * index} 
+                x={this.props.width * index + this.props.margin} 
                 y={0}
-                width={width / deckLength}
-                height={height} />;
+                width={(width + addMargin) / ( deckLength)}
+                height={height} 
+                key={index += 1}/>;
     });
 
     return (
