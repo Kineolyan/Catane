@@ -38,5 +38,13 @@ GLOBALS.map.resources = {
   desert: '#E1F507'
 };
 
+GLOBALS.map.resourceName = {};
+var tmp = Object.keys(GLOBALS.map.resources);
+for(let k in tmp) {
+  if(tmp.hasOwnProperty(k)) {
+       GLOBALS.map.resourceName[k] = k;
+  }
+}
+
 
 module.exports = GLOBALS;
