@@ -5,7 +5,8 @@
  */
 export function shuffle(values) {
   var currentIndex = values.length, randomIndex, swap;
-  var array = values.slice(); // copy the values
+  var array = [];
+  values.forEach(value => array.push(value) ); // copy the values
 
   // While there remain elements to shuffle...
   while (0 !== currentIndex) {
