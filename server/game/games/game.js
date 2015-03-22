@@ -1,5 +1,7 @@
 import Board from '../../elements/boards/board';
 import { RoundGenerator } from '../../elements/boards/generators/maps';
+import Dice from '../../elements/dice/dice';
+import Referee from '../referees/referee';
 
 export default class Game {
 	/**
@@ -54,6 +56,28 @@ export default class Game {
 		}
 	}
 
+	rollDice(player) {
+		if (this.referee.isTurn(player)) {
+			if (this.referee.canRollDice(player)) {
+				return [ this._dice.roll(), this._dice.roll() ];
+			} else {
+				throw new Error('Dice already rolled');
+			}
+		} else {
+			throw new Error('Not the player turn');
+		}
+	}
+
+	endTurn(player) {
+		if (this.referee.isTurn(player)) {
+			this.referee.endTurn();
+
+			return this.referee.currentPlayer;
+		} else {
+			throw new Error('Not the player turn');
+		}
+	}
+
 	/**
 	 * Emits the message on the channel to all players of the game.
 	 * @param  {String} channel name of the event
@@ -68,6 +92,7 @@ export default class Game {
 		if (this._players.size < 2) { throw new Error(`Not enough players in the game (${this._players.size})`); }
 
 		this._started = true;
+		this._dices = new Dice(6);
 		this._board = new Board();
 		this._board.generate(new RoundGenerator(3));
 
@@ -92,6 +117,8 @@ export default class Game {
 				to: { x: path.to.x, y: path.to.y }
 			});
 		}
+
+		this._referee = new Referee(this._board, this._players);
 
 		this._players.forEach( player => player.emit('game:start', { _success: true, board: description }) );
 	}
