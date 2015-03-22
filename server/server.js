@@ -1,4 +1,4 @@
-import Player from './game/players/players';
+import Player from './game/players/player';
 import Games from './game/games/games';
 import { idGenerator } from './game/util';
 
