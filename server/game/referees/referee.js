@@ -20,6 +20,10 @@ export class Referee {
 		return this._players[this._currentPlayerIdx];
 	}
 
+	get players() {
+		return this._players;
+	}
+
 	isTurn(player) {
 		return player.id === this.currentPlayer.id;
 	}

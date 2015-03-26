@@ -287,6 +287,14 @@ describe('Games', function() {
 						expect(path.to.x).toBeAnInteger();
 					});
 				});
+
+				describe('player order', function() {
+					beforeEach(function() {
+						var message = this.client.lastMessage('game:start');
+						this.board = message.board;
+					});
+
+				});
 			});
 
 			describe('with wrong id', function() {

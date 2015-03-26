@@ -69,10 +69,10 @@ export default class Game {
 	}
 
 	endTurn(player) {
-		if (this.referee.isTurn(player)) {
-			this.referee.endTurn();
+		if (this._referee.isTurn(player)) {
+			this._referee.endTurn();
 
-			return this.referee.currentPlayer;
+			return this._referee.currentPlayer;
 		} else {
 			throw new Error('Not the player turn');
 		}
@@ -92,6 +92,24 @@ export default class Game {
 		if (this._players.size < 2) { throw new Error(`Not enough players in the game (${this._players.size})`); }
 
 		this._started = true;
+
+		var boardDescription = this.generatePlay();
+		var playerOrder = this.initiateGame();
+
+		this.emit('game:start', {
+			_success: true,
+			board: boardDescription,
+			players: playerOrder
+		});
+		this.emit('play:turn:new', { player: this._referee.currentPlayer.id });
+	}
+
+	/**
+	 * Generates the play by creating all elements: dice,
+	 * 	board, ...
+	 * @return {Object} a description of the board
+	 */
+	generatePlay() {
 		this._dices = new Dice(6);
 		this._board = new Board();
 		this._board.generate(new RoundGenerator(3));
@@ -118,8 +136,18 @@ export default class Game {
 			});
 		}
 
+		return description;
+	}
+
+	/**
+	 * Initiates the game.
+	 * It will create a referee to monitor the game and order the
+	 * 	players.
+	 * @return {Array} the ids of the players in order of play
+	 */
+	initiateGame() {
 		this._referee = new Referee(this._board, this._players);
 
-		this._players.forEach( player => player.emit('game:start', { _success: true, board: description }) );
+		return this._referee.players.map(player => player.id);
 	}
 }
