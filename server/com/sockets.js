@@ -25,7 +25,8 @@ export default class Socket {
 			} catch (e) {
 				me.emit(channel, {
 					_success: false,
-					message: `[${e.name}] ${e.message}`
+					message: `[${e.name}] ${e.message}`,
+					stacktrace: e.stack
 				});
 			}
 		});
