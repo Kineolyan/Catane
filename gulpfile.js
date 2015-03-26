@@ -59,6 +59,16 @@ function buildJs() {
     .pipe(gulp.dest(PATHS.build.server()));
 }
 
+function buildJsx() {
+  return gulp.src(PATHS.client.js('components/**/*.jsx'))
+    .pipe(cached('jsx'))
+    .pipe(remember('jsx'))
+    .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
+    .pipe(react({harmony: true}))
+    .pipe(plumber.stop())
+    .pipe(gulp.dest(PATHS.build.client('js/compiled')));
+}
+
 /** Performs all unit tests */
 function testUnit() {
   return gulp.src([
@@ -99,13 +109,7 @@ gulp.task('build:sass', function () {
       .pipe(gulp.dest(PATHS.build.client('css')));
 });
 
-gulp.task('build:jsx', function() {
-  return gulp.src(PATHS.client.js('components/**/*.jsx'))
-      .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
-      .pipe(react({harmony: true}))
-      .pipe(plumber.stop())
-      .pipe(gulp.dest(PATHS.build.client('js/compiled')));
-});
+gulp.task('build:jsx', buildJsx);
 
 gulp.task('build:browserify', ['build:jsx'], function(){
   var b = browserify('./' + PATHS.build.client('js/compiled/main.js'))
