@@ -57,8 +57,8 @@ export default class Game {
 	}
 
 	rollDice(player) {
-		if (this.referee.isTurn(player)) {
-			if (this.referee.canRollDice(player)) {
+		if (this._referee.isTurn(player)) {
+			if (this._referee.canRollDice(player)) {
 				return [ this._dice.roll(), this._dice.roll() ];
 			} else {
 				throw new Error('Dice already rolled');
@@ -110,7 +110,6 @@ export default class Game {
 	 * @return {Object} a description of the board
 	 */
 	generatePlay() {
-		this._dices = new Dice(6);
 		this._board = new Board();
 		this._board.generate(new RoundGenerator(3));
 
@@ -146,6 +145,7 @@ export default class Game {
 	 * @return {Array} the ids of the players in order of play
 	 */
 	initiateGame() {
+		this._dice = new Dice(6);
 		this._referee = new Referee(this._board, this._players);
 
 		return this._referee.players.map(player => player.id);

@@ -4,7 +4,7 @@ export class Plays {
 	register(player) {
 		player.on('play:roll-dice', () => {
 			var diceValues = player.game.rollDice(player);
-			player.game.emit('play:roll-dice', { diceValues: diceValues });
+			player.game.emit('play:roll-dice', { dice: diceValues });
 
 			return undefined;
 		});

@@ -4,10 +4,8 @@ describe('Play turn management', function() {
 	beforeEach(function() {
 		this.game = starter.createGame(2);
 		this.players = this.game.players;
-	});
 
-	describe('on game started', function() {
-		beforeEach(function() {
+		this.startGame = function() {
 			this.game.start();
 
 			var firstPlayer = this.players[0].client.lastMessage('play:turn:new').player;
@@ -18,6 +16,12 @@ describe('Play turn management', function() {
 					this.p2 = p;
 				}
 			}
+		};
+	});
+
+	describe('on game started', function() {
+		beforeEach(function() {
+			this.startGame();
 		});
 
 		it('notifies all players of a new turn', function() {
@@ -30,16 +34,7 @@ describe('Play turn management', function() {
 
 	describe('on a turn end', function() {
 		beforeEach(function() {
-			this.game.start();
-
-			var firstPlayer = this.players[0].client.lastMessage('play:turn:new').player;
-			for (let p of this.players) {
-				if (p.id === firstPlayer) {
-					this.p1 = p;
-				} else {
-					this.p2 = p;
-				}
-			}
+			this.startGame();
 
 			this.p1.client.receive('play:turn:end');
 		});
@@ -55,6 +50,30 @@ describe('Play turn management', function() {
 			let message = this.players[0].client.lastMessage('play:turn:new');
 			expect(message.player).not.toBe(this.p1.id);
 		});
+	});
+
+	describe('roll dice', function() {
+		beforeEach(function() {
+			this.startGame();
+
+			this.p1.client.receive('play:roll-dice');
+		});
+
+		it('draws the dice value', function() {
+			var values = this.p1.client.lastMessage('play:roll-dice').dice;
+			expect(values).toHaveLength(2);
+			expect(values[0]).toBeIn([1, 2, 3, 4, 5, 6]);
+			expect(values[1]).toBeIn([1, 2, 3, 4, 5, 6]);
+		});
+
+		it('sends the values for the dice to all players', function() {
+			var values = this.p1.client.lastMessage('play:roll-dice').dice;
+			for (let p of this.players) {
+				let pValues = p.client.lastMessage('play:roll-dice').dice;
+				expect(pValues).toEqual(values);
+			}
+		});
+
 	});
 
 });
