@@ -9,7 +9,7 @@
   "scripts": {
     "check": "blacklisted-gulp",
     "preinstall": "npm prune",
-    "postinstall": "node scripts/postinstall",
+    "postinstall": "node scripts/postinstall && bower install",
     "build": "gulp build",
     "test": "gulp test",
     "watch": "gulp watch",

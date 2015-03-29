@@ -77,7 +77,7 @@ var RoomReact = React.createClass({
 
         <ButtonToolbar className={'pull-right'}>
           {startButton}
-          <Button bsSize="small" bsStyle="info" ref="leaveButton" onClick={this.leave}>
+          <Button bsSize="small" className={'pull-right'} bsStyle="info" ref="leaveButton" onClick={this.leave}>
             Leave Game #{this.props.game.id} <Glyphicon glyph="arrow-left" />
           </Button>
         </ButtonToolbar>
