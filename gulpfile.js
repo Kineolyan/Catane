@@ -108,7 +108,7 @@ gulp.task('build:jsx', function() {
 });
 
 gulp.task('build:browserify', ['build:jsx'], function(){
-  var b = browserify('./' + PATHS.build.client('js/compiled/main.js'))
+  var b = browserify({entries: './' + PATHS.build.client('js/compiled/main.js'), debug: true})
   var stream = b.bundle()
     .pipe(source('main.js')) // the output filename
     .pipe(gulp.dest(PATHS.build.client('js'))); // the output directory

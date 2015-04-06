@@ -8,6 +8,7 @@ var React = require('react');
 var Surface = require('react-art').Surface;
 var MapReact = require('./MapReact');
 var DiceReact = require('./DiceReact');
+var PlayerInfo = require('./PlayerInfo/PlayerInfoReact');
 var GameInterfaceReact = React.createClass({
 
   propTypes: {},
@@ -31,7 +32,7 @@ var GameInterfaceReact = React.createClass({
   },
 
   componentDidMount() {
-    window.addEventListener('resize', this.handleResize);
+    //window.addEventListener('resize', this.handleResize);
   },
 
   /**
@@ -39,11 +40,13 @@ var GameInterfaceReact = React.createClass({
    * @return {React.Element} the rendered element
    */
   render() {
+
     return (
       <div>
         <Surface x={0} y={0} width={this.state.width} height={this.state.height}>
             <DiceReact x={10} y={10} size={50} />
             <MapReact ref="map" initBoard={this.props.board} width={this.state.width} height={this.state.height} margin={50}/>
+            <PlayerInfo ref="player" players={this.props.players} y={150} x={20}/>
         </Surface>
       </div>
     );

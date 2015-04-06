@@ -97,7 +97,7 @@ var DiceReact = React.createClass({
 
   initSocket() {
     Socket.on(Globals.socket.mapDice, (data) => {
-        this.result(data.result);
+        this.result(data.dice);
     });
   }
 });

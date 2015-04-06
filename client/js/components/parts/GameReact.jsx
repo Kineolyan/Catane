@@ -24,7 +24,8 @@ var GameReact = React.createClass({
   getInitialState() {
     return {
       started: false,
-      board: {}
+      board: [],
+      players: {other: [], me: {}}
     };
   },
 
@@ -32,8 +33,8 @@ var GameReact = React.createClass({
    * Start the game
    */
 
-  start(board) {
-    this.setState({started:true, board: board});
+  start(board, players) {
+    this.setState({started:true, board: board, players: players});
   },
 
   /**
@@ -57,7 +58,7 @@ var GameReact = React.createClass({
     if(!this.state.started) {
         return (<StartInterface init={this.props.init} onStart={this.start} />);
     } else {
-        return (<GameInterface board={this.state.board} />);
+        return (<GameInterface board={this.state.board} players={this.state.players} />);
     }
   }
 

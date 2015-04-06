@@ -110,7 +110,13 @@ var RoomReact = React.createClass({
 
     //game started
     Socket.on(Globals.socket.gameStart, (response) => {
-        this.props.onStart(response.board);
+        var other = this.state.players.filter(e => e.id !== this.props.player.getId());
+        this.props.onStart(response.board, {other: other, 
+                                            me: {
+                                                  id: this.props.player.getId(),
+                                                  name: this.props.player.getName()
+                                                }
+                                            });
     });
 
     //game leave

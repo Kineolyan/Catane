@@ -7,6 +7,7 @@
 var React = require('react');
 var Group = require('react-art').Group;
 var Text  = require('react-art').Text;
+var Rectangle  = require('react-art/shapes/rectangle');
 
 var CardReact = React.createClass({
 
@@ -32,6 +33,12 @@ var CardReact = React.createClass({
   render() {
     return (
       <Group x={this.props.x} y={this.props.y} width={this.props.width} height={this.props.height}>
+        <Rectangle 
+          width={this.props.width}
+          height={this.props.height}
+          stroke='black'
+          fill='white'
+        />
         <Text>{this.props.type}</Text>
       </Group>
     );
