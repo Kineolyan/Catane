@@ -36,18 +36,39 @@ describe('Referee', function() {
 	describe('#endTurn', function() {
 		beforeEach(function() {
 			this.firstPlayer = this.referee.currentPlayer;
-			this.referee.endTurn();
 		});
 
-		it('changes to another player', function() {
-			expect(this.referee.currentPlayer.id).not.toBe(this.firstPlayer.id);
-			expect(this.referee.currentPlayer.id).toBeIn(this.playerIds);
+		describe('without required actions', function() {
+			it('requires dice rolling', function() {
+				expect(() => this.referee.endTurn()).toThrowError(Error, /pending actions/i);
+			});
+
+			it('requires thief move on 7\'s', function() {
+				this.referee.rollDice(7); // Need to move thiefs
+
+				expect(() => this.referee.endTurn()).toThrowError(Error, /pending actions/i);
+			});
 		});
 
-		it('loops on the players', function() {
-			// After 5 more changes, we return to the first players
-			for (let i = 0; i < 5; i += 1) { this.referee.endTurn(); }
-			expect(this.referee.currentPlayer.id).toBe(this.firstPlayer.id);
+		describe('when ok', function() {
+			beforeEach(function() {
+				this.referee.rollDice(6);
+				this.referee.endTurn();
+			});
+
+			it('changes to another player', function() {
+				expect(this.referee.currentPlayer.id).not.toBe(this.firstPlayer.id);
+				expect(this.referee.currentPlayer.id).toBeIn(this.playerIds);
+			});
+
+			it('loops on the players', function() {
+				// After 5 more changes, we return to the first players
+				for (let i = 0; i < 5; i += 1) {
+					this.referee.rollDice(8);
+					this.referee.endTurn();
+				}
+				expect(this.referee.currentPlayer.id).toBe(this.firstPlayer.id);
+			});
 		});
 	});
 
@@ -59,6 +80,17 @@ describe('Referee', function() {
 		it('cannot roll dice more than once', function() {
 			this.referee.rollDice(2);
 			expect(this.referee.canRollDice()).toBe(false);
+		});
+	});
+
+	describe('#moveThieves', function() {
+		beforeEach(function() {
+			this.referee.rollDice(7);
+			this.referee.moveThieves();
+		});
+
+		it('allows player to end turn', function() {
+			expect(() => this.referee.endTurn()).not.toThrow();
 		});
 	});
 

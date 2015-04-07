@@ -57,25 +57,29 @@ export default class Game {
 	}
 
 	rollDice(player) {
-		if (this._referee.isTurn(player)) {
-			if (this._referee.canRollDice(player)) {
-				return [ this._dice.roll(), this._dice.roll() ];
-			} else {
-				throw new Error('Dice already rolled');
-			}
+		this._referee.checkTurn(player);
+		if (this._referee.canRollDice(player)) {
+			var values = [ this._dice.roll(), this._dice.roll() ];
+			this._referee.rollDice(values[0] + values[1]);
+
+			return values;
 		} else {
-			throw new Error('Not the player turn');
+			throw new Error('Dice already rolled');
 		}
 	}
 
-	endTurn(player) {
-		if (this._referee.isTurn(player)) {
-			this._referee.endTurn();
+	moveThieves(player) {
+		this._referee.checkTurn(player);
 
-			return this._referee.currentPlayer;
-		} else {
-			throw new Error('Not the player turn');
-		}
+		// TODO complete the implementation
+		this._referee.moveThieves();
+	}
+
+	endTurn(player) {
+		this._referee.checkTurn(player);
+		this._referee.endTurn();
+
+		return this._referee.currentPlayer;
 	}
 
 	/**

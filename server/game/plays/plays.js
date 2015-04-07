@@ -9,6 +9,13 @@ export class Plays {
 			return undefined;
 		});
 
+		player.on('play:move:thieves', () => {
+			player.game.moveThieves(player);
+			// TODO complete the implementation
+
+			return undefined;
+		});
+
 		player.on('play:turn:end', () => {
 			var nextPlayer = player.game.endTurn(player);
 			player.game.emit('play:turn:new', { player: nextPlayer.id });

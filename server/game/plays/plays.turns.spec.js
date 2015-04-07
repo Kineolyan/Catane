@@ -17,6 +17,11 @@ describe('Play turn management', function() {
 				}
 			}
 		};
+
+		this.getLastDiceValue = function() {
+			var message = this.players[0].client.lastMessage('play:roll-dice');
+			return message.dice[0] + message.dice[1];
+		};
 	});
 
 	describe('on game started', function() {
@@ -35,6 +40,10 @@ describe('Play turn management', function() {
 	describe('on a turn end', function() {
 		beforeEach(function() {
 			this.startGame();
+
+			this.p1.client.receive('play:roll-dice');
+			var diceValue = this.getLastDiceValue();
+			if (diceValue === 7) { this.p1.client.receive('play:move:thieves'); }
 
 			this.p1.client.receive('play:turn:end');
 		});
