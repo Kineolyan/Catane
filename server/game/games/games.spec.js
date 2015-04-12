@@ -1,7 +1,7 @@
 import { MockSocket } from '../../com/mocks';
 
 import Games from './games';
-import Player from '../players/players';
+import Player from '../players/player';
 
 describe('Games', function() {
 	beforeEach(function() {
@@ -286,6 +286,14 @@ describe('Games', function() {
 						expect(path.to.y).toBeAnInteger();
 						expect(path.to.x).toBeAnInteger();
 					});
+				});
+
+				describe('player order', function() {
+					beforeEach(function() {
+						var message = this.client.lastMessage('game:start');
+						this.board = message.board;
+					});
+
 				});
 			});
 

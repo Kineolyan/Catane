@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Gestions des parties</title>
+</head>
+<body>
+  <div class="diagram">
+    Title: Début d'une partie
+    participant Player
+    participant Serveur
+    participant All
+    Player->Serveur: ws/game:start\ngame_id
+    Note right of All: Notifies players of the game\nSee play documentation\n
+    Serveur->All: ws/game:start\n{ tiles: [{x: x, y: y, resource: r, diceValue: d}, ..],\n   cities: [{x: x, y: y}, ..],\n   paths: [{from: {x: x, y: y}, to: {x: x, y: y}}, ..] }
+    Note left of All: Resources: desert, caillou, bois, mouton, ble, tuile
+    Note left of All: Dice values: from 2 to 12, null for desert
+    Note right of Serveur: entame un tour
+  </div>
+
+  <div class="diagram">
+    Title: Début d'un tour
+    participant Joueur
+    participant Serveur
+    participant All
+    Serveur->All: ws/play:turn:new\n{ player: &lt;current player&gt; }
+    Joueur->Serveur: ws/play:roll-dice
+    Serveur->All: ws/play:roll-dice\n{ diceValue: d, resources: [r1, ..] }
+    Note left of All: Resources depend on the player
+    Joueur->Serveur: Actions du joueur
+    Joueur->Serveur: ws/play:turn:end
+    Note left of Serveur: On recommence au début du tour
+    Serveur->All: ws/play:turn:new
+  </div>
+
+  <div class="diagram">
+    Title: Ajout d'une colonie
+    participant Joueur
+    participant Serveur
+    participant All
+    Joueur->Serveur: ws/play:add:colony\n{colony: {x: 12, y: 34}}
+    Serveur->All:play:add:city\n{player: playerId, colony: {x: 12, y: 34}}
+  </div>
+
+  <div class="diagram">
+    Title: Ajout d'un chemin
+    participant Joueur
+    participant Serveur
+    participant All
+    Joueur->Serveur: ws/play:add:road\n{path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
+    Note right of Joueur: L'ordre from-to n'est pas important
+    Serveur->All:play:evolve:city\n{player: playerId, path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
+  </div>
+
+  <div class="diagram">
+    Title: Ajout d'une ville
+    participant Joueur
+    participant Serveur
+    participant All
+    Joueur->Serveur: ws/play:add:city\n{city: {x: 12, y: 34}}
+    Serveur->All:play:evolve:city\n{player: playerId, city: {x: 12, y: 34}}
+    Note left of Serveur: L'id du joueur est déjà connue
+  </div>
+  <div class="diagram">
+    Title: Déplacer les voleurs (carte développement ou 7)
+    participant Joueur
+    participant Serveur
+    participant All
+    Joueur->Serveur: ws/play:move:thief\n{tile: {x: 12, y: 34}}
+    Serveur->All: ws/play:move:thief\n{tile: {x: 12, y: 34}}
+  </div>
+
+  <script src="libs/jquery.min.js"></script>
+  <script src="libs/underscore-min.js"></script>
+  <script src="libs/raphael-min.js"></script>
+  <script src="libs/sequence-diagram-min.js"></script>
+  <script>
+    $(".diagram").sequenceDiagram({theme: 'simple'});
+  </script>
+</body>
+</html>

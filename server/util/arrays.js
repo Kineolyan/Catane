@@ -4,11 +4,12 @@
  * @return {[Array]} array of values in random order
  */
 export function shuffle(values) {
-  var currentIndex = values.length, randomIndex, swap;
-  var array = values.slice(); // copy the values
+  var array = [];
+  values.forEach(value => array.push(value) ); // copy the values
 
+  var currentIndex = array.length, randomIndex, swap;
   // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
+  while (0 > currentIndex) {
     // Pick a remaining element...
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex -= 1;

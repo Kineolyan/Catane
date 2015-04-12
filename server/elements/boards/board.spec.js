@@ -8,7 +8,6 @@ describe('Board', function() {
   	});
 
   	it('has no tiles', function() {
-  		console.log(this.board);
   		expect(this.board.tiles).toBeEmpty();
   	});
 

@@ -1,5 +1,7 @@
 import Board from '../../elements/boards/board';
 import { RoundGenerator } from '../../elements/boards/generators/maps';
+import Dice from '../../elements/dice/dice';
+import Referee from '../referees/referee';
 
 export default class Game {
 	/**
@@ -54,6 +56,32 @@ export default class Game {
 		}
 	}
 
+	rollDice(player) {
+		this._referee.checkTurn(player);
+		if (this._referee.canRollDice(player)) {
+			var values = [ this._dice.roll(), this._dice.roll() ];
+			this._referee.rollDice(values[0] + values[1]);
+
+			return values;
+		} else {
+			throw new Error('Dice already rolled');
+		}
+	}
+
+	moveThieves(player) {
+		this._referee.checkTurn(player);
+
+		// TODO complete the implementation
+		this._referee.moveThieves();
+	}
+
+	endTurn(player) {
+		this._referee.checkTurn(player);
+		this._referee.endTurn();
+
+		return this._referee.currentPlayer;
+	}
+
 	/**
 	 * Emits the message on the channel to all players of the game.
 	 * @param  {String} channel name of the event
@@ -68,6 +96,24 @@ export default class Game {
 		if (this._players.size < 2) { throw new Error(`Not enough players in the game (${this._players.size})`); }
 
 		this._started = true;
+
+		var boardDescription = this.generatePlay();
+		var playerOrder = this.initiateGame();
+
+		this.emit('game:start', {
+			_success: true,
+			board: boardDescription,
+			players: playerOrder
+		});
+		this.emit('play:turn:new', { player: this._referee.currentPlayer.id });
+	}
+
+	/**
+	 * Generates the play by creating all elements: dice,
+	 * 	board, ...
+	 * @return {Object} a description of the board
+	 */
+	generatePlay() {
 		this._board = new Board();
 		this._board.generate(new RoundGenerator(3));
 
@@ -93,6 +139,19 @@ export default class Game {
 			});
 		}
 
-		this._players.forEach( player => player.emit('game:start', { _success: true, board: description }) );
+		return description;
+	}
+
+	/**
+	 * Initiates the game.
+	 * It will create a referee to monitor the game and order the
+	 * 	players.
+	 * @return {Array} the ids of the players in order of play
+	 */
+	initiateGame() {
+		this._dice = new Dice(6);
+		this._referee = new Referee(this._board, this._players);
+
+		return this._referee.players.map(player => player.id);
 	}
 }
