@@ -141,7 +141,7 @@ gulp.task('develop', ['watch', 'server']);
 /* -- Test task -- */
 
 gulp.task('test:jsx', testUnit);
-gulp.task('test:unit', ['server'], testUnit);
+gulp.task('test:unit', /*['server'],*/ testUnit);
 gulp.task('test:unit:kill', ['test:unit'], function() {
   process.exit();
 });
