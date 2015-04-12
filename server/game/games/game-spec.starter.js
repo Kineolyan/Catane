@@ -1,10 +1,7 @@
 import { MockSocket } from '../../com/mocks';
 
 import Server from '../../server';
-import Player from '../players/player';
-import { idGenerator } from '../util';
 
-var playerId = idGenerator();
 var server = new Server();
 
 /**

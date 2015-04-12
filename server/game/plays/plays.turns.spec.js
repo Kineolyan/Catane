@@ -34,7 +34,7 @@ describe('Play turn management', function() {
 			for (let p of this.players) {
 				expect(p.client.lastMessage('play:turn:new')).toEqual({ player: firstPlayerId });
 			}
-		})
+		});
 	});
 
 	describe('on a turn end', function() {

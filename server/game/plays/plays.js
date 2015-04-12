@@ -24,7 +24,7 @@ export class Plays {
 		});
 	}
 
-	unregister(player) {}
+	unregister() {}
 }
 
 export default Plays;
