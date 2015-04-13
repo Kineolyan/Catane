@@ -70,13 +70,15 @@ function buildJsx() {
 }
 
 /** Performs all unit tests */
-function testUnit() {
+function testUnit(verbose) {
+  if (verbose === undefined) { verbose = true; }
+
   return gulp.src([
       PATHS.specs('env.js'),
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
       PATHS.build.client('**/*.spec.js')
-    ]).pipe(jas({includeStackTrace: true, verbose: true}));
+    ]).pipe(jas({includeStackTrace: true, verbose: verbose}));
 }
 
 function cleanCache() {
@@ -89,7 +91,9 @@ function cleanCache() {
 gulp.task('build:js', buildJs);
 
 // Special task to order properly tasks
-gulp.task('watch:js:test', ['build:js'], testUnit);
+gulp.task('watch:js:test', ['build:js'], function() {
+  return testUnit(false);
+});
 
 gulp.task('watch:js', function() {
   gulp.watch([
