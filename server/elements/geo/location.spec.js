@@ -21,4 +21,14 @@ describe('Location', function() {
 		});
 	});
 
+	describe('#shift', function() {
+		it('creates a new shift location', function() {
+			var point = new Location(2, 3);
+			var shiftedPoint = point.shift(4, 5);
+			expect(shiftedPoint).not.toBe(point);
+			expect(shiftedPoint.x).toEqual(6);
+			expect(shiftedPoint.y).toEqual(8);
+		});
+	});
+
 });

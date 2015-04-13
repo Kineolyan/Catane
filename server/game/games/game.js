@@ -1,7 +1,8 @@
 import Board from '../../elements/boards/board';
 import { RoundGenerator } from '../../elements/boards/generators/maps';
 import Dice from '../../elements/dice/dice';
-import Referee from '../referees/referee';
+import { PlacementReferee, GameReferee } from '../referees/referee';
+import { shuffle } from '../../util/arrays';
 
 export default class Game {
 	/**
@@ -56,6 +57,10 @@ export default class Game {
 		}
 	}
 
+	pickCity(location) {}
+
+	pickPath(path) {}
+
 	rollDice(player) {
 		this._referee.checkTurn(player);
 		if (this._referee.canRollDice(player)) {
@@ -75,9 +80,18 @@ export default class Game {
 		this._referee.moveThieves();
 	}
 
+	/**
+	 * Makes the player end its turn.
+	 * @param player the player ending its turn
+	 * @returns the next player whose turn has started
+	 */
 	endTurn(player) {
 		this._referee.checkTurn(player);
 		this._referee.endTurn();
+		if (this._prepared === false && this._referee.isPlacementComplete()) {
+			this._prepared = true;
+			this.initiateGame();
+		}
 
 		return this._referee.currentPlayer;
 	}
@@ -98,7 +112,7 @@ export default class Game {
 		this._started = true;
 
 		var boardDescription = this.generatePlay();
-		var playerOrder = this.initiateGame();
+		var playerOrder = this.prepareGame();
 
 		this.emit('game:start', {
 			_success: true,
@@ -129,7 +143,7 @@ export default class Game {
 		for (let city of this._board.cities) {
 			description.cities.push({
 				x: city.location.x,
-				y: city.location.y,
+				y: city.location.y
 			});
 		}
 		for (let path of this._board.paths) {
@@ -143,15 +157,26 @@ export default class Game {
 	}
 
 	/**
+	 * Prepares the game.
+	 * This will create a referee monitoring the placement of the players, the
+	 * distribution of the spots and roads.
+	 * @return {Array} the ids of the players in order of play
+	 */
+	prepareGame() {
+		this._referee = new PlacementReferee(this._board, shuffle(this._players));
+
+		return this._referee.players.map(player => player.id);
+	}
+
+	/**
 	 * Initiates the game.
 	 * It will create a referee to monitor the game and order the
 	 * 	players.
-	 * @return {Array} the ids of the players in order of play
 	 */
 	initiateGame() {
 		this._dice = new Dice(6);
-		this._referee = new Referee(this._board, this._players);
+		this._referee = new GameReferee(this._board, this._players);
 
-		return this._referee.players.map(player => player.id);
+		// send to each player their resources
 	}
 }

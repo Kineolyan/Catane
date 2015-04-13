@@ -31,6 +31,7 @@ export default class Path {
 				this._to = from;
 			}
 		}
+		this._owner = null;
 	}
 
 	get from() {
@@ -39,6 +40,15 @@ export default class Path {
 
 	get to() {
 		return this._to;
+	}
+
+	get owner() {
+		return this._owner;
+	}
+
+	set owner(owner) {
+		this._owner = owner;
+		return owner;
 	}
 
 	hashCode() {

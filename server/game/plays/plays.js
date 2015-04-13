@@ -1,7 +1,25 @@
+import Location from '../../elements/geo/location';
+import Path from '../../elements/geo/path';
+
 export class Plays {
 	constructor() {}
 
 	register(player) {
+		player.on('play:pick:city', (request) => {
+			var location = new Location(request.city.x, request.city.y);
+			player.game.pickCity(location);
+
+			return undefined;
+		});
+
+		player.on('play:pick:path', (request) => {
+			var fromLocation = new Location(request.path.from.x, request.path.from.y);
+			var toLocation = new Location(request.path.to.x, request.path.to.y);
+			player.game.pickPath(new Path(fromLocation, toLocation));
+
+			return undefined;
+		});
+
 		player.on('play:roll-dice', () => {
 			var diceValues = player.game.rollDice(player);
 			player.game.emit('play:roll-dice', { dice: diceValues });
