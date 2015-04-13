@@ -7,13 +7,14 @@
     "catane": "./bin/catane"
   },
   "scripts": {
-    "check": "blacklisted-gulp",
-    "preinstall": "npm prune",
-    "postinstall": "node scripts/postinstall && bower install",
     "build": "gulp build",
+    "check": "blacklisted-gulp",
+    "clean": "gulp clean",
+    "do_the_thing": "gulp do_the_thing",
+    "postinstall": "node scripts/postinstall && bower install",
+    "preinstall": "npm prune",
     "test": "gulp test",
-    "watch": "gulp watch",
-    "do_the_thing": "gulp do_the_thing"
+    "watch": "gulp watch"
   },
   "repository": {
     "type": "git",

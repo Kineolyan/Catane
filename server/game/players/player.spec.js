@@ -1,4 +1,4 @@
-import Player from './players';
+import Player from './player';
 import { MockSocket } from './../../com/mocks';
 
 describe('Player', function() {

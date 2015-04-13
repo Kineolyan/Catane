@@ -1,5 +1,6 @@
-import Player from './game/players/players';
+import Player from './game/players/player';
 import Games from './game/games/games';
+import Plays from './game/plays/plays';
 import { idGenerator } from './game/util';
 
 const logger = global.logger;
@@ -10,7 +11,8 @@ export default class Server {
 		this._nextPlayerId = idGenerator();
 
 		this._resources = [
-			new Games()
+			new Games(),
+			new Plays()
 		];
 	}
 

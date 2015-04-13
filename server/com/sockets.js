@@ -1,3 +1,5 @@
+const logger = global.logger;
+
 export default class Socket {
 	constructor(id, socket, world) {
 		this._id = id;
@@ -23,9 +25,12 @@ export default class Socket {
 					}
 				}
 			} catch (e) {
+				logger.error(`#${channel} > {${e.name}} ${e.message}\n${e.stack}`);
+
 				me.emit(channel, {
 					_success: false,
-					message: `[${e.name}] ${e.message}`
+					message: `[${e.name}] ${e.message}`,
+					stacktrace: e.stack
 				});
 			}
 		});

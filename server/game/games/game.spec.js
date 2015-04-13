@@ -1,7 +1,7 @@
 import Game from './game';
 
 import { MockSocket } from '../../com/mocks';
-import Player from '../players/players';
+import Player from '../players/player';
 
 describe('Game', function() {
 	beforeEach(function() {
