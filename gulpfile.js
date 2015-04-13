@@ -14,7 +14,6 @@ var browserify = require('browserify');
 var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
-var nodemon = require('gulp-nodemon');
 
 // var refresh = require('gulp-livereload');
 // var livereload = require('tiny-lr');
@@ -141,10 +140,7 @@ gulp.task('develop', ['watch', 'server']);
 /* -- Test task -- */
 
 gulp.task('test:jsx', testUnit);
-gulp.task('test:unit', /*['server'],*/ testUnit);
-gulp.task('test:unit:kill', ['test:unit'], function() {
-  process.exit();
-});
+gulp.task('test:unit', testUnit);
 
 
 gulp.task('test:lint', function() {
@@ -209,30 +205,6 @@ gulp.task('docs', ['docs:install', 'docs:serve']);
 //default gulp
 gulp.task('default', [ 'build', 'test', 'docs' ]);
 
-/* -- Launch server -- */
-gulp.task('server', function(done) {
-  var isDone = false;
-
-  nodemon({
-    script: 'bin/catane',
-    ignore: [
-      PATHS.docs('libs/*'),
-      PATHS.specs('**/*'),
-      PATHS('**/*.spec.js')
-    ],
-    stderr: false,
-    stdout: false
-  }).on('start', function() {
-      if(!isDone) {
-        isDone = true;
-        done();
-      }
-    })
-    .on('crash', function() {
-      console.log('Server already launched, just failing');
-    });
-
-});
 
 gulp.task('clean:cache', cleanCache);
 

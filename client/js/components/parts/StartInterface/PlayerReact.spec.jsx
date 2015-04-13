@@ -21,17 +21,6 @@ describe('A player', function() {
       expect(this.player.getId()).toEqual(2);
   });
 
-  it('can change name if specified and then change step', function(done) {
-    
-    spyOn(window, 'prompt').and.returnValue("jean");
-    this.player.triggerChangeName();
-
-    setTimeout(() => {
-      expect(this.player.getName()).toEqual('jean');
-      expect(this.change).toHaveBeenCalled();
-      done();
-    }, 500);
-  });
 
   afterEach(function() {
     React.unmountComponentAtNode(this.player.getDOMNode().parent);

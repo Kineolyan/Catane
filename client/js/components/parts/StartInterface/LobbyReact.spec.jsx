@@ -15,15 +15,6 @@ describe('A lobby', function() {
     spyOn(this.lobby, 'chooseGame');
   });
 
-  it('should be able to create a game', function(done) {
-    var btn = this.lobby.refs.createGameBtn.getDOMNode();
-    utils.Simulate.click(btn, { currentTarget: { dataset: 1 }});
-
-    setTimeout(() => {
-      expect(this.choose).toHaveBeenCalledWith({id: 1});
-      done();
-    }, 500);
-  });
 
   it('should render the list of game and be able to choose one', function(done) {
       this.lobby.setState({gameAvailables:[{
