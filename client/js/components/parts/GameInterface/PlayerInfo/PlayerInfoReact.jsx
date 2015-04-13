@@ -43,7 +43,6 @@ var PlayerInfoReact = React.createClass({
         renderedPlayers = [];
 
     var index = 0;
-
     players.forEach((element, i) => {
       var id = parseInt(element.id, 10);
       if(id !== p.me.id) {
@@ -54,7 +53,6 @@ var PlayerInfoReact = React.createClass({
                                           height={60}
                                           {...element} />);
         index += 1;
-        console.log(index);
       }
     });
 
