@@ -59,11 +59,9 @@ function buildJs() {
 }
 
 function buildJsx() {
-  return gulp.src(PATHS.client.js('components/**/*.jsx'))
-    .pipe(cached('jsx'))
-    .pipe(remember('jsx'))
+  return gulp.src(PATHS.client.js('components/**/*.js'))
     .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
-    .pipe(react({harmony: true}))
+    .pipe(babel())
     .pipe(plumber.stop())
     .pipe(gulp.dest(PATHS.build.client('js/compiled')));
 }
@@ -75,7 +73,7 @@ function testUnit() {
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
       PATHS.build.client('**/*.spec.js')
-    ]).pipe(jas({includeStackTrace: true, verbose: true}));
+    ]).pipe(jas({includeStackTrace: true, verbose: false}));
 }
 
 function cleanCache() {
@@ -146,10 +144,10 @@ gulp.task('test:unit', testUnit);
 gulp.task('test:lint', function() {
   return gulp.src([
   		PATHS.bin('*.js'),
-  		PATHS.build.client('js/compiled/**/*.js'),
+  		PATHS.client('**/*.js'),
   		PATHS.server('**/*.js')
   	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
-    .pipe(jshint())
+    .pipe(jshint({linter : require('jshint-jsx').JSXHINT }))
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'))
     .pipe(plumber.stop());
