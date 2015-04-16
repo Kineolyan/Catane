@@ -55,4 +55,12 @@ export default class Path {
 		return offset(this._from.x) + HASH_BASE * (offset(this._from.y) + HASH_BASE * (offset(this._to.x) + HASH_BASE * offset(this._to.y)));
 	}
 
+	toString() {
+		return `from (${this._from.toString()} to ${this._to.toString()})`;
+	}
+
+	toJson() {
+		return { from: this._from.toJson(), to: this._to.toJson() };
+	}
+
 }

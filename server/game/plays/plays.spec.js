@@ -17,7 +17,9 @@ describe('Plays', function() {
 
 		// Channels listened
 		[
-			'play:turn:end', 'play:roll-dice'
+			'play:pick:colony', 'play:pick:path',
+			'play:roll-dice', 'play:move:thieves',
+			'play:turn:end'
 		].forEach(function(channel) {
 			it(`makes client listen to "${channel}"`, function() {
 				expect(this.client).toBeListeningTo(channel);

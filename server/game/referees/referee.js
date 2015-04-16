@@ -25,7 +25,7 @@ export class AReferee {
 
 	checkTurn(player) {
 		if (!this.isTurn(player)) {
-			throw new Error('Not the player turn');
+			throw new Error(`Not player ${player.id} turn (${this.currentPlayer.id})`);
 		}
 	}
 
@@ -76,7 +76,7 @@ export class PlacementReferee extends AReferee {
 	 * Checks if the player can pick the city as its initial colony,
 	 * @param location the location of the desired city.
 	 */
-	pickCity(location) {
+	pickColony(location) {
 		if (this._step === PLACEMENT_STEPS.PICK_SPOT) {
 			if (this.canBuildColony(location)) {
 				this._step = PLACEMENT_STEPS.PICK_PATH;

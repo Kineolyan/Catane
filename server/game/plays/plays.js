@@ -5,9 +5,14 @@ export class Plays {
 	constructor() {}
 
 	register(player) {
-		player.on('play:pick:city', (request) => {
-			var location = new Location(request.city.x, request.city.y);
-			player.game.pickCity(location);
+		player.on('play:pick:colony', (request) => {
+			var location = new Location(request.colony.x, request.colony.y);
+			var colony = player.game.pickColony(player, location);
+
+			player.game.emit('play:pick:colony', {
+				player: player.id,
+				colony: colony.location.toJson()
+			});
 
 			return undefined;
 		});
@@ -15,7 +20,12 @@ export class Plays {
 		player.on('play:pick:path', (request) => {
 			var fromLocation = new Location(request.path.from.x, request.path.from.y);
 			var toLocation = new Location(request.path.to.x, request.path.to.y);
-			player.game.pickPath(new Path(fromLocation, toLocation));
+			var pickedPath = player.game.pickPath(player, new Path(fromLocation, toLocation));
+
+			player.game.emit('player:pick:path', {
+				player: player.id,
+				path: pickedPath.toJson()
+			});
 
 			return undefined;
 		});

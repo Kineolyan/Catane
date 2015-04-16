@@ -4,6 +4,7 @@ import { MockSocket } from '../../com/mocks';
 import Player from '../players/player';
 import Board from '../../elements/boards/board';
 import Location from '../../elements/geo/location.js';
+import Path from '../../elements/geo/path.js';
 import { RoundGenerator } from '../../elements/boards/generators/maps.js';
 
 describe('AReferee', function() {
@@ -161,20 +162,20 @@ describe('PlacementReferee', function() {
 		});
 
 		it('says true after placing a city', function() {
-			this.referee.pickCity(new Location(0, 2));
+			this.referee.pickColony(new Location(0, 2));
 			expect(this.referee.hasRemainingRequiredActions()).toBe(true);
 		});
 
 		it('says false after picking the road', function() {
 			var city = new Location(0, 2);
-			this.referee.pickCity(city);
+			this.referee.pickColony(city);
 			this.referee.pickPath(city, new Location(1, 2));
 
 			expect(this.referee.hasRemainingRequiredActions()).toBe(false);
 		});
 	});
 
-	describe('#pickCity', function() {
+	describe('#pickColony', function() {
 		beforeEach(function() {
 			// p1 turn is in progress
 			// Give a city to p2
@@ -182,23 +183,23 @@ describe('PlacementReferee', function() {
 		});
 
 		it('accepts picking a city correctly', function() {
-			expect(() => this.referee.pickCity(new Location(0, -1))).not.toThrowError();
+			expect(() => this.referee.pickColony(new Location(0, -1))).not.toThrowError();
 		});
 
 		it('rejects picking a city near someone else city', function() {
-			expect(() => this.referee.pickCity(new Location(0, 2))).toThrowError();
+			expect(() => this.referee.pickColony(new Location(0, 2))).toThrowError();
 		});
 
 		it('rejects picking someone else city', function() {
-			expect(() => this.referee.pickCity(new Location(0, 1))).toThrowError();
+			expect(() => this.referee.pickColony(new Location(0, 1))).toThrowError();
 		});
 
 		it('rejects picking an invalid location as city', function() {
-			expect(() => this.referee.pickCity(new Location(0, 0))).toThrowError();
+			expect(() => this.referee.pickColony(new Location(0, 0))).toThrowError();
 		});
 	});
 
-	describe('#pickCity', function() {
+	describe('#pickColony', function() {
 		beforeEach(function() {
 			// p1 turn is in progress
 			// Give a city to p2

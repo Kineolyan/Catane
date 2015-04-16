@@ -20,6 +20,10 @@ export default class Location {
 		return `(${this._x}, ${this._y})`;
 	}
 
+	toJson() {
+		return { x: this._x, y: this._y };
+	}
+
 	/**
 	 * Creates a shifted location by a given indent.
 	 * @param x x shift

@@ -37,12 +37,12 @@ export default class Board {
 
 	/**
 	 * Gets the path joining the two locations
-	 * @param fromLocation ending path location
-	 * @param toLocation other ending location of the path
+	 * @param {Location|Path} fromLocation ending path location or a path
+	 * @param {Location=} toLocation other ending location of the path
 	 * @return {Path} the desired path or undefined if not existing
 	 */
 	getPath(fromLocation, toLocation) {
-		var path = new Path(fromLocation, toLocation);
+		var path = toLocation === undefined ? fromLocation : new Path(fromLocation, toLocation);
 		return this._paths.get(path.hashCode());
 	}
 

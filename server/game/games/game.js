@@ -57,9 +57,39 @@ export default class Game {
 		}
 	}
 
-	pickCity(location) {}
+	/**
+	 * Picks a city for a player.
+	 * @param player the player wanting the location
+	 * @param location the location of the desired city
+	 * @return {City} the picked colony
+	 * @throws if the rules prevent this operation
+	 */
+	pickColony(player, location) {
+		this._referee.checkTurn(player);
+		this._referee.pickColony(location);
 
-	pickPath(path) {}
+		var pickedColony = this._board.getCity(location);
+		pickedColony.owner = player;
+
+		return pickedColony;
+	}
+
+	/**
+	 * Picks a path for a player.
+	 * @param player the player wanting the path
+	 * @param path the path desired
+	 * @return {Path} the picked path
+	 * @throws if the rules prevent this operation
+	 */
+	pickPath(player, path) {
+		this._referee.checkTurn(player);
+		this._referee.pickPath(path);
+
+		var pickedPath = this._board.getPath(path);
+		pickedPath.owner = player;
+
+		return pickedPath;
+	}
 
 	rollDice(player) {
 		this._referee.checkTurn(player);
