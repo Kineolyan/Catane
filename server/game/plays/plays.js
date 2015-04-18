@@ -22,7 +22,7 @@ export class Plays {
 			var toLocation = new Location(request.path.to.x, request.path.to.y);
 			var pickedPath = player.game.pickPath(player, new Path(fromLocation, toLocation));
 
-			player.game.emit('player:pick:path', {
+			player.game.emit('play:pick:path', {
 				player: player.id,
 				path: pickedPath.toJson()
 			});

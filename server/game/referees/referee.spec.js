@@ -1,4 +1,4 @@
-import { GameReferee, PlacementReferee } from './referee';
+import { AReferee, GameReferee, PlacementReferee } from './referee';
 
 import { MockSocket } from '../../com/mocks';
 import Player from '../players/player';
@@ -6,6 +6,31 @@ import Board from '../../elements/boards/board';
 import Location from '../../elements/geo/location.js';
 import Path from '../../elements/geo/path.js';
 import { RoundGenerator } from '../../elements/boards/generators/maps.js';
+
+class TestReferee extends AReferee {
+	constructor(board, players) {
+		this._turn = 0;
+		super(board, players);
+		this._readyToEnd = false;
+	}
+
+	get turn() {
+		return this._turn;
+	}
+
+	startTurn() {
+		this._turn += 1;
+		this._readyToEnd = false;
+	}
+
+	completeTurn() {
+		this._readyToEnd = true;
+	}
+
+	hasRemainingRequiredActions() {
+		return !this._readyToEnd;
+	}
+}
 
 describe('AReferee', function() {
 	beforeEach(function() {
@@ -18,7 +43,7 @@ describe('AReferee', function() {
 			new Player(this.socket.toSocket(), 2)
 		];
 		// We test if with a GameReferee since it is less complicated
-		this.referee = new GameReferee(this.board, this.players);
+		this.referee = new TestReferee(this.board, this.players);
 	});
 
 	describe('#canBuildColony', function() {
@@ -51,6 +76,18 @@ describe('AReferee', function() {
 				let isCurrentPlayer = this.referee.currentPlayer.id === player.id;
 				expect(this.referee.isTurn(player)).toBe(isCurrentPlayer);
 			}
+		});
+	});
+
+	describe('#endTurn', function() {
+		it('fails if there are remaining required actions', function() {
+			// At start, turn is not complete
+			expect(() => this.referee.endTurn()).toThrowError();
+		});
+
+		it('succeeds when all required tasks are performed', function() {
+			this.referee.completeTurn();
+			expect(() => this.referee.endTurn()).toChangeBy(() => this.referee.turn, 1);
 		});
 	});
 });
@@ -206,6 +243,30 @@ describe('PlacementReferee', function() {
 			var cityLocation = new Location(0, 1);
 			this.board.getCity(cityLocation).owner = this.players[1];
 			this.board.getPath(new Path(cityLocation, cityLocation.shift(1, -1))).owner = this.players[1];
+		});
+	});
+
+	describe('#isPlacementComplete', function() {
+		beforeEach(function() {
+			this.pick = function(cityX, cityY, toX, toY) {
+				this.referee.pickColony(new Location(cityX, cityY));
+				this.referee.pickPath(new Path(new Location(cityX, cityY), new Location(toX, toY)));
+				this.referee.endTurn();
+			}
+		});
+
+		it('is complete after each player pick twice', function() {
+			this.pick(0, 2, 1, 2); // for p1
+			this.pick(2, 0, 3, -1); // for p2
+			this.pick(0, -2, -1, -2); // for p1
+			// Last pick
+			expect(() => {
+				this.pick(-2, 0, -3, 1);  // for p2
+			}).toChangeFromTo(() => this.referee.isPlacementComplete(), false, true);
+		});
+
+		it('is not complete at start', function() {
+			expect(this.referee.isPlacementComplete()).toBe(false);
 		});
 	});
 });

@@ -51,7 +51,7 @@ export class MockSocket {
 	 */
 	emit(channel, message) {
 		this._messages[channel] = this._messages[channel] || [];
-		this._messages[channel].push(message);
+		this._messages[channel].push(message || null);
 	}
 
 	/**
@@ -83,8 +83,8 @@ export class MockSocket {
 
 	/**
 	 * Gets all the messages of a channel;
-	 * @param  {String} channel
-	 * @return {Array<Object>} received messages
+	 * @param  {String} channel the channel to fetch
+	 * @return {Array<Object>} received messages (null values for empty messages)
 	 */
 	messages(channel) {
 		return this._messages[channel] || [];
@@ -92,8 +92,9 @@ export class MockSocket {
 
 	/**
 	 * Gets the last message of a channel
-	 * @param  {String} channel
-	 * @return {Array<Object>} received messages
+	 * @param  {String} channel the channel to fetch
+	 * @return {Array<Object>} last message received on the channel (null if the message was empty)
+	 *  or undefined if there are no messages.
 	 */
 	lastMessage(channel) {
 		var messages = this.messages(channel);

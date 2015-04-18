@@ -121,6 +121,7 @@ export default class Game {
 		if (this._prepared === false && this._referee.isPlacementComplete()) {
 			this._prepared = true;
 			this.initiateGame();
+			this.emit('game:play');
 		}
 
 		return this._referee.currentPlayer;
@@ -129,7 +130,7 @@ export default class Game {
 	/**
 	 * Emits the message on the channel to all players of the game.
 	 * @param  {String} channel name of the event
-	 * @param  {Object} message message to send
+	 * @param  {Object=} message message to send
 	 */
 	emit(channel, message) {
 		this._players.forEach(player => player.emit(channel, message));
@@ -140,6 +141,7 @@ export default class Game {
 		if (this._players.size < 2) { throw new Error(`Not enough players in the game (${this._players.size})`); }
 
 		this._started = true;
+		logger.info(`Game ${this.id} starting ...`)
 
 		var boardDescription = this.generatePlay();
 		var playerOrder = this.prepareGame();
@@ -149,6 +151,7 @@ export default class Game {
 			board: boardDescription,
 			players: playerOrder
 		});
+		this.emit('game:prepare');
 		this.emit('play:turn:new', { player: this._referee.currentPlayer.id });
 	}
 
@@ -194,7 +197,9 @@ export default class Game {
 	 */
 	prepareGame() {
 		this._referee = new PlacementReferee(this._board, shuffle(this._players));
+		this._prepared = false;
 
+		logger.info(`Preparing game ${this.id} ...`);
 		return this._referee.players.map(player => player.id);
 	}
 
@@ -205,8 +210,11 @@ export default class Game {
 	 */
 	initiateGame() {
 		this._dice = new Dice(6);
-		this._referee = new GameReferee(this._board, this._players);
+		var previousReferee = this._referee;
+		this._referee = new GameReferee(previousReferee.board, previousReferee.players);
 
-		// send to each player their resources
+		// TODO send to each player their resources
+
+		logger.info(`Game ${this.id} prepared and running !`);
 	}
 }

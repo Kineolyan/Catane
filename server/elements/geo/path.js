@@ -56,7 +56,7 @@ export default class Path {
 	}
 
 	toString() {
-		return `from (${this._from.toString()} to ${this._to.toString()})`;
+		return `from ${this._from.toString()} to ${this._to.toString()}`;
 	}
 
 	toJson() {

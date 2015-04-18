@@ -45,7 +45,7 @@ export class AReferee {
 	}
 
 	endTurn() {
-		if (this.hasRemainingRequiredActions()) {
+		if (!this.hasRemainingRequiredActions()) {
 			this._currentPlayerIdx = (this._currentPlayerIdx + 1) % this._players.length;
 
 			this.startTurn();
@@ -63,8 +63,8 @@ const PLACEMENT_STEPS = {
 
 export class PlacementReferee extends AReferee {
 	constructor(board, players) {
-		super(board, players);
 		this._placementIteration = 0;
+		super(board, players);
 	}
 
 	startTurn() {
@@ -133,6 +133,6 @@ export class GameReferee extends AReferee {
 	}
 
 	hasRemainingRequiredActions() {
-		return this._step >= GAME_STEPS.PLAY;
+		return this._step <+ GAME_STEPS.PLAY;
 	}
 }
