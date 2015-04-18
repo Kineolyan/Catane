@@ -4,16 +4,17 @@ var fs = require('fs');
 var path = require('path');
 var gulp = require('gulp');
 var sass = require('gulp-sass');
+var del = require('del');
 var cached = require('gulp-cached');
 var remember = require('gulp-remember');
 var jas = require('gulp-jasmine');
 var jshint = require('gulp-jshint');
 var babel = require('gulp-babel');
-var react = require('gulp-react');
 var browserify = require('browserify');
 var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
+var runSequence = require('run-sequence');
 
 function pathItem(name) {
 	return function(children) {
@@ -48,18 +49,20 @@ PATHS.specs.matchers = pathItem('matchers');
 /** Builds all js transpiling from ES6 to ES5 */
 function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
-    .pipe(cached('js'))
-    .pipe(remember('js'))
+    .pipe(cached('server-js'))
+    .pipe(remember('server-js'))
     .pipe(babel({ sourceRoot: PATHS.server() }))
     .pipe(gulp.dest(PATHS.build.server()));
 }
 
 function buildJsx() {
   return gulp.src(PATHS.client.js('components/**/*.js'))
+    .pipe(cached('client-js'))
+    .pipe(remember('client-js'))
     .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
     .pipe(babel())
     .pipe(plumber.stop())
-    .pipe(gulp.dest(PATHS.build.client('js/compiled')));
+    .pipe(gulp.dest(PATHS.build.client('js/components')));
 }
 
 /** Performs all unit tests */
@@ -75,6 +78,12 @@ function testUnit() {
 function cleanCache() {
   // Clear all caches to perform a full actions
   cached.caches = {};
+}
+
+function cleanOutput() {
+  return del([
+      PATHS.build()
+  ]);
 }
 
 /* --  Build tasks -- */
@@ -104,12 +113,13 @@ gulp.task('build:sass', function () {
 
 gulp.task('build:jsx', buildJsx);
 
-gulp.task('build:browserify', ['build:jsx'], function(){
-  var b = browserify({entries: './' + PATHS.build.client('js/compiled/main.js'), debug: true})
-  var stream = b.bundle()
-    .pipe(source('main.js')) // the output filename
+gulp.task('build:browserify', ['build:jsx'], function() {
+  return browserify({
+      entries: './' + PATHS.build.client('js/components/main.js'),
+      debug: true
+    }).bundle()
+    .pipe(source('catane.js')) // the output filename
     .pipe(gulp.dest(PATHS.build.client('js'))); // the output directory
-  return stream;
 });
 
 gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
@@ -173,8 +183,9 @@ gulp.task('default', [ 'build', 'test', 'docs' ]);
 
 gulp.task('clean:cache', cleanCache);
 
-gulp.task('clean', [ 'clean:cache' ]);
+gulp.task('clean:output', cleanOutput);
 
+gulp.task('clean', [ 'clean:output', 'clean:cache' ]);
 
 /**
  * Master task to rebuild all the project
@@ -182,7 +193,6 @@ gulp.task('clean', [ 'clean:cache' ]);
  * This will perform all actions to build and test the application.
  */
 gulp.task('do_the_thing', function() {
-  var runSequence = require('run-sequence');
   runSequence('clean', 'build', 'test', 'docs:install', function() {
     console.log('All things are done Sir :)');
     process.exit();
