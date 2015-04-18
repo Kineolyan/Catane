@@ -252,7 +252,7 @@ describe('PlacementReferee', function() {
 				this.referee.pickColony(new Location(cityX, cityY));
 				this.referee.pickPath(new Path(new Location(cityX, cityY), new Location(toX, toY)));
 				this.referee.endTurn();
-			}
+			};
 		});
 
 		it('is complete after each player pick twice', function() {

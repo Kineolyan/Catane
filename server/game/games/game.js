@@ -4,6 +4,8 @@ import Dice from '../../elements/dice/dice';
 import { PlacementReferee, GameReferee } from '../referees/referee';
 import { shuffle } from '../../util/arrays';
 
+const logger = global.logger;
+
 export default class Game {
 	/**
 	 * Constructor
@@ -141,7 +143,7 @@ export default class Game {
 		if (this._players.size < 2) { throw new Error(`Not enough players in the game (${this._players.size})`); }
 
 		this._started = true;
-		logger.info(`Game ${this.id} starting ...`)
+		logger.info(`Game ${this.id} starting ...`);
 
 		var boardDescription = this.generatePlay();
 		var playerOrder = this.prepareGame();

@@ -1,4 +1,3 @@
-import Location from '../geo/location';
 import Path from '../geo/path.js';
 import * as geo from '../geo/geo';
 
