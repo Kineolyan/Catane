@@ -7,27 +7,47 @@
 <body>
   <div class="diagram">
     Title: Début d'une partie
-    participant Player
-    participant Serveur
-    participant All
-    Player->Serveur: ws/game:start\ngame_id
-    Note right of All: Notifies players of the game\nSee play documentation\n
-    Serveur->All: ws/game:start\n{ tiles: [{x: x, y: y, resource: r, diceValue: d}, ..],\n   cities: [{x: x, y: y}, ..],\n   paths: [{from: {x: x, y: y}, to: {x: x, y: y}}, ..] }
-    Note left of All: Resources: desert, caillou, bois, mouton, ble, tuile
-    Note left of All: Dice values: from 2 to 12, null for desert
-    Note right of Serveur: entame un tour
-  </div>
-
-  <div class="diagram">
-    Title: Début d'un tour
     participant Joueur
     participant Serveur
     participant All
-    Serveur->All: ws/play:turn:new\n{ player: &lt;current player&gt; }
+    Joueur->Serveur: ws/game:start\ngame_id
+    Note right of All: Notifie les joueurs\nSee play documentation\n
+    Serveur->All: ws/game:start\n{ tiles: [{x: x, y: y, resource: r, diceValue: d}, ..],\n   cities: [{x: x, y: y}, ..],\n   paths: [{from: {x: x, y: y}, to: {x: x, y: y}}, ..] }
+    Note left of All: Resources: desert, caillou, bois, mouton, ble, tuile
+    Note left of All: Dice values: from 2 to 12, null for desert
+    Note right of Serveur: Phase de placement
+    Serveur->All: ws/game:prepare
+    Note right of Serveur: Fait choisir les joueurs
+    Joueur->Serveur: ws/play:pick:*, ws/play:turn:end
+    Note right of Joueur: Chaque joueur choisit ses colonies et routes
+    Note right of Serveur: Tout est prêt, on peut jouer
+    Serveur->All: ws/game:play
+  </div>
+
+  <div class="diagram">
+    Title: Placement initial des pions
+    participant Joueur
+    participant Serveur
+    participant All
+    Serveur->All: ws/play:turn:new\n{ player: &lt;first player id&gt; }
+    Joueur->Serveur: ws/play:pick:colony\n{ colony: { x: 1, y: 2 } }
+    Serveur->All: ws/play:pick:colony\n{ player: playerId, colony: { x: 1, y: 2 } }
+    Joueur->Serveur: ws/play:pick:path\n{ path: { from: { x: 1, y: 2 }, to: { x: 3, y: 4 } }
+    Serveur->All: ws/play:pick:path\n{ player: playerId, path: { from: { x: 1, y: 2 }, to: { x: 3, y: 4 } }
+    Joueur->Serveur: ws/play:turn:end
+    Serveur->All: ws/play:turn:new\n{ player: &lt;next player id&gt; }
+  </div>
+
+  <div class="diagram">
+    Title: Début d'un tour de jeu
+    participant Joueur
+    participant Serveur
+    participant All
+    Serveur->All: ws/play:turn:new\n{ player: &lt;current player id&gt; }
     Joueur->Serveur: ws/play:roll-dice
-    Serveur->All: ws/play:roll-dice\n{ diceValue: d, resources: [r1, ..] }
-    Note left of All: Resources depend on the player
-    Joueur->Serveur: Actions du joueur
+    Serveur->All: ws/play:roll-dice\n{ diceValue: d, resources: { bois: 1, tuile: 3, ... } }
+    Note left of All: Resources pour chaque joueur (bilan complet)
+    Joueur->Serveur: Actions du joueur ...
     Joueur->Serveur: ws/play:turn:end
     Note left of Serveur: On recommence au début du tour
     Serveur->All: ws/play:turn:new
@@ -39,7 +59,7 @@
     participant Serveur
     participant All
     Joueur->Serveur: ws/play:add:colony\n{colony: {x: 12, y: 34}}
-    Serveur->All:play:add:city\n{player: playerId, colony: {x: 12, y: 34}}
+    Serveur->All:play:add:colony\n{player: playerId, colony: {x: 12, y: 34}}
   </div>
 
   <div class="diagram">
@@ -49,7 +69,7 @@
     participant All
     Joueur->Serveur: ws/play:add:road\n{path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
     Note right of Joueur: L'ordre from-to n'est pas important
-    Serveur->All:play:evolve:city\n{player: playerId, path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
+    Serveur->All:play:add:road\n{player: playerId, path: {from: {x: 12, y: 34}, to: {x: 13, y: 34}}}
   </div>
 
   <div class="diagram">
@@ -57,8 +77,8 @@
     participant Joueur
     participant Serveur
     participant All
-    Joueur->Serveur: ws/play:add:city\n{city: {x: 12, y: 34}}
-    Serveur->All:play:evolve:city\n{player: playerId, city: {x: 12, y: 34}}
+    Joueur->Serveur: ws/play:evolve:city\n{ city: { x: 12, y: 34 } }
+    Serveur->All:play:evolve:city\n{ player: playerId, city: { x: 12, y: 34 } }
     Note left of Serveur: L'id du joueur est déjà connue
   </div>
   <div class="diagram">
@@ -66,8 +86,8 @@
     participant Joueur
     participant Serveur
     participant All
-    Joueur->Serveur: ws/play:move:thief\n{tile: {x: 12, y: 34}}
-    Serveur->All: ws/play:move:thief\n{tile: {x: 12, y: 34}}
+    Joueur->Serveur: ws/play:move:thieves\n{ tile: { x: 12, y: 34 } }
+    Serveur->All: ws/play:move:thieves\n{ tile: { x: 12, y: 34 } }
   </div>
 
   <script src="libs/jquery.min.js"></script>
