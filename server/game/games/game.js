@@ -1,7 +1,10 @@
 import Board from '../../elements/boards/board';
 import { RoundGenerator } from '../../elements/boards/generators/maps';
 import Dice from '../../elements/dice/dice';
-import Referee from '../referees/referee';
+import { PlacementReferee, GameReferee } from '../referees/referee';
+import { shuffle } from '../../util/arrays';
+
+const logger = global.logger;
 
 export default class Game {
 	/**
@@ -56,6 +59,40 @@ export default class Game {
 		}
 	}
 
+	/**
+	 * Picks a city for a player.
+	 * @param player the player wanting the location
+	 * @param location the location of the desired city
+	 * @return {City} the picked colony
+	 * @throws if the rules prevent this operation
+	 */
+	pickColony(player, location) {
+		this._referee.checkTurn(player);
+		this._referee.pickColony(location);
+
+		var pickedColony = this._board.getCity(location);
+		pickedColony.owner = player;
+
+		return pickedColony;
+	}
+
+	/**
+	 * Picks a path for a player.
+	 * @param player the player wanting the path
+	 * @param path the path desired
+	 * @return {Path} the picked path
+	 * @throws if the rules prevent this operation
+	 */
+	pickPath(player, path) {
+		this._referee.checkTurn(player);
+		this._referee.pickPath(path);
+
+		var pickedPath = this._board.getPath(path);
+		pickedPath.owner = player;
+
+		return pickedPath;
+	}
+
 	rollDice(player) {
 		this._referee.checkTurn(player);
 		if (this._referee.canRollDice(player)) {
@@ -75,9 +112,19 @@ export default class Game {
 		this._referee.moveThieves();
 	}
 
+	/**
+	 * Makes the player end its turn.
+	 * @param player the player ending its turn
+	 * @returns the next player whose turn has started
+	 */
 	endTurn(player) {
 		this._referee.checkTurn(player);
 		this._referee.endTurn();
+		if (this._prepared === false && this._referee.isPlacementComplete()) {
+			this._prepared = true;
+			this.initiateGame();
+			this.emit('game:play');
+		}
 
 		return this._referee.currentPlayer;
 	}
@@ -85,7 +132,7 @@ export default class Game {
 	/**
 	 * Emits the message on the channel to all players of the game.
 	 * @param  {String} channel name of the event
-	 * @param  {Object} message message to send
+	 * @param  {Object=} message message to send
 	 */
 	emit(channel, message) {
 		this._players.forEach(player => player.emit(channel, message));
@@ -96,15 +143,17 @@ export default class Game {
 		if (this._players.size < 2) { throw new Error(`Not enough players in the game (${this._players.size})`); }
 
 		this._started = true;
+		logger.info(`Game ${this.id} starting ...`);
 
 		var boardDescription = this.generatePlay();
-		var playerOrder = this.initiateGame();
+		var playerOrder = this.prepareGame();
 
 		this.emit('game:start', {
 			_success: true,
 			board: boardDescription,
 			players: playerOrder
 		});
+		this.emit('game:prepare');
 		this.emit('play:turn:new', { player: this._referee.currentPlayer.id });
 	}
 
@@ -129,7 +178,7 @@ export default class Game {
 		for (let city of this._board.cities) {
 			description.cities.push({
 				x: city.location.x,
-				y: city.location.y,
+				y: city.location.y
 			});
 		}
 		for (let path of this._board.paths) {
@@ -143,15 +192,31 @@ export default class Game {
 	}
 
 	/**
+	 * Prepares the game.
+	 * This will create a referee monitoring the placement of the players, the
+	 * distribution of the spots and roads.
+	 * @return {Array} the ids of the players in order of play
+	 */
+	prepareGame() {
+		this._referee = new PlacementReferee(this._board, shuffle(this._players));
+		this._prepared = false;
+
+		logger.info(`Preparing game ${this.id} ...`);
+		return this._referee.players.map(player => player.id);
+	}
+
+	/**
 	 * Initiates the game.
 	 * It will create a referee to monitor the game and order the
 	 * 	players.
-	 * @return {Array} the ids of the players in order of play
 	 */
 	initiateGame() {
 		this._dice = new Dice(6);
-		this._referee = new Referee(this._board, this._players);
+		var previousReferee = this._referee;
+		this._referee = new GameReferee(previousReferee.board, previousReferee.players);
 
-		return this._referee.players.map(player => player.id);
+		// TODO send to each player their resources
+
+		logger.info(`Game ${this.id} prepared and running !`);
 	}
 }

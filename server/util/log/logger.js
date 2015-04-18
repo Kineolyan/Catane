@@ -8,8 +8,8 @@ export function createLogger(level = Level.DEFAULT) {
 	case Level.ALL:
 		return new DebugLogger();
 
-	case Level.DEFAULT:
 	default:
+	case Level.DEFAULT:
 		return new ProductionLogger();
 	}
 }
