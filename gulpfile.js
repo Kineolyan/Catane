@@ -15,10 +15,6 @@ var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
 
-// var refresh = require('gulp-livereload');
-// var livereload = require('tiny-lr');
-// var server = livereload();
-
 function pathItem(name) {
 	return function(children) {
 		var items = [ name ];
@@ -49,7 +45,7 @@ PATHS.specs.matchers = pathItem('matchers');
 
 /* -- Actions -- */
 
-/** BUild all js transpiling from ES6 to ES5 */
+/** Builds all js transpiling from ES6 to ES5 */
 function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
     .pipe(cached('js'))
@@ -154,35 +150,6 @@ gulp.task('test:lint', function() {
 });
 
 gulp.task('test', ['test:unit', 'test:lint']);
-
-/* -- Live reload && watchs-- */
-
-// gulp.task('css', function () {
-//   gulp.src('app/**/*.css').pipe(refresh(server));
-// });
-
-// gulp.task('js', function () {
-//   gulp.src('app/**/*.js').pipe(refresh(server));
-// });
-
-// gulp.task('livereload-server', function () {
-//   server.listen(35729, function (err) {
-//     if (err) { return console.log(err); }
-//   });
-// });
-
-// gulp.task('serve', function () {
-//   gulp.run('livereload-server');
-
-//   gulp.watch('app/**/*.css', function (event) {
-//     gulp.run('css');
-//   });
-
-//   gulp.watch('app/**/*.js', function (event) {
-//     gulp.run('js');
-//   });
-// });
-
 
 /* -- Documentation -- */
 
