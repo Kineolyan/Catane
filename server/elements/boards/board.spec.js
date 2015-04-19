@@ -192,4 +192,7 @@ describe('Board', function () {
 		});
 	});
 
+	describe('#getTilesForDice', function() {
+		// TODO test the function
+	});
 });

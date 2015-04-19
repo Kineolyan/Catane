@@ -104,6 +104,11 @@ export default class Game {
 			var values = [ this._dice.roll(), this._dice.roll() ];
 			this._referee.rollDice(values[0] + values[1]);
 
+			// Distribute the resources to players
+			var total = values[0] + values[1];
+			var affectedTiles = this._board.getTilesForDice(total);
+			for (let tile of affectedTiles) { tile.distributeResources(); }
+
 			return values;
 		} else {
 			throw new Error('Dice already rolled');

@@ -87,6 +87,14 @@ describe('Play turn management', function () {
 			}
 		});
 
+		it('sends the resources to all players', function () {
+			for (let p of this.players) {
+				let message = p.client.lastMessage('play:roll-dice');
+				expect(message).toHaveKey('resources');
+			}
+		});
+
+		// TODO test the updates or not of the resources
 	});
 
 });

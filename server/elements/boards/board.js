@@ -86,6 +86,20 @@ export default class Board {
 		return tiles;
 	}
 
+	/**
+	 * Gets the tiles with the given dice value.
+	 * @param value the dice value to look for
+	 * @return {Array} the tiles with that dice value.
+	 */
+	getTilesForDice(value) {
+		var tiles = [];
+		for (let tile of this._tiles) {
+			if (tile.diceValue === value) { tiles.push(tile); }
+		}
+
+		return tiles;
+	}
+
 	generate(generator) {
 		generator.forEachTile(tile => this._tiles.set(tile.location.hashCode(), tile));
 		generator.forEachCity(city => this._cities.set(city.location.hashCode(), city) );

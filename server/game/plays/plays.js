@@ -35,9 +35,11 @@ export class Plays {
 
 		player.on('play:roll-dice', () => {
 			var diceValues = player.game.rollDice(player);
-			player.game.emit('play:roll-dice', { dice: diceValues });
+			for (let p of player.game.players) {
+				if (p.id !== player.id) { p.emit('play:roll-dice', { dice: diceValues, resources: p.resources }); }
+			}
 
-			return undefined;
+			return { dice: diceValues, resources: player.resources };
 		});
 
 		player.on('play:move:thieves', () => {
