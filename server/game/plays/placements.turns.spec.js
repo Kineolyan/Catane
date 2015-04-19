@@ -1,4 +1,5 @@
 import * as starter from '../games/game-spec.starter.js';
+import * as maps from '../../util/maps.js';
 
 describe('Placement turn management', function() {
 	beforeEach(function() {
@@ -56,7 +57,17 @@ describe('Placement turn management', function() {
 					let message  = p.client.lastMessage('play:pick:colony');
 					expect(message.player).toEqual(firstPlayerId);
 					expect(message.colony).toEqual(this.pickedLocation);
+					if (p.id !== firstPlayerId) { expect(message).not.toHaveKey('resources'); }
 				}
+			});
+
+			it('provides gained resources to the player', function() {
+				var message = this.p1.client.lastMessage('play:pick:colony');
+				var totalResources = 0;
+				for ( let [ , count ] of maps.entries(message.resources)) {
+					totalResources += count;
+				}
+				expect(totalResources).toBeIn([ 2, 3 ]);
 			});
 		});
 

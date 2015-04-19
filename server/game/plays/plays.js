@@ -9,12 +9,15 @@ export class Plays {
 			var location = new Location(request.colony.x, request.colony.y);
 			var colony = player.game.pickColony(player, location);
 
-			player.game.emit('play:pick:colony', {
+			var message = {
 				player: player.id,
 				colony: colony.location.toJson()
-			});
+			};
+			player.game.emit(player, 'play:pick:colony', message);
 
-			return undefined;
+			// Add the resources for the player
+			message.resources = player.resources;
+			return message;
 		});
 
 		player.on('play:pick:path', (request) => {

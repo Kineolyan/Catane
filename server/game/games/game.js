@@ -70,8 +70,13 @@ export default class Game {
 		this._referee.checkTurn(player);
 		this._referee.pickColony(location);
 
+		// Assign the colony
 		var pickedColony = this._board.getCity(location);
 		pickedColony.owner = player;
+
+		// Provide the resources
+		var reachedTiles = this._board.getSurroundingTiles(location);
+		player.receiveResources(reachedTiles.map(tile => tile.resource));
 
 		return pickedColony;
 	}
