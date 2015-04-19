@@ -44,8 +44,13 @@ describe('Player', function() {
 			this.player = new Player(this.socket.toSocket());
 		});
 
-		it('updates the number of resources', function() {
+		it('updates the number of resources from an array', function() {
 			this.player.receiveResources([ 'ble', 'bois', 'mouton', 'ble' ]);
+			expect(this.player.resources).toEqual({ ble: 2, mouton: 1, bois: 1 });
+		});
+
+		it('updates the number of resources from a hash', function() {
+			this.player.receiveResources({ ble: 2, bois: 1, mouton: 1 });
 			expect(this.player.resources).toEqual({ ble: 2, mouton: 1, bois: 1 });
 		});
 	});

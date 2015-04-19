@@ -1,6 +1,9 @@
 import Tile from './tile';
+
 import Location from './location';
 import City from './city';
+import Player from '../../game/players/player.js';
+import { MockSocket } from '../../com/mocks.js';
 
 describe('Tile', function() {
 	describe('constructor', function() {
@@ -27,7 +30,7 @@ describe('Tile', function() {
 
 	describe('cities management', function() {
 		beforeEach(function() {
-			this.tile = new Tile(4, 2, 'tuile');
+			this.tile = new Tile(4, 2, 'tuile', 8);
 
 			this.city = new City(4, 3);
 			this.tile.addCity(this.city);
@@ -49,5 +52,31 @@ describe('Tile', function() {
 		});
 	});
 
+	describe('#distributeResources', function() {
+		beforeEach(function() {
+			this.tile = new Tile(0, 0, 'ble', 2);
 
+			this.emptySpot = new City(1, 0);
+			this.tile.addCity(this.emptySpot);
+
+			this.colony = new City(0, -1);
+			this.colony.owner = new Player(new MockSocket().toSocket(), 1);
+			this.tile.addCity(this.colony);
+
+			this.city = new City(-1, 1);
+			this.city.owner = new Player(new MockSocket().toSocket(), 2);
+			this.city.evolve();
+			this.tile.addCity(this.city);
+		});
+
+		it('gives 1 resource to the colonies', function() {
+			expect(() => this.tile.distributeResources())
+					.toChangeBy(() => this.colony.owner.resources.ble || 0, 1);
+		});
+
+		it('gives twice the resource to the cities', function() {
+			expect(() => this.tile.distributeResources())
+					.toChangeBy(() => this.city.owner.resources.ble || 0, 2);
+		});
+	});
 });
