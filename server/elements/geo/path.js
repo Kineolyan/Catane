@@ -31,6 +31,7 @@ export default class Path {
 				this._to = from;
 			}
 		}
+		this._owner = null;
 	}
 
 	get from() {
@@ -41,8 +42,25 @@ export default class Path {
 		return this._to;
 	}
 
+	get owner() {
+		return this._owner;
+	}
+
+	set owner(owner) {
+		this._owner = owner;
+		return owner;
+	}
+
 	hashCode() {
 		return offset(this._from.x) + HASH_BASE * (offset(this._from.y) + HASH_BASE * (offset(this._to.x) + HASH_BASE * offset(this._to.y)));
+	}
+
+	toString() {
+		return `from ${this._from.toString()} to ${this._to.toString()}`;
+	}
+
+	toJson() {
+		return { from: this._from.toJson(), to: this._to.toJson() };
 	}
 
 }

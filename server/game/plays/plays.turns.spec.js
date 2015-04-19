@@ -1,6 +1,6 @@
 import * as starter from '../games/game-spec.starter.js';
 
-describe('Play turn management', function() {
+xdescribe('Play turn management', function() {
 	beforeEach(function() {
 		this.game = starter.createGame(2);
 		this.players = this.game.players;

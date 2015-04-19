@@ -4,11 +4,14 @@ import City from '../../geo/city';
 import Path from '../../geo/path';
 import { catane } from './dices';
 import { RandomResources } from './resources';
-
-const CITY_POSITIONS = [ [0, 1], [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1] ];
+import * as geo from '../../geo/geo';
 
 export class RoundGenerator {
 	constructor(nbRings) {
+		if (nbRings < 1) {
+			throw new Error(`Nb of rings must be higher than 1. ${nbRings} provided`);
+		}
+
 		this._tiles = new Map();
 		this._cities = new Map();
 		this._paths = new Map();
@@ -57,9 +60,7 @@ export class RoundGenerator {
 	 */
 	createSurroundingTiles(center) {
 		var newTiles = [];
-		[
-			[0, 0], [1, 1], [2, -1], [1, -2], [-1, -1], [-2, 1], [-1, 2]
-		].forEach(function(location) {
+		geo.SURROUNDING_TILES.forEach(function(location) {
 			var [x, y] = location;
 
 			var tile = this.createTile(center.location.x + x, center.location.y + y);
@@ -85,7 +86,7 @@ export class RoundGenerator {
 
 			let firstCity = null;
 			let lastCity = null;
-			for (let [cityX, cityY] of CITY_POSITIONS) {
+			for (let [cityX, cityY] of geo.SURROUNDING_CITIES) {
 				let city = this.createCity(x + cityX, y + cityY);
 				tile.addCity(city);
 

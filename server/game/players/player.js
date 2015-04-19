@@ -32,8 +32,8 @@ export default class Player {
 	}
 
 	/**
-	 * Register the name of the user
-	 * @param  {String} the new name of the player
+	 * Registers the name of the user
+	 * @param  {String} name the new name of the player
 	 * @return {String} the name set
 	 */
 	set name(name) {
@@ -43,7 +43,7 @@ export default class Player {
 	}
 
 	/**
-	 * Gest the game the player belongs to.
+	 * Gets the game the player belongs to.
 	 * @return {Game} the game
 	 */
 	get game() {
@@ -52,8 +52,8 @@ export default class Player {
 
 	/**
 	 * Sets the game the player has joined
-	 * @param  {Game} the joined game
-	 * @return {Player} this
+	 * @param  {Game} game the joined game
+	 * @return {Game} the game set
 	 */
 	set game(game) {
 		this._game = game;

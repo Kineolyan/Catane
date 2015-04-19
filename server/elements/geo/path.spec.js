@@ -48,4 +48,11 @@ describe('Path', function() {
 		});
 	});
 
+	describe('#toJson', function() {
+		it('returns a object representing the path', function() {
+			var path = new Path(new Location(1,2), new Location(3, 4));
+			expect(path.toJson()).toEqual({ from: { x: 1, y: 2 }, to: { x: 3, y: 4 } });
+		});
+	});
+
 });

@@ -60,7 +60,9 @@ var arrayMatchers = {
 		return {
 			compare: function(actual, expected) {
 				var result = {
-					pass: actual.every(function(value) { return util.contains(expected, value, equalityTesters); }) && expected.every(function(value) { return util.contains(actual, value, equalityTesters); })
+					pass: actual.length === expected.length
+						&& actual.every(function(value) { return util.contains(expected, value, equalityTesters); })
+						&& expected.every(function(value) { return util.contains(actual, value, equalityTesters); })
 				};
 
 				result.message = 'Expecting ' + n_util.inspect(actual)
