@@ -131,11 +131,24 @@ export default class Game {
 
 	/**
 	 * Emits the message on the channel to all players of the game.
-	 * @param  {String} channel name of the event
-	 * @param  {Object=} message message to send
+	 * @param {Player=} player the current player, defined to exclude the player for the broadcast.
+	 * @param {String} channel name of the event
+	 * @param {Object=} message message to send
 	 */
-	emit(channel, message) {
-		this._players.forEach(player => player.emit(channel, message));
+	emit(player, channel, message) {
+		var excludedId;
+		if (typeof player === 'string') {
+			// It does not define any player
+			message = channel;
+			channel = player;
+			excludedId = -1;
+		} else {
+			excludedId = player.id;
+		}
+
+		this._players.forEach(player => {
+			if (player.id !== excludedId) { player.emit(channel, message); }
+		});
 	}
 
 	start() {
