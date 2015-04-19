@@ -130,7 +130,7 @@ gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
 /* -- Watcher -- */
 gulp.task('watch:jsx', function() {
-  gulp.watch(PATHS.client.js('components/**/*.jsx'), ['watch:jsx:test']);
+  gulp.watch(PATHS.client.js('components/**/*.js'), ['watch:jsx:test']);
 });
 
 gulp.task('watch:jsx:test', ['build:browserify'], testUnit);

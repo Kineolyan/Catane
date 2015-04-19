@@ -22,7 +22,7 @@ export default class Card extends React.Component {
           stroke='black'
           fill='white'
         />
-        <Text>{this.props.type}</Text>
+        <Text fill="black" font={{'font-size':  '12px'}}>{this.props.type}</Text>
       </Group>
     );
   }

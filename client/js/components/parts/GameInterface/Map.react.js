@@ -16,8 +16,9 @@ export default class MapR extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
-      board: this.props.initBoard
+      board: new MapHelper(this.props.initBoard, this.props.margin)
     };
   }
 
@@ -26,7 +27,7 @@ export default class MapR extends React.Component {
    * @return {React.Element} the rendered element
    */
   render() {
-    var board = new MapHelper(this.state.board, this.props.margin),
+    var board = this.state.board,
         tiles,
         paths, 
         cities;

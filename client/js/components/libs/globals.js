@@ -26,7 +26,9 @@ GLOBALS.socket = {
   gameQuit: 'game:quit',
   playerNickname: 'player:nickname',
   mapDice: 'play:roll-dice',
-  turnNex: 'turn:new'
+  turnNex: 'turn:new',
+  gamePrepare: 'game:prepare',
+  playTurnNew: 'play:turn:new'
 };
 
 GLOBALS.map = {};
@@ -46,7 +48,7 @@ Object.keys(GLOBALS.map.resources).forEach(e => {
 
 GLOBALS.interface = {};
 GLOBALS.interface.player = {};
-GLOBALS.interface.player.colors = ['yellow', '#7FFFD4', '#F08080', '#E0FFFF'];
+GLOBALS.interface.player.colors = ['yellow', 'red', 'navy', 'silver'];
 
 
 export default GLOBALS;

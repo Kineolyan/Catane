@@ -9,6 +9,8 @@ import {Surface} from 'react-art';
 import MapReact from './Map.react';
 import DiceReact from './Dice.react';
 import PlayerInfo from './PlayerInfo/PlayerInfo.react';
+import Socket from '../../libs/socket';
+import Globals from '../../libs/globals';
 
 export default class GameInterface extends React.Component {
 
@@ -16,7 +18,8 @@ export default class GameInterface extends React.Component {
     super(props);
     this.state = {
       width: window.innerWidth,
-      height: window.innerHeight
+      height: window.innerHeight,
+      prepare: false
     };
 
   }
@@ -29,7 +32,8 @@ export default class GameInterface extends React.Component {
   }
 
   componentDidMount() {
-    //window.addEventListener('resize', this.handleResize);
+    this.initSocket();
+
   }
 
   /**
@@ -43,14 +47,26 @@ export default class GameInterface extends React.Component {
         <Surface x={0} y={0} width={this.state.width} height={this.state.height}>
             <DiceReact x={10} y={10} size={50} />
             <MapReact ref="map" initBoard={this.props.board} width={this.state.width} height={this.state.height} margin={50}/>
-            <PlayerInfo ref="player" players={this.props.players} y={150} x={20}/>
+            
+            <PlayerInfo ref="player" 
+                        players={this.props.players} 
+                        prepare={this.state.prepare}
+                        onMyTurn={this.changeMap}
+                        y={150} 
+                        x={20}/>
         </Surface>
       </div>
     );
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize);
+  initSocket() {
+    Socket.on(Globals.socket.gamePrepare, () => {
+      this.setState({prepare: true});
+    });
+  }
+
+  changeMap() {
+
   }
 
 }
