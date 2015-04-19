@@ -252,18 +252,19 @@ describe('Games', function() {
 					});
 
 					it('describes tiles', function() {
+						// TODO test it more intensively
 						var tile = this.board.tiles[0];
 
-						expect(tile).toHaveKeys([ 'x', 'y', 'resource', 'diceValue' ]);
+						if (tile.resource === 'desert') {
+							expect(tile).toHaveKeys([ 'x', 'y', 'resource' ]);
+						} else {
+							expect(tile).toHaveKeys([ 'x', 'y', 'resource', 'diceValue' ]);
+						}
+
 						expect(tile.x).toBeAnInteger();
 						expect(tile.y).toBeAnInteger();
-
 						expect(tile.resource).toBeIn([ 'desert', 'tuile', 'bois', 'mouton', 'ble', 'caillou' ]);
-
-						// TODO test it more intensively
-						if (tile.resource === 'desert') {
-							expect(tile.diceValue).toBeUndefined();
-						} else {
+						if (tile.resource !== 'desert') {
 							expect(tile.diceValue).toBeAnInteger();
 							expect(tile.diceValue).toBeBetween(2, 12);
 						}
