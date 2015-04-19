@@ -51,7 +51,10 @@ export class MockSocket {
 	 */
 	emit(channel, message) {
 		this._messages[channel] = this._messages[channel] || [];
-		this._messages[channel].push(message || null);
+		/* Copy the message to avoid side effects due to the absence of real comm.
+		 * This prevents updates on the stored message. */
+		var copy = message !== undefined ? JSON.parse(JSON.stringify(message)) : null;
+		this._messages[channel].push(copy);
 	}
 
 	/**
