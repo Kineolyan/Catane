@@ -141,9 +141,6 @@ gulp.task('watch:sass', function() {
 
 gulp.task('watch', ['watch:js', 'watch:jsx', 'watch:sass']);
 
-//watch + server
-
-gulp.task('develop', ['watch', 'server']);
 
 /* -- Test task -- */
 
