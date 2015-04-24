@@ -3,6 +3,7 @@ import Board from './board';
 import Location from '../geo/location';
 import Path from '../geo/path.js';
 import City from '../geo/city';
+import Tile from '../geo/tile.js';
 import { RoundGenerator } from './generators/maps.js';
 
 describe('Board', function () {
@@ -31,7 +32,7 @@ describe('Board', function () {
 			this.board = new Board();
 			this.board.generate({
 				forEachTile: function (action) {
-					action("tile");
+					action(new Tile(0, 0, 'ble', 8));
 				},
 				forEachCity: function (action) {
 					action(new City(1, 2));
@@ -46,7 +47,11 @@ describe('Board', function () {
 		});
 
 		it('has all generated tiles', function () {
-			expect(this.board.tiles).toEqual([ "tile" ]);
+			expect(this.board.tiles).toHaveLength(1);
+			var tile = this.board.tiles[0];
+			expect(tile.resource).toEqual('ble');
+			expect(tile.location).toEqual(new Location(0, 0));
+			expect(tile.diceValue).toEqual(8);
 		});
 
 		it('has all generated cities', function () {
@@ -152,4 +157,42 @@ describe('Board', function () {
 		});
 	});
 
+	describe('#getSurroundingTiles', function() {
+		beforeEach(function() {
+			this.board = new Board();
+			this.board.generate(new RoundGenerator(2));
+		});
+
+		it('get correct tiles inside the board', function() {
+			// Test the two patterns
+			var tileLocations = this.board.getSurroundingTiles(new Location(1, 0))
+					.map(tile => tile.location);
+			expect(tileLocations).toHaveMembers([
+				new Location(1, 1),
+				new Location(2, -1),
+				new Location(0, 0)
+			]);
+
+			tileLocations = this.board.getSurroundingTiles(new Location(-1, 0))
+					.map(tile => tile.location);
+			expect(tileLocations).toHaveMembers([
+				new Location(-1, -1),
+				new Location(-2, 1),
+				new Location(0, 0)
+			]);
+		});
+
+		it('get correct cities on board border', function() {
+			var tileLocations = this.board.getSurroundingTiles(new Location(0, 2))
+					.map(tile => tile.location);
+			expect(tileLocations).toHaveMembers([
+				new Location(1, 1),
+				new Location(-1, 2)
+			]);
+		});
+	});
+
+	describe('#getTilesForDice', function() {
+		// TODO test the function
+	});
 });

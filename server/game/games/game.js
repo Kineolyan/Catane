@@ -70,8 +70,13 @@ export default class Game {
 		this._referee.checkTurn(player);
 		this._referee.pickColony(location);
 
+		// Assign the colony
 		var pickedColony = this._board.getCity(location);
 		pickedColony.owner = player;
+
+		// Provide the resources
+		var reachedTiles = this._board.getSurroundingTiles(location);
+		player.receiveResources(reachedTiles.map(tile => tile.resource));
 
 		return pickedColony;
 	}
@@ -98,6 +103,11 @@ export default class Game {
 		if (this._referee.canRollDice(player)) {
 			var values = [ this._dice.roll(), this._dice.roll() ];
 			this._referee.rollDice(values[0] + values[1]);
+
+			// Distribute the resources to players
+			var total = values[0] + values[1];
+			var affectedTiles = this._board.getTilesForDice(total);
+			for (let tile of affectedTiles) { tile.distributeResources(); }
 
 			return values;
 		} else {
@@ -131,11 +141,24 @@ export default class Game {
 
 	/**
 	 * Emits the message on the channel to all players of the game.
-	 * @param  {String} channel name of the event
-	 * @param  {Object=} message message to send
+	 * @param {Player=} player the current player, defined to exclude the player for the broadcast.
+	 * @param {String} channel name of the event
+	 * @param {Object=} message message to send
 	 */
-	emit(channel, message) {
-		this._players.forEach(player => player.emit(channel, message));
+	emit(player, channel, message) {
+		var excludedId;
+		if (typeof player === 'string') {
+			// It does not define any player
+			message = channel;
+			channel = player;
+			excludedId = -1;
+		} else {
+			excludedId = player.id;
+		}
+
+		this._players.forEach(player => {
+			if (player.id !== excludedId) { player.emit(channel, message); }
+		});
 	}
 
 	start() {

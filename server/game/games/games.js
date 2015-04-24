@@ -149,11 +149,10 @@ export default class Games {
 	 */
 	broadcastPlayers(game) {
 		var players = Array.from(game.players, (player) => ({ name: player.name, id: player.id }));
-		var message = {
+		game.emit('game:players', {
 			_success: true,
 			players: players
-		};
-		game.players.forEach(player => player.emit('game:players', message));
+		});
 	}
 
 }

@@ -22,7 +22,7 @@ describe('Game', function() {
 	describe('#add', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
-			this.player = new Player(this.client, 1);
+			this.player = new Player(this.client.toSocket(), 1);
 
 			this.result = this.game.add(this.player);
 		});
@@ -51,7 +51,7 @@ describe('Game', function() {
 	describe('#remove', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
-			this.player = new Player(this.client, 1);
+			this.player = new Player(this.client.toSocket(), 1);
 
 			expect(this.game.add(this.player)).toBe(true);
 			this.result = this.game.remove(this.player);
@@ -77,7 +77,7 @@ describe('Game', function() {
 	describe('#start', function() {
 		beforeEach(function() {
 			this.clients = [ new MockSocket() ];
-			this.players = [ new Player(this.clients[0], 1) ];
+			this.players = [ new Player(this.clients[0].toSocket(), 1) ];
 
 			expect(this.game.add(this.players[0])).toBe(true);
 		});
@@ -85,7 +85,7 @@ describe('Game', function() {
 		describe('with enough players', function() {
 			beforeEach(function() {
 				this.clients.push(new MockSocket());
-				this.players.push(new Player(this.clients[1], 2));
+				this.players.push(new Player(this.clients[1].toSocket(), 2));
 
 				expect(this.game.add(this.players[1])).toBe(true);
 				this.game.start();
@@ -103,6 +103,27 @@ describe('Game', function() {
 			it('fails with Error', function() {
 				expect(() => this.game.start()).toThrowError(/not enough players/i);
 			});
+		});
+	});
+
+	describe('#emit', function() {
+		beforeEach(function() {
+			this.clients = [ new MockSocket(), new MockSocket()	];
+			this.players = this.clients.map((client, i) => new Player(client.toSocket(), i + 1));
+			for (let player of this.players) { this.game.add(player); }
+		});
+
+		it('broadcast to all players if none specified', function() {
+			this.game.emit('test', 1);
+			for (let client of this.clients) {
+				expect(client.lastMessage('test')).toEqual(1);
+			}
+		});
+
+		it('broadcast to all players but the one specified', function() {
+			this.game.emit(this.players[0], 'test', 2);
+			expect(this.clients[0].lastMessage('test')).toBeUndefined();
+			expect(this.clients[1].lastMessage('test')).toEqual(2);
 		});
 	});
 });

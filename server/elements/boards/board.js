@@ -8,13 +8,13 @@ function getEntryValue(entry) {
 export default class Board {
 
 	constructor() {
-		this._tiles = [];
+		this._tiles = new Map();
 		this._cities = new Map();
 		this._paths = new Map();
 	}
 
 	get tiles() {
-		return this._tiles;
+		return Array.from(this._tiles, getEntryValue);
 	}
 
 	get cities() {
@@ -70,8 +70,38 @@ export default class Board {
 		return cities;
 	}
 
+	/**
+	 * Gets the tiles surrounding a city.
+	 * @param location city location
+	 * @return {Array} the tiles around the city
+	 */
+	getSurroundingTiles(location) {
+		var tiles = [];
+		for (let [x, y] of geo.SURROUNDING_CITIES) {
+			let nextLocation = location.shift(x, y);
+			let nextTile = this._tiles.get(nextLocation.hashCode());
+			if (nextTile !== undefined) { tiles.push(nextTile); }
+		}
+
+		return tiles;
+	}
+
+	/**
+	 * Gets the tiles with the given dice value.
+	 * @param value the dice value to look for
+	 * @return {Array} the tiles with that dice value.
+	 */
+	getTilesForDice(value) {
+		var tiles = [];
+		for (let tile of this._tiles) {
+			if (tile.diceValue === value) { tiles.push(tile); }
+		}
+
+		return tiles;
+	}
+
 	generate(generator) {
-		generator.forEachTile(tile => this._tiles.push(tile));
+		generator.forEachTile(tile => this._tiles.set(tile.location.hashCode(), tile));
 		generator.forEachCity(city => this._cities.set(city.location.hashCode(), city) );
 		generator.forEachPath(path => this._paths.set(path.hashCode(), path));
 	}

@@ -1,4 +1,5 @@
 import { messages } from '../../com/messages.js';
+import * as maps from '../../util/maps.js';
 
 export default class Player {
 
@@ -8,6 +9,7 @@ export default class Player {
 		this._id = id;
 		this._name = `Player ${id}`;
 		this._game = undefined;
+		this._resources = {};
 
 		socket.on('player:nickname', function(name) {
 			player.name = name;
@@ -59,6 +61,32 @@ export default class Player {
 		this._game = game;
 
 		return game;
+	}
+
+	get resources() {
+		return this._resources;
+	}
+
+	receiveResources(resources) {
+		if (resources.constructor === Array) {
+			for (let resource of resources) {
+				this._updateResource(resource, 1);
+			}
+		} else {
+			for (let [resource, value] of maps.entries(resources)) {
+				this._updateResource(resource, value);
+			}
+		}
+	}
+
+	/**
+	 * Updates a resource by a given number.
+	 * @param resource the resource name
+	 * @param value the value to add to the current
+	 * @private
+	 */
+	_updateResource(resource, value) {
+		this._resources[resource] = (this._resources[resource] || 0) + value;
 	}
 
 	/**
