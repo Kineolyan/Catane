@@ -42,10 +42,10 @@ export class Plays {
 			return { dice: diceValues, resources: player.resources };
 		});
 
-		player.on('play:move:thieves', () => {
-			player.game.moveThieves(player);
-			// TODO complete the implementation
-
+		player.on('play:move:thieves', (request) => {
+			var tileLocation = new Location(request.tile.x, request.tile.y);
+			player.game.moveThieves(player, tileLocation);
+			player.game.emit('play:move:thieves', { tile: tileLocation.location.toJson() });
 			return undefined;
 		});
 

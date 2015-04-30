@@ -124,8 +124,19 @@ export class GameReferee extends AReferee {
 		this._step = (diceValue !== 7) ? GAME_STEPS.PLAY : GAME_STEPS.MOVE_THIEVES;
 	}
 
-	moveThieves() {
-		this._step = GAME_STEPS.PLAY;
+	moveThieves(tileLocation) {
+		if (this._step === GAME_STEPS.MOVE_THIEVES || this._step === GAME_STEPS.PLAY) {
+			if (this._board.getTile(tileLocation) === undefined) {
+				throw new Error(`Location ${tileLocation.toString()} does not refer to a tile`);
+			}
+			if (this._board.thieves.hashCode() === tileLocation.hashCode()) {
+				throw new Error(`Thieves already on ${tileLocation.toString()}`);
+			}
+
+			this._step = GAME_STEPS.PLAY;
+		} else {
+			throw new Error(`Not the correct step to move thieves. Current ${this._step}`);
+		}
 	}
 
 	startTurn() {

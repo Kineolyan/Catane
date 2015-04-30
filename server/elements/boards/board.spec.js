@@ -68,6 +68,21 @@ describe('Board', function () {
 		});
 	});
 
+	describe('#getTile', function () {
+		beforeEach(function () {
+			this.board = new Board();
+			this.board.generate(new RoundGenerator(1));
+		});
+
+		it('finds existing tiles', function () {
+			expect(this.board.getTile(new Location(0, 0))).not.toBeUndefined();
+		});
+
+		it('returns undefined on unexisting tiles', function () {
+			expect(this.board.getTile(new Location(0, 1))).toBeUndefined();
+		});
+	});
+
 	describe('#getCity', function () {
 		beforeEach(function () {
 			this.board = new Board();

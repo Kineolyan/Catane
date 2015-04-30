@@ -11,6 +11,7 @@ export default class Board {
 		this._tiles = new Map();
 		this._cities = new Map();
 		this._paths = new Map();
+		this._thieves = null;
 	}
 
 	get tiles() {
@@ -23,6 +24,31 @@ export default class Board {
 
 	get paths() {
 		return Array.from(this._paths, getEntryValue);
+	}
+
+	/**
+	 * Gets the thieves location
+	 * @return {null|Location}
+	 */
+	get thieves() {
+		return this._thieves;
+	}
+
+	/**
+	 * Sets the new location for the thieves
+	 * @param {Location} location the new location
+	 */
+	set thieves(location) {
+		this._thieves = location;
+	}
+
+	/**
+	 * Gets the tile at a given location
+	 * @param location the asked location
+	 * @return {Tile} the tile at the location or undefined if emtpy
+	 */
+	getTile(location) {
+		return this._tiles.get(location.hashCode());
 	}
 
 	/**
@@ -101,7 +127,10 @@ export default class Board {
 	}
 
 	generate(generator) {
-		generator.forEachTile(tile => this._tiles.set(tile.location.hashCode(), tile));
+		generator.forEachTile(tile => {
+			this._tiles.set(tile.location.hashCode(), tile)
+			if (tile.resource === 'desert') { this._thieves = tile.location; }
+		});
 		generator.forEachCity(city => this._cities.set(city.location.hashCode(), city) );
 		generator.forEachPath(path => this._paths.set(path.hashCode(), path));
 	}

@@ -65,6 +65,12 @@ export function createGame(nbPlayers) {
 		players: players,
 		start: function() {
 			players[0].client.receive('game:start', gameId);
+			
+			var message = players[0].client.lastMessage('game:start');
+			this.order = message.players;
+			for (let tile of message.board.tiles) {
+				if (tile.resource === 'desert') { this.thieves = tile.location; }
+			}
 		},
 		/**
 		 * Picks a city and a road for the given player.
