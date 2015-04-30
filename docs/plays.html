@@ -12,7 +12,7 @@
     participant All
     Joueur->Serveur: ws/game:start\ngame_id
     Note right of All: Notifie les joueurs\nSee play documentation\n
-    Serveur->All: ws/game:start\n{ tiles: [{x: x, y: y, resource: r, diceValue: d}, ..],\n   cities: [{x: x, y: y}, ..],\n   paths: [{from: {x: x, y: y}, to: {x: x, y: y}}, ..] }
+    Serveur->All: ws/game:start\n{ board:\n{ tiles: [{x: x, y: y, resource: r, diceValue: d}, ..],\n   cities: [{x: x, y: y}, ..],\n   paths: [{from: {x: x, y: y}, to: {x: x, y: y}}, ..]\n}, players: [ id1, id2, ... ] }
     Note left of All: Resources: desert, caillou, bois, mouton, ble, tuile
     Note left of All: Dice values: from 2 to 12, null for desert
     Note right of Serveur: Phase de placement
