@@ -31,9 +31,11 @@ export default class PlayerInfo extends React.Component {
     var p = this.props.players;
     var players = p.other.sort((a, b) => a.id - b.id);
 
-    this.id = p.me.id;
 
     Player.deleteAll();
+
+    Player.myId = p.me.id;
+
     players.forEach((element, i) => {
       Player.createPlayer(element.id, element.name, Globals.interface.player.colors[i]);
     });
@@ -53,7 +55,7 @@ export default class PlayerInfo extends React.Component {
         renderedPlayers = [];
 
     Player.getMap().forEach((element) => {
-      if(element.id !== this.id) {
+      if(!element.isMe()) {
         renderedPlayers.push(<OtherPlayer key={index}
                                           index={index}
                                           color={element.color}
@@ -77,24 +79,23 @@ export default class PlayerInfo extends React.Component {
   }
 
   initSocket() {
-
-    Socket.on(Globals.socket.playTurnNew, (res) => {
-      var playing = Player.getPlayer(res.player);
-
-      if(playing.id === this.id) {
-        this.startPlay();
-      } else {
-        this.setState({message: `Playing : ${playing.name}`});
-      }
-    });
-
+    Socket.on(Globals.socket.playTurnNew, this.playNewTurn.bind(this));
   }
 
-  startPlay() {
-    if(this.props.prepare) {
-      this.setState({message: `Choose a colony`});
-      this.props.onMyTurn();
+  playNewTurn(res) {
+    var playing = Player.getPlayer(res.player);
+
+    if(playing.isMe()) {
+      if(this.props.prepare) {
+        this.setMessage(`Choose a colony then a path`);
+      }
+    } else {
+        this.setMessage(`Playing : ${playing.name}`);
     }
+  }
+
+  setMessage(message) {
+    this.setState({message: message});
   }
 }
 

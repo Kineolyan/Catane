@@ -12,41 +12,51 @@ import Tile from './Tile.react';
 import City from './City.react';
 import Path from './Path.react';
 
+import Socket from '../../libs/socket';
+import Globals from '../../libs/globals';
+import Player from '../../libs/player';
+
 export default class MapR extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      board: new MapHelper(this.props.initBoard, this.props.margin)
+      board: new MapHelper(this.props.board, this.props.margin),
+      canSelect: false
     };
   }
 
+
+  componentDidMount() {
+    this.initSocket();
+  }
   /**
    * Render the whole map of the game
    * @return {React.Element} the rendered element
    */
   render() {
     var board = this.state.board,
-        tiles,
-        paths, 
-        cities;
+        tiles = [],
+        paths = [],
+        cities = [];
 
     if(board.tiles) {
-        tiles = board.tiles.map((elem) => {
-          return <Tile key={elem.key} tile={elem} />;
+
+        board.tiles.forEach((elem) => {
+          tiles.push(<Tile key={elem.key} tile={elem} />);
         });
     }
   
     if(board.paths) {
-        paths = board.paths.map((elem) => {
-          return <Path key={elem.key} path={elem} />;
+        board.paths.forEach((elem) => {
+          paths.push(<Path key={elem.key} path={elem} />);
         });
     }
-    
     if(board.cities) {
-        cities = board.cities.map((elem) => {
-          return <City key={elem.key} city={elem} />;
+
+        board.cities.forEach((elem) => {
+          cities.push(<City key={elem.key} city={elem} />);
         });
     }
     
@@ -59,10 +69,19 @@ export default class MapR extends React.Component {
       </Group>
     );
   }
+
+  initSocket() {
+    Socket.on(Globals.socket.playTurnNew, (res) => {
+      if(this.props.prepare) {
+        var player = Player.getPlayer(res.player);
+        this.setState({canSelect: player.isMe()});
+      }
+    });
+  }
 }
 
 MapR.propTypes = {
-  initBoard: React.PropTypes.any.isRequired
+  board: React.PropTypes.any.isRequired
 };
 
 MapR.displayName = 'Map';

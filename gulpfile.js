@@ -57,8 +57,6 @@ function buildJs() {
 
 function buildJsx() {
   return gulp.src(PATHS.client.js('components/**/*.js'))
-    .pipe(cached('client-js'))
-    .pipe(remember('client-js'))
     .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
     .pipe(babel())
     .pipe(plumber.stop())
@@ -82,10 +80,10 @@ function cleanCache() {
   cached.caches = {};
 }
 
-function cleanOutput() {
+function cleanOutput(done) {
   return del([
       PATHS.build()
-  ]);
+  ], done);
 }
 
 /* --  Build tasks -- */

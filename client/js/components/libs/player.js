@@ -19,6 +19,10 @@ export default class Player {
   get name() {
     return this._name;
   }
+
+  isMe() {
+    return this._id === Player.id;
+  }
 }
 
 Player.createPlayer = function() {
@@ -38,3 +42,11 @@ Player.getMap = () => {
 Player.deleteAll = () => {
   players.clear();
 };
+
+Player.getMe = () => {
+  return Player.getPlayer(Player.myId);
+};
+
+Player.myId = 0;
+
+

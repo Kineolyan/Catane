@@ -19,7 +19,7 @@ export default class GameInterface extends React.Component {
     this.state = {
       width: window.innerWidth,
       height: window.innerHeight,
-      prepare: false
+      prepare: true
     };
 
   }
@@ -46,7 +46,13 @@ export default class GameInterface extends React.Component {
       <div>
         <Surface x={0} y={0} width={this.state.width} height={this.state.height}>
             <DiceReact x={10} y={10} size={50} />
-            <MapReact ref="map" initBoard={this.props.board} width={this.state.width} height={this.state.height} margin={50}/>
+
+            <MapReact ref="map" 
+                      board={this.props.board} 
+                      width={this.state.width} 
+                      height={this.state.height} 
+                      margin={50}
+                      prepare={this.state.prepare}/>
             
             <PlayerInfo ref="player" 
                         players={this.props.players} 
@@ -66,7 +72,7 @@ export default class GameInterface extends React.Component {
   }
 
   changeMap() {
-
+    
   }
 
 }

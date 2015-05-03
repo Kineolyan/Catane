@@ -77,7 +77,7 @@ describe('A basic map', function() {
                          { from: { x: -2, y: 2 }, to: { x: -2, y: 3 } },
                          { from: { x: -2, y: 3 }, to: { x: -1, y: 3 } } ] };
 
-    this.map = utils.renderIntoDocument(<MapReact initBoard={this.board} margin={10} />);
+    this.map = utils.renderIntoDocument(<MapReact board={this.board} margin={10} />);
 
   });
 
@@ -92,4 +92,5 @@ describe('A basic map', function() {
   it('should render the paths', function() {
     expect(tests.getRenderedElements(this.map, Path).length).toEqual(this.board.paths.length);
   });
+
 });

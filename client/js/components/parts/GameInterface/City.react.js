@@ -14,7 +14,7 @@ export default class City extends React.Component {
     var city = this.props.city;
     return (
       <Group x={city.ortho.x} y={city.ortho.y}>
-        <Circle radius={this.props.radius} fill="blue"/>
+        <Circle radius={this.props.radius} fill="black"/>
       </Group>
     );
   }

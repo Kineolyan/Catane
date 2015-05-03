@@ -4,35 +4,37 @@ var unitSize = 60;
 /**
  * Map helpher, transforming hexa coordinate to orthogonal. 
  */
-var MapHelpher = function(board, margin) {
-  if(!board.tiles) {
-    return {};
-  }
-  
-  unitSize = getSize(board.tiles, window.innerHeight, window.innerWidth, margin);
+class MapHelpher  {
 
-  this.tiles = [];
-  this.cities = [];
-  this.paths = [];
+  constructor(board, margin) {
+    if(!board.tiles) {
+      return {};
+    }
+    unitSize = getSize(board.tiles, window.innerHeight, window.innerWidth, margin);
 
-  if(board.tiles) {
-    for(var i = 0; i < board.tiles.length; i += 1) {
-        this.tiles.push(new Tile(board.tiles[i]));    
+    this.tiles = new Map();
+    this.cities = new Map();
+    this.paths = new Map();
+
+    if(board.tiles) {
+      for(let i = 0; i < board.tiles.length; i += 1) {
+          this.tiles.set(board.tiles[i], new Tile(board.tiles[i]));    
+      }
+    }
+
+    if(board.cities) {
+      for(let i = 0; i < board.cities.length; i += 1) {
+          this.cities.set(board.cities[i], new City(board.cities[i]));    
+      }
+    }
+
+    if(board.paths) {
+      for(let i = 0; i < board.paths.length; i += 1) {
+          this.paths.set(board.paths[i], new Path(board.paths[i]));    
+      }
     }
   }
-
-  if(board.cities) {
-    for(var j = 0; j < board.cities.length; j += 1) {
-        this.cities.push(new City(board.cities[j]));    
-    }
-  }
-
-  if(board.paths) {
-    for(var k = 0; k < board.paths.length; k += 1) {
-        this.paths.push(new Path(board.paths[k]));    
-    }
-  }
-};
+}
 
 /**
  * Get the size of one edge of a tiles
@@ -100,53 +102,52 @@ function convert(x, y, sz) {
 
 //Abstract class for a map element
 var index = 0;
-var MapElement = function (element) {
-  Object.assign(this, element);
-  this.unitSize = unitSize;
-  this.key = this.x + ',' + this.y + ',' + index;
 
-  this.ortho = convert(this.x, this.y);
+class MapElement {
+  constructor(element) {
+    Object.assign(this, element);
 
-  index += 1;
-};
+    this.unitSize = unitSize;
+    this.key = this.x + ',' + this.y + ',' + index;
 
+    this.ortho = convert(this.x, this.y);
+    index += 1;
+  }
+}
 //A tile with orthogonal coordinate and vertex
-var Tile = function(tile) {
-  MapElement.call(this, tile);
-
-  this.resource = tile.resource;
-
-  //vertex
-  this.vertex = [];
-  this.vertex.push(convert(0, - 1));
-  this.vertex.push(convert(1, - 1));
-  this.vertex.push(convert(1, 0));
-  this.vertex.push(convert(0, 1));
-  this.vertex.push(convert(- 1, 1));
-  this.vertex.push(convert(- 1, 0));
-
-};
-Tile.prototype = Object.create(MapElement.prototype);
-Tile.prototype.constructor = Tile;
+class Tile extends MapElement {
+  constructor(tile) {
+    super(tile);
+    //vertex
+    this.vertex = [];
+    this.vertex.push(convert(0, - 1));
+    this.vertex.push(convert(1, - 1));
+    this.vertex.push(convert(1, 0));
+    this.vertex.push(convert(0, 1));
+    this.vertex.push(convert(- 1, 1));
+    this.vertex.push(convert(- 1, 0));
+  }
+}
 
 //A city with orthogonal coordinate
-var City = function(city) {
-  MapElement.call(this, city);
-};
-City.prototype = Object.create(MapElement.prototype);
-City.prototype.constructor = City;
+class City extends MapElement {
+  constructor(city) {
+    super(city);
+  }
+}
 
 //A path with orthogonal coordinate
-var Path = function(path) {
-  MapElement.call(this, {x: path.from.x, y: path.from.y});
+class Path extends MapElement {
+  constructor(path) {
+    super(path);
 
-  this.to = path.to;
-  this.to.ortho = convert(this.to.x, this.to.y);
+    this.to = path.to;
+    this.to.ortho = convert(this.to.x, this.to.y);
 
-  this.from = path.from;
-  this.from.ortho = convert(this.from.x, this.from.y);
-};
-Path.prototype = Object.create(MapElement.prototype);
-Path.prototype.constructor = Path;
+    this.from = path.from;
+    this.from.ortho = convert(this.from.x, this.from.y);
+  }
+  
+}
 
 export default MapHelpher;

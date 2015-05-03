@@ -16,7 +16,6 @@ export default class PathR extends React.Component {
     path.moveTo(p.ortho.x, p.ortho.y);
     path.lineTo(p.to.ortho.x, p.to.ortho.y);
     path.close();
-
     return (
       <Group>
         <Shape d={path} 

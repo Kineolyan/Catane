@@ -12,9 +12,10 @@ var utils = React.addons.TestUtils;
 describe('A tile', function() {
 
   beforeEach(function() {
-    var data = new MapHelper({ tiles:[ { x: 0, y: 0, resource: 'tuile', diceValue: 1 }]});
+    var val = { x: 0, y: 0, resource: 'tuile', diceValue: 1 };
+    var data = new MapHelper({ tiles:[val]});
 
-    this.tile = utils.renderIntoDocument(<Tile tile={ data.tiles[0] } />);
+    this.tile = utils.renderIntoDocument(<Tile tile={data.tiles.get(val)} />);
   });
 
   it('should represent the value of the dice', function() {
@@ -29,8 +30,9 @@ describe('A tile', function() {
 
   describe('Desert tile', function() {
     beforeEach(function() {
-      var data = new MapHelper({ tiles:[ { x: 0, y: 0, resource: 'desert', diceValue: null }]});
-      this.desertTile = utils.renderIntoDocument(<Tile tile={ data.tiles[0] } />);
+      var val = { x: 0, y: 0, resource: 'desert', diceValue: null };
+      var data = new MapHelper({ tiles:[val]});
+      this.desertTile = utils.renderIntoDocument(<Tile tile={ data.tiles.get(val) } />);
     });
 
     it('does not diplay dice value', function() {

@@ -13,6 +13,7 @@ import Globals from '../../libs/globals';
 export default class Tile extends React.Component {
 
   render() {
+
     var tile = this.props.tile,
         vertex = tile.vertex,
         path = 'M' + vertex[0].x + ' ' + vertex[0].y,
