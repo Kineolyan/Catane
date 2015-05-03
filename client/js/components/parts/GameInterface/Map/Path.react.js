@@ -7,13 +7,20 @@
 import React from 'react';
 import Element from './Element.react';
 import {Path, Shape} from 'react-art';
+import Socket from '../../../libs/socket';
+import Globals from '../../../libs/globals';
 
 export default class PathR extends React.Component {
 
   render() {
     var p = this.props.path,
         path = new Path(),
-        coef;
+        coef,
+        color = 'black';
+
+    if(p.player) {
+      color = p.player.color;
+    }
 
     if(p.to.ortho.y - p.from.ortho.y) {
       coef = -1 * (p.to.ortho.x - p.from.ortho.x) / (p.to.ortho.y - p.from.ortho.y);
@@ -30,12 +37,18 @@ export default class PathR extends React.Component {
     path.close();
 
     return (
-      <Element {...this.props} type={'path'}>
+      <Element {...this.props} type={'path'} onClick={this.handleClick.bind(this)}>
         <Shape d={path} 
-               fill="black"
+               fill={color}
               />
       </Element>
       );
+  }
+
+  handleClick() {
+    if(this.props.selectable) {
+      Socket.emit(Globals.socket.playPickPath, {path: this.props.path.key});
+    }
   }
 }
 

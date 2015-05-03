@@ -77,13 +77,26 @@ export default class MapR extends React.Component {
 
   initSocket() {
     Socket.on(Globals.socket.playTurnNew, this.playTurnNew.bind(this));
-    Socket.on(Globals.socket.playPickColony, this.playPickColony.bind(this));
+    Socket.on(Globals.socket.playPickColony, this.playPickElement.bind(this));
+    Socket.on(Globals.socket.playPickPath, this.playPickElement.bind(this));
   }
 
-  playPickColony(res) {
+  playPickElement(res) {
     if(this.props.prepare) {
         var player = Player.getPlayer(res.player);
-        this._board.giveElement('cities', res.colony, player);
+        var key;
+        var payload;
+
+        if(res.colony) {
+          key = 'cities';
+          payload = res.colony;
+        } else if(res.path) {
+          key = 'paths';
+          payload = res.path;
+          Socket.emit(Globals.socket.playTurnEnd);
+        }
+
+        this._board.giveElement(key, payload, player);
         this.refreshBoard();
     }
   }

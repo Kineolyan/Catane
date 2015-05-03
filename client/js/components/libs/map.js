@@ -58,7 +58,6 @@ class MapHelpher  {
       var elem = this._elements.get(type).get(JSON.stringify(key));
       if(elem) {
         elem.player = player;
-        console.log('player');
       } else {
         return false;
       }

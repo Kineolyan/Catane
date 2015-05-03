@@ -29,8 +29,9 @@ GLOBALS.socket = {
   turnNex: 'turn:new',
   gamePrepare: 'game:prepare',
   playTurnNew: 'play:turn:new',
-  playPickColony:'play:pick:colony',
-  playPickPath:'play:pick:path'
+  playPickColony: 'play:pick:colony',
+  playPickPath: 'play:pick:path',
+  playTurnEnd: 'play:turn:end'
 
 };
 
