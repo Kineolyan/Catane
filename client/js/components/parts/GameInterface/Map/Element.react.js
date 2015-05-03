@@ -1,18 +1,31 @@
 import React from 'react';
+import {Group} from 'react-art';
 
-export default class Element extends React.Component {
+export default class MapElement extends React.Component {
 
-  constructor(props, initState = {}) {
+  constructor(props) {
     super(props);
 
-    this.state = Object.assign({mouseIn: false}, initState);
+    this.state = {mouseIn: false};
+  }
+
+  render() {
+    return (<Group {...this.props} onMouseOver={this.mouseEnter.bind(this)} 
+                                   onMouseOut={this.mouseLeave.bind(this)} >
+              {this.props.children}
+            </Group>);
   }
 
   mouseEnter() {
+    if(this.props.selectable) {
+      window.document.body.style.cursor = 'pointer';
+    }
+
     this.setState({mouseIn: true});
   }
 
   mouseLeave() {
+    window.document.body.style.cursor = 'auto';
     this.setState({mouseIn: false});
   }
 }

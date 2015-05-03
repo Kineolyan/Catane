@@ -6,7 +6,7 @@ var socket = sock();
 var sockets = {
   on(event, callback) {
     socket.on(event, (response) => {
-        console.log(event, response);
+        console.log('Response: ', event, response);
 
         if(response && response._success === false) {
           window.alert('Error :' + response.message);
@@ -17,6 +17,7 @@ var sockets = {
   },
 
   emit(event, data) {
+    console.log('Emit: ', event, data);
     return socket.emit(event, data);
   },
 

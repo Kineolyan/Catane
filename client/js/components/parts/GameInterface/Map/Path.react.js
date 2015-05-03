@@ -6,29 +6,35 @@
 
 import React from 'react';
 import Element from './Element.react';
-import {Group, Path, Shape} from 'react-art';
+import {Path, Shape} from 'react-art';
 
-export default class PathR extends Element {
-
-  constructor(props) {
-    super(props);
-  }
+export default class PathR extends React.Component {
 
   render() {
     var p = this.props.path,
-        path = new Path();
+        path = new Path(),
+        coef;
 
-    path.moveTo(p.ortho.x, p.ortho.y);
-    path.lineTo(p.to.ortho.x, p.to.ortho.y);
+    if(p.to.ortho.y - p.from.ortho.y) {
+      coef = -1 * (p.to.ortho.x - p.from.ortho.x) / (p.to.ortho.y - p.from.ortho.y);
+    } else {
+      coef = 1;
+    }
+
+    var diff = Math.sqrt(Math.pow(this.props.thickness, 2) / (1 + Math.pow(coef, 2)));
+
+    path.moveTo(p.ortho.x - diff, p.ortho.y - diff * coef);
+    path.lineTo(p.ortho.x + diff, p.ortho.y + diff * coef);
+    path.lineTo(p.to.ortho.x + diff, p.to.ortho.y + diff * coef);
+    path.lineTo(p.to.ortho.x - diff, p.to.ortho.y - diff * coef);
     path.close();
+
     return (
-      <Group>
+      <Element {...this.props} type={'path'}>
         <Shape d={path} 
-               stroke='#000000'
-               strokeWidth={this.props.thickness}
+               fill="black"
               />
-        
-      </Group>
+      </Element>
       );
   }
 }

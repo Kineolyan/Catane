@@ -8,21 +8,31 @@
 import React from 'react';
 import Element from './Element.react';
 import Circle from 'react-art/shapes/circle';
-import {Group} from 'react-art';
+import Socket from '../../../libs/socket';
+import Globals from '../../../libs/globals';
 
-export default class City extends Element {
-
-  constructor(props) {
-    super(props);
-  }
+export default class City extends React.Component {
 
   render() {
-    var city = this.props.city;
+    var city = this.props.city,
+        color = 'black';
+
+    if(city.player) {
+      console.log(city.player);
+      color = city.player.color;
+    }
+
     return (
-      <Group x={city.ortho.x} y={city.ortho.y}>
-        <Circle radius={this.props.radius} fill="black"/>
-      </Group>
+      <Element x={city.ortho.x} y={city.ortho.y} {...this.props} onClick={this.handleClick.bind(this)}>
+        <Circle radius={this.props.radius} fill={color}/>
+      </Element>
     );
+  }
+
+  handleClick() {
+    if(this.props.selectable) {
+      Socket.emit(Globals.socket.playPickColony, {colony: this.props.city.key});
+    }
   }
 }
 

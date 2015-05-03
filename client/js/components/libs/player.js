@@ -1,6 +1,7 @@
 var players = new Map();
+var manager;
 
-export default class Player {
+class Player {
   constructor(id, name, color) {
 
     this._id = parseInt(id, 10);
@@ -21,32 +22,33 @@ export default class Player {
   }
 
   isMe() {
-    return this._id === Player.id;
+    return this._id === manager.myId;
   }
 }
 
-Player.createPlayer = function() {
-  var player = new Player(...arguments);
-  players.set(player.id, player);
-  return player;
+manager = {
+  myId: 0,
+  createPlayer() {
+    var player = new Player(...arguments);
+    players.set(player.id, player);
+    return player;
+  },
+
+  getPlayer(id) {
+    return players.get(parseInt(id, 10));
+  },
+
+  getMap() {
+    return players;
+  },
+
+  deleteAll() {
+    players.clear();
+  },
+
+  getMe() {
+    return this.getPlayer(this.myId);
+  }
 };
 
-Player.getPlayer = (id) => {
-  return players.get(parseInt(id, 10));
-};
-
-Player.getMap = () => {
-  return players;
-};
-
-Player.deleteAll = () => {
-  players.clear();
-};
-
-Player.getMe = () => {
-  return Player.getPlayer(Player.myId);
-};
-
-Player.myId = 0;
-
-
+export default manager;

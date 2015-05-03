@@ -28,7 +28,10 @@ GLOBALS.socket = {
   mapDice: 'play:roll-dice',
   turnNex: 'turn:new',
   gamePrepare: 'game:prepare',
-  playTurnNew: 'play:turn:new'
+  playTurnNew: 'play:turn:new',
+  playPickColony:'play:pick:colony',
+  playPickPath:'play:pick:path'
+
 };
 
 GLOBALS.map = {};

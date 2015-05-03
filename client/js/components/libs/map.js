@@ -19,19 +19,19 @@ class MapHelpher  {
 
     if(board.tiles) {
       for(let i = 0; i < board.tiles.length; i += 1) {
-          tiles.set(board.tiles[i], new Tile(board.tiles[i]));    
+          tiles.set(JSON.stringify(board.tiles[i]), new Tile(board.tiles[i]));    
       }
     }
 
     if(board.cities) {
       for(let i = 0; i < board.cities.length; i += 1) {
-          cities.set(board.cities[i], new City(board.cities[i]));    
+          cities.set(JSON.stringify(board.cities[i]), new City(board.cities[i]));    
       }
     }
 
     if(board.paths) {
       for(let i = 0; i < board.paths.length; i += 1) {
-          paths.set(board.paths[i], new Path(board.paths[i]));    
+          paths.set(JSON.stringify(board.paths[i]), new Path(board.paths[i]));    
       }
     }
 
@@ -55,9 +55,10 @@ class MapHelpher  {
 
   giveElement(type, key, player) {
     if(this._elements.has(type)) {
-      var elem = this._elements.get(type).get(key);
+      var elem = this._elements.get(type).get(JSON.stringify(key));
       if(elem) {
         elem.player = player;
+        console.log('player');
       } else {
         return false;
       }
@@ -140,7 +141,8 @@ class MapElement {
     Object.assign(this, element);
 
     this.unitSize = unitSize;
-    this.key = this.x + ',' + this.y + ',' + index;
+    this.index = this.x + ',' + this.y + ',' + index;
+    this.key = element;
 
     this.ortho = convert(this.x, this.y);
     index += 1;
@@ -191,6 +193,14 @@ class Path extends MapElement {
 
     this.from = path.from;
     this.from.ortho = convert(this.from.x, this.from.y);
+  }
+
+  get x() {
+    return this.from.x;
+  }
+
+  get y() {
+    return this.from.y;
   }
   
 }

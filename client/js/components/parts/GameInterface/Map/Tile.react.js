@@ -11,11 +11,7 @@ import Circle from 'react-art/shapes/circle';
 
 import Globals from '../../../libs/globals';
 
-export default class Tile extends Element {
-
-  constructor(props) {
-    super(props);
-  }
+export default class Tile extends React.Component {
 
   render() {
 
@@ -43,14 +39,14 @@ export default class Tile extends Element {
     }
 
     return (
-      <Group x={tile.ortho.x} y={tile.ortho.y}>
+      <Element x={tile.ortho.x} y={tile.ortho.y} {...this.props}>
         <Shape d={path}
                fill={color}
                stroke='#FFFFFF'
               />
 
         { diceValue }
-      </Group>
+      </Element>
       );
   }
 
