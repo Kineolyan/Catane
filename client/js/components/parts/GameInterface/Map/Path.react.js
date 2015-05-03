@@ -5,9 +5,14 @@
 */
 
 import React from 'react';
+import Element from './Element.react';
 import {Group, Path, Shape} from 'react-art';
 
-export default class PathR extends React.Component {
+export default class PathR extends Element {
+
+  constructor(props) {
+    super(props);
+  }
 
   render() {
     var p = this.props.path,

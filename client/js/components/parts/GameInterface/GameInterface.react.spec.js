@@ -2,7 +2,7 @@ import '../../libs/test';
 
 import React from 'react/addons';
 import GameInterface from './GameInterface.react';
-import MapReact from './Map.react';
+import MapReact from './Map/Map.react';
 
 var utils = React.addons.TestUtils;
 

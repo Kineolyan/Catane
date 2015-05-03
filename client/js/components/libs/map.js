@@ -12,28 +12,60 @@ class MapHelpher  {
     }
     unitSize = getSize(board.tiles, window.innerHeight, window.innerWidth, margin);
 
-    this.tiles = new Map();
-    this.cities = new Map();
-    this.paths = new Map();
+    this._elements = new Map();
+    var tiles = new Map();
+    var cities = new Map();
+    var paths = new Map();
 
     if(board.tiles) {
       for(let i = 0; i < board.tiles.length; i += 1) {
-          this.tiles.set(board.tiles[i], new Tile(board.tiles[i]));    
+          tiles.set(board.tiles[i], new Tile(board.tiles[i]));    
       }
     }
 
     if(board.cities) {
       for(let i = 0; i < board.cities.length; i += 1) {
-          this.cities.set(board.cities[i], new City(board.cities[i]));    
+          cities.set(board.cities[i], new City(board.cities[i]));    
       }
     }
 
     if(board.paths) {
       for(let i = 0; i < board.paths.length; i += 1) {
-          this.paths.set(board.paths[i], new Path(board.paths[i]));    
+          paths.set(board.paths[i], new Path(board.paths[i]));    
       }
     }
+
+    this._elements.set('tiles', tiles);
+    this._elements.set('cities', cities);
+    this._elements.set('paths', paths);
+
   }
+
+  get tiles() {
+    return this._elements.get('tiles');
+  }
+
+  get cities() {
+    return this._elements.get('cities');
+  }
+
+  get paths() {
+    return this._elements.get('paths');
+  }
+
+  giveElement(type, key, player) {
+    if(this._elements.has(type)) {
+      var elem = this._elements.get(type).get(key);
+      if(elem) {
+        elem.player = player;
+      } else {
+        return false;
+      }
+    } else {
+      throw new Error(`No elements of type: ${type}`);
+    }
+  }
+
 }
 
 /**
@@ -112,7 +144,20 @@ class MapElement {
 
     this.ortho = convert(this.x, this.y);
     index += 1;
+
+
+    this._player = null;
   }
+
+  set player(val) {
+    this._player = val;
+  }
+
+  get player() {
+    return this._player;
+  }
+
+
 }
 //A tile with orthogonal coordinate and vertex
 class Tile extends MapElement {

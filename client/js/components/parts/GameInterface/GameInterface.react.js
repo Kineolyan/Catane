@@ -6,7 +6,7 @@
 
 import React from 'react';
 import {Surface} from 'react-art';
-import MapReact from './Map.react';
+import MapReact from './Map/Map.react';
 import DiceReact from './Dice.react';
 import PlayerInfo from './PlayerInfo/PlayerInfo.react';
 import Socket from '../../libs/socket';

@@ -4,11 +4,17 @@
 /*
   One city of the game
 */
+
 import React from 'react';
+import Element from './Element.react';
 import Circle from 'react-art/shapes/circle';
 import {Group} from 'react-art';
 
-export default class City extends React.Component {
+export default class City extends Element {
+
+  constructor(props) {
+    super(props);
+  }
 
   render() {
     var city = this.props.city;

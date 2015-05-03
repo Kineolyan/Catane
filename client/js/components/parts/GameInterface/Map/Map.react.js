@@ -6,15 +6,15 @@
 
 import React from 'react';
 import {Group} from 'react-art';
-import MapHelper from '../../libs/map';
+import MapHelper from '../../../libs/map';
 
 import Tile from './Tile.react';
 import City from './City.react';
 import Path from './Path.react';
 
-import Socket from '../../libs/socket';
-import Globals from '../../libs/globals';
-import Player from '../../libs/player';
+import Socket from '../../../libs/socket';
+import Globals from '../../../libs/globals';
+import Player from '../../../libs/player';
 
 export default class MapR extends React.Component {
 
@@ -42,21 +42,19 @@ export default class MapR extends React.Component {
         cities = [];
 
     if(board.tiles) {
-
         board.tiles.forEach((elem) => {
-          tiles.push(<Tile key={elem.key} tile={elem} />);
+          tiles.push(<Tile key={elem.key} tile={elem} selectable={this.state.canSelect && !elem.player} />);
         });
     }
   
     if(board.paths) {
         board.paths.forEach((elem) => {
-          paths.push(<Path key={elem.key} path={elem} />);
+          paths.push(<Path key={elem.key} path={elem} selectable={this.state.canSelect && !elem.player} />);
         });
     }
     if(board.cities) {
-
         board.cities.forEach((elem) => {
-          cities.push(<City key={elem.key} city={elem} />);
+          cities.push(<City key={elem.key} city={elem} selectable={this.state.canSelect && !elem.player} />);
         });
     }
     
@@ -71,12 +69,14 @@ export default class MapR extends React.Component {
   }
 
   initSocket() {
-    Socket.on(Globals.socket.playTurnNew, (res) => {
-      if(this.props.prepare) {
+    Socket.on(Globals.socket.playTurnNew, this.playTurnNew.bind(this));
+  }
+
+  playTurnNew(res) {
+    if(this.props.prepare) {
         var player = Player.getPlayer(res.player);
         this.setState({canSelect: player.isMe()});
-      }
-    });
+    }
   }
 }
 

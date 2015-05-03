@@ -5,12 +5,17 @@
 */
 
 import React from 'react';
+import Element from './Element.react';
 import {Group, Shape, Text} from 'react-art';
 import Circle from 'react-art/shapes/circle';
 
-import Globals from '../../libs/globals';
+import Globals from '../../../libs/globals';
 
-export default class Tile extends React.Component {
+export default class Tile extends Element {
+
+  constructor(props) {
+    super(props);
+  }
 
   render() {
 

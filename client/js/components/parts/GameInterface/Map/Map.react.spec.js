@@ -1,4 +1,4 @@
-import tests from '../../libs/test';
+import tests from '../../../libs/test';
 
 import React from 'react/addons';
 
