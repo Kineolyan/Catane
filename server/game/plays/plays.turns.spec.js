@@ -8,14 +8,8 @@ describe('Play turn management', function () {
 		this.startGame = function () {
 			this.game.start();
 
-			var firstPlayer = this.players[ 0 ].client.lastMessage('play:turn:new').player;
-			for (let p of this.players) {
-				if (p.id === firstPlayer) {
-					this.p1 = p;
-				} else {
-					this.p2 = p;
-				}
-			}
+			this.p1 = this.players[0];
+			this.p2 = this.players[1];
 
 			this.game.randomPick();
 		};
@@ -46,7 +40,9 @@ describe('Play turn management', function () {
 			this.p1.client.receive('play:roll-dice');
 			var diceValue = this.getLastDiceValue();
 			if (diceValue === 7) {
-				this.p1.client.receive('play:move:thieves');
+				let newThievesLocation = this.game.thieves.hashCode() === 0 ?
+					{ x: 1, y: 1} : { x: 0, y: 0};
+				this.p1.client.receive('play:move:thieves', { tile: newThievesLocation });
 			}
 
 			this.p1.client.receive('play:turn:end');
@@ -95,6 +91,24 @@ describe('Play turn management', function () {
 		});
 
 		// TODO test the updates or not of the resources
+	});
+
+	describe('move thieves', function() {
+		beforeEach(function () {
+			this.startGame();
+
+			this.p1.client.receive('play:roll-dice');
+			// No need to check if the value is a 7 yet (can move thieves without cards)
+			this.newThievesLocation = this.game.thieves.hashCode() === 0 ? { x: 1, y: 1} : { x: 0, y: 0};
+			this.p1.client.receive('play:move:thieves', { tile: this.newThievesLocation });
+		});
+
+		it('sends an update of the thieves position', function() {
+			for (let p of this.players) {
+				let message = p.client.lastMessage('play:move:thieves');
+				expect(message.tile).toEqual(this.newThievesLocation);
+			}
+		});
 	});
 
 });

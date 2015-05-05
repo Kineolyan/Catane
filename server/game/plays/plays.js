@@ -45,7 +45,7 @@ export class Plays {
 		player.on('play:move:thieves', (request) => {
 			var tileLocation = new Location(request.tile.x, request.tile.y);
 			player.game.moveThieves(player, tileLocation);
-			player.game.emit('play:move:thieves', { tile: tileLocation.location.toJson() });
+			player.game.emit('play:move:thieves', { tile: tileLocation.toJson() });
 			return undefined;
 		});
 
