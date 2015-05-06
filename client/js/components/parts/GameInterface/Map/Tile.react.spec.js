@@ -2,7 +2,7 @@ import tests from '../../../libs/test';
 
 import React from 'react/addons';
 
-import MapHelper from '../../../libs/map';
+import MapHelper from '../../../common/map';
 import Tile from './Tile.react';
 import {Text} from 'react-art';
 import Globals from '../../../libs/globals';

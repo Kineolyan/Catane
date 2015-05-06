@@ -8,7 +8,11 @@ import React from 'react';
 import {Surface} from 'react-art';
 import MapReact from './Map/Map.react';
 import DiceReact from './Dice.react';
-import PlayerInfo from './PlayerInfo/PlayerInfo.react';
+import PlayersInfo from './PlayersInfo/PlayersInfo.react';
+import MessageV from './MessageV.react';
+
+import Player from '../../common/player';
+import Message from '../../common/message';
 import Socket from '../../libs/socket';
 import Globals from '../../libs/globals';
 
@@ -54,7 +58,8 @@ export default class GameInterface extends React.Component {
                       margin={50}
                       prepare={this.state.prepare}/>
             
-            <PlayerInfo ref="player" 
+            <MessageV y={120} />
+            <PlayersInfo ref="player" 
                         players={this.props.players} 
                         prepare={this.state.prepare}
                         onMyTurn={this.changeMap}
@@ -67,10 +72,23 @@ export default class GameInterface extends React.Component {
 
   initSocket() {
     Socket.on(Globals.socket.gamePrepare, this.launchGame.bind(this));
+    Socket.on(Globals.socket.playTurnNew, this.playNewTurn.bind(this));
   }
 
   launchGame() {
     this.setState({prepare: true});
+  }
+
+  playNewTurn(res) {
+    var playing = Player.getPlayer(res.player);
+
+    if(playing.isMe()) {
+      if(this.state.prepare) {
+        Message.content = `Choose a colony then a path`;
+      }
+    } else {
+        Message.content = `Playing : ${playing.name}`;
+    }
   }
 
 }

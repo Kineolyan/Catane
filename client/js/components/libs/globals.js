@@ -26,7 +26,7 @@ GLOBALS.socket = {
   gameQuit: 'game:quit',
   playerNickname: 'player:nickname',
   mapDice: 'play:roll-dice',
-  turnNex: 'turn:new',
+  turnNew: 'turn:new',
   gamePrepare: 'game:prepare',
   playTurnNew: 'play:turn:new',
   playPickColony: 'play:pick:colony',

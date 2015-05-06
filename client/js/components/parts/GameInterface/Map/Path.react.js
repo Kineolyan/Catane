@@ -16,7 +16,8 @@ export default class PathR extends React.Component {
     var p = this.props.path,
         path = new Path(),
         coef,
-        color = 'black';
+        color = 'black', 
+        thickness = this.props.thickness;
 
     if(p.player) {
       color = p.player.color;
@@ -26,9 +27,10 @@ export default class PathR extends React.Component {
       coef = -1 * (p.to.ortho.x - p.from.ortho.x) / (p.to.ortho.y - p.from.ortho.y);
     } else {
       coef = 1;
+      thickness *= 1.5;
     }
 
-    var diff = Math.sqrt(Math.pow(this.props.thickness, 2) / (1 + Math.pow(coef, 2)));
+    var diff = Math.sqrt(Math.pow(thickness, 2) / (1 + Math.pow(coef, 2)));
 
     path.moveTo(p.ortho.x - diff, p.ortho.y - diff * coef);
     path.lineTo(p.ortho.x + diff, p.ortho.y + diff * coef);

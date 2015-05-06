@@ -6,25 +6,25 @@
 
 import React from 'react';
 import {Group, Text} from 'react-art';
-import Deck from './Deck.react';
-import OtherPlayer from './OtherPlayer.react';
-import Player from '../../../libs/player';
 import Circle from 'react-art/shapes/circle';
 
+import Deck from './Deck.react';
+import OtherPlayer from './OtherPlayer.react';
+
+import Player from '../../../common/player';
 import Globals from '../../../libs/globals';
 import Socket from '../../../libs/socket';
-export default class PlayerInfo extends React.Component {
+
+export default class PlayersInfo extends React.Component {
 
 
   constructor(props) {
     super(props);
 
     this.state = {
-      cards: [],
-      message: 'Starting...'
+      cards: []
     };
 
-    this.id = null;
   }
 
   componentWillMount() {
@@ -40,10 +40,6 @@ export default class PlayerInfo extends React.Component {
     players.forEach((element, i) => {
       Player.createPlayer(element.id, element.name, Globals.interface.player.colors[i]);
     });
-  }
-
-  componentDidMount() {
-    this.initSocket();
   }
 
   /**
@@ -84,9 +80,6 @@ export default class PlayerInfo extends React.Component {
         
         <Text y={-5} x={15} fill="black" font={{'font-size':  '12px'}}>{name}</Text>
         
-        <Group y={30}>
-          <Text fill="black" font={{'font-size':  '12px'}}>{this.state.message}</Text>
-        </Group>
         <Deck cards={this.state.cards} width={window.innerWidth / 2} height={40} />
 
         <Group y={60}>
@@ -95,32 +88,12 @@ export default class PlayerInfo extends React.Component {
       </Group>
     );
   }
-
-  initSocket() {
-    Socket.on(Globals.socket.playTurnNew, this.playNewTurn.bind(this));
-  }
-
-  playNewTurn(res) {
-    var playing = Player.getPlayer(res.player);
-
-    if(playing.isMe()) {
-      if(this.props.prepare) {
-        this.setMessage(`Choose a colony then a path`);
-      }
-    } else {
-        this.setMessage(`Playing : ${playing.name}`);
-    }
-  }
-
-  setMessage(message) {
-    this.setState({message: message});
-  }
 }
 
-PlayerInfo.defaultProps = {
+PlayersInfo.defaultProps = {
     x: 0,
     y: 0,
     players: {other: [], me: {}}
 };
 
-PlayerInfo.displayName = 'PlayerInfo';
+PlayersInfo.displayName = 'PlayersInfo';

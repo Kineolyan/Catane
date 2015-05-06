@@ -1,7 +1,7 @@
 import tests from '../../../libs/test';
 
 import React from 'react/addons';
-import PlayerInfo from './PlayerInfo.react';
+import PlayerInfo from './PlayersInfo.react';
 import Deck from './Deck.react';
 
 var utils = React.addons.TestUtils;

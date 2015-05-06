@@ -6,7 +6,7 @@
 
 import React from 'react';
 import {Group} from 'react-art';
-import MapHelper from '../../../libs/map';
+import MapHelper from '../../../common/map';
 
 import Tile from './Tile.react';
 import City from './City.react';
@@ -14,7 +14,7 @@ import Path from './Path.react';
 
 import Socket from '../../../libs/socket';
 import Globals from '../../../libs/globals';
-import Player from '../../../libs/player';
+import Player from '../../../common/player';
 
 export default class MapR extends React.Component {
 
