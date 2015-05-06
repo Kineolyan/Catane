@@ -9,6 +9,7 @@ import {Group, Text} from 'react-art';
 import Deck from './Deck.react';
 import OtherPlayer from './OtherPlayer.react';
 import Player from '../../../libs/player';
+import Circle from 'react-art/shapes/circle';
 
 import Globals from '../../../libs/globals';
 import Socket from '../../../libs/socket';
@@ -52,7 +53,17 @@ export default class PlayerInfo extends React.Component {
   render() {
 
     var index = 0, 
-        renderedPlayers = [];
+        renderedPlayers = [],
+        color = 'white',
+        me = Player.getMe(),
+        name = '';
+
+    if(me) {
+      color = me.color;
+      name = me.name;
+    }
+
+
 
     Player.getMap().forEach((element) => {
       if(!element.isMe()) {
@@ -69,11 +80,18 @@ export default class PlayerInfo extends React.Component {
 
     return (
       <Group x={this.props.x} y={this.props.y}>
-        <Group y={-30}>
+        <Circle radius={10} fill={color} stroke="black" />
+        
+        <Text y={-5} x={15} fill="black" font={{'font-size':  '12px'}}>{name}</Text>
+        
+        <Group y={30}>
           <Text fill="black" font={{'font-size':  '12px'}}>{this.state.message}</Text>
         </Group>
         <Deck cards={this.state.cards} width={window.innerWidth / 2} height={40} />
-        {renderedPlayers}
+
+        <Group y={60}>
+          {renderedPlayers}
+        </Group>
       </Group>
     );
   }

@@ -58,7 +58,7 @@ export default class GameInterface extends React.Component {
                         players={this.props.players} 
                         prepare={this.state.prepare}
                         onMyTurn={this.changeMap}
-                        y={150} 
+                        y={90} 
                         x={20}/>
         </Surface>
       </div>
