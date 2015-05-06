@@ -66,13 +66,11 @@ export default class GameInterface extends React.Component {
   }
 
   initSocket() {
-    Socket.on(Globals.socket.gamePrepare, () => {
-      this.setState({prepare: true});
-    });
+    Socket.on(Globals.socket.gamePrepare, this.launchGame.bind(this));
   }
 
-  changeMap() {
-    
+  launchGame() {
+    this.setState({prepare: true});
   }
 
 }

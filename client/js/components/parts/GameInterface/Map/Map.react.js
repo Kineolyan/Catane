@@ -25,7 +25,7 @@ export default class MapR extends React.Component {
 
     this.state = {
       board: this._board,
-      selectable: false
+      selectable: {city: false, path: false, tile: false}
     };
 
   }
@@ -49,19 +49,19 @@ export default class MapR extends React.Component {
 
     if(board.tiles) {
         board.tiles.forEach((elem) => {
-          tiles.push(<Tile key={elem.index} tile={elem} />);
+          tiles.push(<Tile key={elem.index} tile={elem} selectable={this.state.selectable.tile}/>);
         });
     }
   
     if(board.paths) {
         board.paths.forEach((elem) => {
-          paths.push(<Path key={elem.index} path={elem} selectable={this.state.selectable && !elem.player} />);
+          paths.push(<Path key={elem.index} path={elem} selectable={this.state.selectable.path && !elem.player} />);
         });
     }
 
     if(board.cities) {
         board.cities.forEach((elem) => {
-          cities.push(<City key={elem.index} city={elem} selectable={this.state.selectable && !elem.player} />);
+          cities.push(<City key={elem.index} city={elem} selectable={this.state.selectable.city && !elem.player} />);
         });
     }
     
@@ -90,6 +90,7 @@ export default class MapR extends React.Component {
         if(res.colony) {
           key = 'cities';
           payload = res.colony;
+          this.setState({selectable: {path: true}});
         } else if(res.path) {
           key = 'paths';
           payload = res.path;
@@ -104,7 +105,11 @@ export default class MapR extends React.Component {
   playTurnNew(res) {
     if(this.props.prepare) {
         var player = Player.getPlayer(res.player);
-        this.setState({selectable: player.isMe()});
+        if(player.isMe()) {
+          this.setState({selectable: {city: true}});
+        } else {
+          this.setState({selectable: {}});
+        }
     }
   }
 }

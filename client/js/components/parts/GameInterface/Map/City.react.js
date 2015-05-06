@@ -18,7 +18,6 @@ export default class City extends React.Component {
         color = 'black';
 
     if(city.player) {
-      console.log(city.player);
       color = city.player.color;
     }
 
