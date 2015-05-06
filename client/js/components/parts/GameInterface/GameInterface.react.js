@@ -49,7 +49,10 @@ export default class GameInterface extends React.Component {
     return (
       <div>
         <Surface x={0} y={0} width={this.state.width} height={this.state.height}>
-            <DiceReact x={10} y={10} size={50} />
+            <DiceReact x={10} 
+                       y={10} 
+                       size={50} 
+                       ref="dice"/>
 
             <MapReact ref="map" 
                       board={this.props.board} 
@@ -71,11 +74,16 @@ export default class GameInterface extends React.Component {
   }
 
   initSocket() {
-    Socket.on(Globals.socket.gamePrepare, this.launchGame.bind(this));
+    Socket.on(Globals.socket.gamePrepare, this.prepareGame.bind(this));
     Socket.on(Globals.socket.playTurnNew, this.playNewTurn.bind(this));
+    Socket.on(Globals.socket.gamePlay, this.launchGame.bind(this));
   }
 
   launchGame() {
+    this.setState({prepare: false});
+  }
+
+  prepareGame() {
     this.setState({prepare: true});
   }
 
@@ -85,6 +93,9 @@ export default class GameInterface extends React.Component {
     if(playing.isMe()) {
       if(this.state.prepare) {
         Message.content = `Choose a colony then a path`;
+      } else {
+        Message.content = `Roll the dice`;
+        this.refs.dice.enable();
       }
     } else {
         Message.content = `Playing : ${playing.name}`;

@@ -18,7 +18,8 @@ export default class Dice extends React.Component {
     this.state = {
       first: 1,
       second: 1,
-      rolling: false
+      rolling: false,
+      enabled: false
     };
   }
 
@@ -56,7 +57,8 @@ export default class Dice extends React.Component {
   }
 
   launch() {
-    if(!this.state.rolling) {
+    if(!this.state.rolling && this.state.enabled) {
+      this.setState({enabled: false});
       Socket.emit(Globals.socket.mapDice);
     }
   }
@@ -65,11 +67,12 @@ export default class Dice extends React.Component {
     
     var size = this.props.size,
         margin = size + 10,
-        color = this.state.rolling ? '#FBF896' : '#D1FFA3';
+        color = this.state.rolling ? '#FBF896' : '#D1FFA3',
+        cursor = this.state.enabled ? 'pointer' : 'auto';
 
     return (
       //react art handles event in its own way, see react-art modules - to investigate more
-      <Group x={this.props.x} y={this.props.y} onClick={this.launch.bind(null, this)} cursor="pointer">  
+      <Group x={this.props.x} y={this.props.y} onClick={this.launch.bind(this)} cursor={cursor}>  
         
         <Rectangle width={size} height={size} stroke="black" fill={color} />
         <Text y={size / 4} x={size / 2} fill="black" alignment="center" font={{'font-size': size / 2 + 'px'}}>
@@ -87,8 +90,12 @@ export default class Dice extends React.Component {
 
   initSocket() {
     Socket.on(Globals.socket.mapDice, (data) => {
-        this.result(data.dice);
+        this.result({first: data.dice[0], second: data.dice[1]});
     });
+  }
+
+  enable() {
+    this.setState({enabled: true});
   }
 }
 
@@ -97,7 +104,8 @@ Dice.defaultProps = {
     y: 0,
     size: 10,
     startTime: 200,
-    rolls: 10
+    rolls: 10,
+    selectable: false
 };
 
 Dice.displayName = 'Dice';

@@ -28,6 +28,7 @@ GLOBALS.socket = {
   mapDice: 'play:roll-dice',
   turnNew: 'turn:new',
   gamePrepare: 'game:prepare',
+  gamePlay: 'game:play',
   playTurnNew: 'play:turn:new',
   playPickColony: 'play:pick:colony',
   playPickPath: 'play:pick:path',
