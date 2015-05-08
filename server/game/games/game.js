@@ -106,7 +106,7 @@ export default class Game {
 
 			// Distribute the resources to players
 			var total = values[0] + values[1];
-			var affectedTiles = this._board.getTilesForDice(total);
+			var affectedTiles = this._board.getTilesForDice(total, true);
 			for (let tile of affectedTiles) { tile.distributeResources(); }
 
 			return values;
@@ -115,11 +115,15 @@ export default class Game {
 		}
 	}
 
-	moveThieves(player) {
+	/**
+	 * Move the thieves to a new tile.
+	 * @param player the player executing the move
+	 * @param tileLocation the new location for thieves
+	 */
+	moveThieves(player, tileLocation) {
 		this._referee.checkTurn(player);
-
-		// TODO complete the implementation
-		this._referee.moveThieves();
+		this._referee.moveThieves(tileLocation);
+		this._board.thieves = tileLocation;
 	}
 
 	/**

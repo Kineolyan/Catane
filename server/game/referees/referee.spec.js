@@ -96,7 +96,8 @@ describe('GameReferee', function() {
 	beforeEach(function() {
 		this.socket = new MockSocket();
 
-		this.board = null;
+		this.board = new Board();
+		this.board.generate(new RoundGenerator(2));
 		this.players = [
 			new Player(this.socket, 1),
 			new Player(this.socket, 2),
@@ -166,10 +167,22 @@ describe('GameReferee', function() {
 	describe('#moveThieves', function() {
 		beforeEach(function() {
 			this.referee.rollDice(7);
-			this.referee.moveThieves();
+
+			var tiles = this.board.tiles;
+			this.newThievesLocation = tiles[0].resource !== 'desert' ?
+					tiles[0].location : tiles[1].location;
+		});
+
+		it('rejects move on invalid location', function() {
+			expect(() => this.referee.moveThieves(new Location(0, 1))).toThrow();
+		});
+
+		it('rejects move on the same location', function() {
+			expect(() => this.referee.moveThieves(this.board.thieves)).toThrow();
 		});
 
 		it('allows player to end turn', function() {
+			this.referee.moveThieves(this.newThievesLocation);
 			expect(() => this.referee.endTurn()).not.toThrow();
 		});
 	});
