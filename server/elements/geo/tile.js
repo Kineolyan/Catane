@@ -7,7 +7,7 @@ export default class Tile {
 	 * @param  {Integer} x x-coordinate
 	 * @param  {Integer} y y-coordinate
 	 * @param  {String} resource the resource
-	 * @param  {String} diceValue the dice value
+	 * @param  {Number} diceValue the dice value
 	 */
 	constructor(x, y, resource, diceValue) {
 		this._location = new Location(x, y);

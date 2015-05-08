@@ -106,7 +106,7 @@ export default class Game {
 
 			// Distribute the resources to players
 			var total = values[0] + values[1];
-			var affectedTiles = this._board.getTilesForDice(total);
+			var affectedTiles = this._board.getTilesForDice(total, true);
 			for (let tile of affectedTiles) { tile.distributeResources(); }
 
 			return values;

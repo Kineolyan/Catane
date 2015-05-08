@@ -115,12 +115,16 @@ export default class Board {
 	/**
 	 * Gets the tiles with the given dice value.
 	 * @param value the dice value to look for
+	 * @param {boolean?} excludeThieves do not include tiles with thieves
 	 * @return {Array} the tiles with that dice value.
 	 */
-	getTilesForDice(value) {
+	getTilesForDice(value, excludeThieves) {
+		var excludedLocationHash = excludeThieves === true ? this._thieves.hashCode() : undefined;
 		var tiles = [];
-		for (let tile of this._tiles) {
-			if (tile.diceValue === value) { tiles.push(tile); }
+		for (let [ hashCode, tile ] of this._tiles) {
+			if (tile.diceValue === value && hashCode !== excludedLocationHash) {
+				tiles.push(tile);
+			}
 		}
 
 		return tiles;
@@ -128,7 +132,7 @@ export default class Board {
 
 	generate(generator) {
 		generator.forEachTile(tile => {
-			this._tiles.set(tile.location.hashCode(), tile)
+			this._tiles.set(tile.location.hashCode(), tile);
 			if (tile.resource === 'desert') { this._thieves = tile.location; }
 		});
 		generator.forEachCity(city => this._cities.set(city.location.hashCode(), city) );
