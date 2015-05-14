@@ -30,6 +30,9 @@ export default class MapR extends React.Component {
 
   }
 
+  /**
+   * Refresh the board
+   */
   refreshBoard() {
     this.setState({board: this._board});
   }
@@ -81,6 +84,9 @@ export default class MapR extends React.Component {
     Socket.on(Globals.socket.playPickPath, this.playPickElement.bind(this));
   }
 
+  /**
+   * A player picked somehting on the map
+   */
   playPickElement(res) {
     if(this.props.prepare) {
         var player = Players.getPlayer(res.player);
@@ -102,6 +108,9 @@ export default class MapR extends React.Component {
     }
   }
 
+  /**
+   * New player is starting to play
+   */
   playTurnNew(res) {
     if(this.props.prepare) {
         var player = Players.getPlayer(res.player);

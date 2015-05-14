@@ -1,6 +1,9 @@
 import React from 'react';
 import {Group} from 'react-art';
 
+/**
+ * Basic element of the map, handling basic mouse interaction
+ */
 export default class MapElement extends React.Component {
 
   constructor(props) {

@@ -50,6 +50,9 @@ export default class Tile extends React.Component {
       );
   }
 
+  /**
+   * Find the color of a tile
+   */
   tileColor() {
     var color = 'white',
         tmpCol = Globals.map.resources[this.props.tile.resource];

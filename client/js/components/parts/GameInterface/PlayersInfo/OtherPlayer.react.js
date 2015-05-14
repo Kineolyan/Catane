@@ -1,7 +1,7 @@
 'use strict';
 
 /* 
-  React component containing the card 
+  React component containing information about one other player 
 */
 
 import React from 'react';

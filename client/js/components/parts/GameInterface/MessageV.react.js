@@ -24,9 +24,13 @@ export default class MessageV extends React.Component {
     Message.hasChanged(this.updateText.bind(this));
   }
 
+  /**
+   * Change the text
+   */
   updateText(text) {
     this.setState({message: text});
   }
+  
   /**
    * Render the whole map of the game
    * @return {React.Element} the rendered element

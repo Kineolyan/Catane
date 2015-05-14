@@ -1,7 +1,7 @@
 'use strict';
 
 /* 
-  React component containing the player informations
+  React component containing all the players informations
 */
 
 import React from 'react';
@@ -39,9 +39,8 @@ export default class PlayersInfo extends React.Component {
 
 
     Players.deleteAll();
-
     Players.myId = p.me.id;
-
+    //create all the players in the players bag
     players.forEach((element, i) => {
       Players.createPlayer(element.id, element.name, Globals.interface.player.colors[i]);
     });

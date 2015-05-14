@@ -79,14 +79,23 @@ export default class GameInterface extends React.Component {
     Socket.on(Globals.socket.gamePlay, this.launchGame.bind(this));
   }
 
+  /**
+   * Launch the game
+   */
   launchGame() {
     this.setState({prepare: false});
   }
 
+  /**
+   * Set the game in the preparation mode
+   */
   prepareGame() {
     this.setState({prepare: true});
   }
 
+  /**
+   * New player started to play
+   */
   playNewTurn(res) {
     var playing = Players.getPlayer(res.player);
 

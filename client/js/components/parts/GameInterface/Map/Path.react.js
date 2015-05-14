@@ -23,6 +23,10 @@ export default class PathR extends React.Component {
       color = p.player.color;
     }
 
+    /**
+     * The idea is to draw a rectangle in any direction using path
+     */
+    //get the direction of the path
     if(p.to.ortho.y - p.from.ortho.y) {
       coef = -1 * (p.to.ortho.x - p.from.ortho.x) / (p.to.ortho.y - p.from.ortho.y);
     } else {
@@ -32,6 +36,7 @@ export default class PathR extends React.Component {
 
     var diff = Math.sqrt(Math.pow(thickness, 2) / (1 + Math.pow(coef, 2)));
 
+    //draw
     path.moveTo(p.ortho.x - diff, p.ortho.y - diff * coef);
     path.lineTo(p.ortho.x + diff, p.ortho.y + diff * coef);
     path.lineTo(p.to.ortho.x + diff, p.to.ortho.y + diff * coef);

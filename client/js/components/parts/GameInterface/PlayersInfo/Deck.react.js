@@ -1,7 +1,7 @@
 'use strict';
 
 /* 
-  React component containing the card 
+  React component containing the cards
 */
 
 import React from 'react';

@@ -27,6 +27,11 @@ export default class Dice extends React.Component {
     this.initSocket();
   }
 
+  /**
+   * Make the dice rolling
+   * @example
+   * result({first: 1, second: 3})
+   */
   result(dice, done) {
     var round = this.props.rolls;
     done = done || function() {};
@@ -56,6 +61,10 @@ export default class Dice extends React.Component {
 
   }
 
+  /**
+   * Launch the dice
+   * @return {[type]}
+   */
   launch() {
     if(!this.state.rolling && this.state.enabled) {
       this.setState({enabled: false});
@@ -93,6 +102,9 @@ export default class Dice extends React.Component {
     });
   }
 
+  /**
+   * Enable the dice
+   */
   enable() {
     this.setState({enabled: true});
   }
