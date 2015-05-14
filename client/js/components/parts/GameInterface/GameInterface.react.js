@@ -11,7 +11,7 @@ import DiceReact from './Dice.react';
 import PlayersInfo from './PlayersInfo/PlayersInfo.react';
 import MessageV from './MessageV.react';
 
-import Player from '../../common/player';
+import Players from '../../common/players';
 import Message from '../../common/message';
 import Socket from '../../libs/socket';
 import Globals from '../../libs/globals';
@@ -88,7 +88,7 @@ export default class GameInterface extends React.Component {
   }
 
   playNewTurn(res) {
-    var playing = Player.getPlayer(res.player);
+    var playing = Players.getPlayer(res.player);
 
     if(playing.isMe()) {
       if(this.state.prepare) {

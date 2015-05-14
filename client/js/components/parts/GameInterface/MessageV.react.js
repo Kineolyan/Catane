@@ -21,9 +21,11 @@ export default class MessageV extends React.Component {
   }
 
   componentWillMount() {
-    Message.hasChanged((message) => {
-      this.setState({message: message});
-    });
+    Message.hasChanged(this.updateText.bind(this));
+  }
+
+  updateText(text) {
+    this.setState({message: text});
   }
   /**
    * Render the whole map of the game
@@ -33,7 +35,7 @@ export default class MessageV extends React.Component {
 
     return (
       <Group x={this.props.x} y={this.props.y}>
-        <Text fill="black" font={{'font-size':  '12px'}}>{this.state.message}</Text>
+        <Text ref="message" fill="black" font={{'font-size':  '12px'}}>{this.state.message}</Text>
       </Group>
     );
   }

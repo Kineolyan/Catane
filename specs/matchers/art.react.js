@@ -6,11 +6,12 @@ var artMatchers = {
   toContainText: function() {
     return {
       compare: function(elem, text) {
+        //console.log(elem.textPathElement);
         var originalText = elem.textPathElement.string;
         var result = { pass: originalText.indexOf(text) !== -1 };
         result.message = 'Expecting to '
-          + (result.pass === true ? ' not' : '')
-          + ' contain  ' + originalText;
+          + (result.pass === true ? 'not ' : '')
+          + 'contain  ' + originalText;
 
         return result;
       }

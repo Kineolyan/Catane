@@ -27,8 +27,8 @@ export default class OtherPlayer extends React.Component {
           fill={this.props.color}
         />
         <Group x={10} y={10}>
-          <Text fill="black" font={{'font-size':  '12px'}}>{this.props.name}</Text>
-          <Text y={20} fill="black" font={{'font-size':  '12px'}}>{'Cards : ' + this.props.nbOfCards}</Text>
+          <Text ref="name" fill="black" font={{'font-size':  '12px'}}>{this.props.name}</Text>
+          <Text ref="cards" y={20} fill="black" font={{'font-size':  '12px'}}>{'Cards : ' + this.props.nbOfCards}</Text>
         </Group>
       </Group>
     );
@@ -42,5 +42,9 @@ OtherPlayer.propTypes = {
 
 OtherPlayer.defaultProps = {
   nbOfCards: 0,
-  color: 'yellow'
+  color: 'yellow',
+  width: 100,
+  height: 60
 };
+
+OtherPlayer.displayName = 'OtherPlayer';

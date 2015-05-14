@@ -102,7 +102,7 @@ export default class Room extends React.Component {
 
     //game started
     Socket.on(Globals.socket.gameStart, (response) => {
-        var other = this.state.players.filter(e => e.id !== this.props.player.getId());
+        var other = this.state.players.filter(e => parseInt(e.id, 10) !== this.props.player.getId());
         this.props.onStart(response.board, {other: other, 
                                             me: {
                                                   id: this.props.player.getId(),

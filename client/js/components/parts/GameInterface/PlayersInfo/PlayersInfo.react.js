@@ -11,9 +11,8 @@ import Circle from 'react-art/shapes/circle';
 import Deck from './Deck.react';
 import OtherPlayer from './OtherPlayer.react';
 
-import Player from '../../../common/player';
+import Players from '../../../common/players';
 import Globals from '../../../libs/globals';
-import Socket from '../../../libs/socket';
 
 export default class PlayersInfo extends React.Component {
 
@@ -30,16 +29,24 @@ export default class PlayersInfo extends React.Component {
   componentWillMount() {
 
     var p = this.props.players;
-    var players = p.other.sort((a, b) => a.id - b.id);
+    var players = p.other.slice();
+
+    if(p.me.name) {
+      players.push(p.me);
+    }
+
+    players = players.sort((a, b) => a.id - b.id);
 
 
-    Player.deleteAll();
+    Players.deleteAll();
 
-    Player.myId = p.me.id;
+    Players.myId = p.me.id;
 
     players.forEach((element, i) => {
-      Player.createPlayer(element.id, element.name, Globals.interface.player.colors[i]);
+      Players.createPlayer(element.id, element.name, Globals.interface.player.colors[i]);
     });
+
+
   }
 
   /**
@@ -51,7 +58,7 @@ export default class PlayersInfo extends React.Component {
     var index = 0, 
         renderedPlayers = [],
         color = 'white',
-        me = Player.getMe(),
+        me = Players.getMe(),
         name = '';
 
     if(me) {
@@ -59,16 +66,12 @@ export default class PlayersInfo extends React.Component {
       name = me.name;
     }
 
-
-
-    Player.getMap().forEach((element) => {
+    Players.getMap().forEach((element) => {
       if(!element.isMe()) {
         renderedPlayers.push(<OtherPlayer key={index}
                                           index={index}
                                           color={element.color}
                                           name={element.name}
-                                          width={100}
-                                          height={60}
                                           {...element} />);
         index += 1;
       }
@@ -78,7 +81,7 @@ export default class PlayersInfo extends React.Component {
       <Group x={this.props.x} y={this.props.y}>
         <Circle radius={10} fill={color} stroke="black" />
         
-        <Text y={-5} x={15} fill="black" font={{'font-size':  '12px'}}>{name}</Text>
+        <Text ref="name" y={-5} x={15} fill="black" font={{'font-size':  '12px'}}>{name}</Text>
         
         <Deck cards={this.state.cards} width={window.innerWidth / 2} height={40} />
 

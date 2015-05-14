@@ -20,7 +20,6 @@ var tests = {
     if(!internal) {
       internal = inst;
     }
-
     var ret = (internal._currentElement.type.displayName && internal._currentElement.type.displayName === type.displayName) ? [internal._currentElement] : [];
 
     if(internal._renderedComponent) {

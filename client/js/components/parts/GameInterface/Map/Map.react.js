@@ -14,7 +14,7 @@ import Path from './Path.react';
 
 import Socket from '../../../libs/socket';
 import Globals from '../../../libs/globals';
-import Player from '../../../common/player';
+import Players from '../../../common/players';
 
 export default class MapR extends React.Component {
 
@@ -83,7 +83,7 @@ export default class MapR extends React.Component {
 
   playPickElement(res) {
     if(this.props.prepare) {
-        var player = Player.getPlayer(res.player);
+        var player = Players.getPlayer(res.player);
         var key;
         var payload;
 
@@ -104,7 +104,7 @@ export default class MapR extends React.Component {
 
   playTurnNew(res) {
     if(this.props.prepare) {
-        var player = Player.getPlayer(res.player);
+        var player = Players.getPlayer(res.player);
         if(player.isMe()) {
           this.setState({selectable: {city: true}});
         } else {

@@ -71,7 +71,6 @@ export default class Dice extends React.Component {
         cursor = this.state.enabled ? 'pointer' : 'auto';
 
     return (
-      //react art handles event in its own way, see react-art modules - to investigate more
       <Group x={this.props.x} y={this.props.y} onClick={this.launch.bind(this)} cursor={cursor}>  
         
         <Rectangle width={size} height={size} stroke="black" fill={color} />
