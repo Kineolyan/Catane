@@ -1,3 +1,5 @@
+import * as maps from '../../util/maps.js';
+
 export class AReferee {
 	constructor(board, players) {
 		this._board = board;
@@ -31,6 +33,9 @@ export class AReferee {
 
 	/**
 	 * Decides if it is possible to build a colony at a specific spot.
+	 * One can build a colony if the location refers to a valid
+	 * spot, is not already owned and is not too close from
+	 * other colonies or cities.
 	 * @param location the location to consider
 	 * @returns {boolean} true if one can build the colony
 	 */
@@ -111,6 +116,13 @@ const GAME_STEPS = {
 	PLAY: 2
 };
 
+export const ResourceCosts = {
+	COLONY: { tuile: 1, bois: 1, mouton: 1, ble: 1 },
+	CITY: { caillou: 3, ble: 2 },
+	ROAD: { tuile: 1, bois: 1 },
+	CARD: { caillou: 1, mouton: 1, ble: 1 }
+};
+
 export class GameReferee extends AReferee {
 	constructor(board, players) {
 		super(board, players);
@@ -139,11 +151,40 @@ export class GameReferee extends AReferee {
 		}
 	}
 
+	settleColony(location) {
+		if (this._step === GAME_STEPS.PLAY) {
+			if (!this.canBuildColony(location)) {
+				throw new Error(`Cannot build colony on ${location.toString()}`);
+			}
+			if (!this.hasEnoughResources(this.currentPlayer, ResourceCosts.COLONY)) {
+				throw new Error(`Not enough resources to build a colony`);
+			}
+		} else {
+			throw new Error(`Not the correct step to settle on a colony. Current ${this._step}`);
+		}
+	}
+
 	startTurn() {
 		this._step = GAME_STEPS.ROLL_DICE;
 	}
 
 	hasRemainingRequiredActions() {
 		return this._step <+ GAME_STEPS.PLAY;
+	}
+
+	/**
+	 * Decides if the given player has enough resources to
+	 * comply the given cost.
+	 * @param  {Player}  player the player to check
+	 * @param  {Object}  costs   the cost of the operation
+	 * @return {Boolean} true if everything is ok
+	 */
+	hasEnoughResources(player, costs) {
+		var resources = player.resources;
+		for (let [r, cost] of maps.entries(costs)) {
+			let quantity = resources[r] || 0;
+			if (quantity < cost) { return false; }
+		}
+		return true;
 	}
 }

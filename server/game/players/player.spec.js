@@ -55,6 +55,23 @@ describe('Player', function() {
 		});
 	});
 
+	describe('#useResources', function() {
+		beforeEach(function() {
+			this.player = new Player(this.socket.toSocket());
+			this.player.receiveResources({ ble: 3, bois: 2, caillou: 1 });
+		});
+
+		it('updates the number of resources from an array', function() {
+			this.player.useResources([ 'ble', 'bois', 'caillou', 'ble' ]);
+			expect(this.player.resources).toEqual({ ble: 1, caillou: 0, bois: 1 });
+		});
+
+		it('updates the number of resources from a hash', function() {
+			this.player.useResources({ ble: 2, bois: 1, caillou: 1 });
+			expect(this.player.resources).toEqual({ ble: 1, caillou: 0, bois: 1 });
+		});
+	});
+
 	describe('->player:nickname', function() {
 		beforeEach(function() {
 			this.player = new Player(this.socket.toSocket());

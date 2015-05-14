@@ -1,7 +1,7 @@
 import Board from '../../elements/boards/board';
 import { RoundGenerator } from '../../elements/boards/generators/maps';
 import Dice from '../../elements/dice/dice';
-import { PlacementReferee, GameReferee } from '../referees/referee';
+import { PlacementReferee, GameReferee, ResourceCosts } from '../referees/referee';
 import { shuffle } from '../../util/arrays';
 
 const logger = global.logger;
@@ -116,7 +116,7 @@ export default class Game {
 	}
 
 	/**
-	 * Move the thieves to a new tile.
+	 * Moves the thieves to a new tile.
 	 * @param player the player executing the move
 	 * @param tileLocation the new location for thieves
 	 */
@@ -124,6 +124,24 @@ export default class Game {
 		this._referee.checkTurn(player);
 		this._referee.moveThieves(tileLocation);
 		this._board.thieves = tileLocation;
+	}
+
+	/**
+	 * Creates a new colony on the given location.
+	 * @param player the player executing the action
+	 * @param  {Location} location the new location
+	 * @return {City} the picked colony
+	 */
+	settleColony(player, location) {
+		this._referee.checkTurn(player);
+		this._referee.settleColony(location);
+
+		// Assign the colony
+		var pickedColony = this._board.getCity(location);
+		pickedColony.owner = player;
+		player.useResources(ResourceCosts.COLONY);
+
+		return pickedColony;
 	}
 
 	/**

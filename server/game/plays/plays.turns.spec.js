@@ -5,14 +5,13 @@ describe('Play turn management', function () {
 		this.game = starter.createGame(2);
 		this.players = this.game.players;
 
-		this.startGame = function () {
-			this.game.start();
+		// Start the game for all
+		this.game.start();
 
-			this.p1 = this.players[0];
-			this.p2 = this.players[1];
+		this.p1 = this.players[0];
+		this.p2 = this.players[1];
 
-			this.game.randomPick();
-		};
+		this.game.randomPick();
 
 		this.getLastDiceValue = function () {
 			var message = this.players[ 0 ].client.lastMessage('play:roll-dice');
@@ -21,10 +20,6 @@ describe('Play turn management', function () {
 	});
 
 	describe('on game started', function () {
-		beforeEach(function () {
-			this.startGame();
-		});
-
 		it('notifies all players of a new turn', function () {
 			var firstPlayerId = this.p1.id;
 			for (let p of this.players) {
@@ -35,8 +30,6 @@ describe('Play turn management', function () {
 
 	describe('on a turn end', function () {
 		beforeEach(function () {
-			this.startGame();
-
 			this.p1.client.receive('play:roll-dice');
 			var diceValue = this.getLastDiceValue();
 			if (diceValue === 7) {
@@ -63,8 +56,6 @@ describe('Play turn management', function () {
 
 	describe('roll dice', function () {
 		beforeEach(function () {
-			this.startGame();
-
 			this.p1.client.receive('play:roll-dice');
 		});
 
@@ -95,8 +86,6 @@ describe('Play turn management', function () {
 
 	describe('move thieves', function() {
 		beforeEach(function () {
-			this.startGame();
-
 			this.p1.client.receive('play:roll-dice');
 			// No need to check if the value is a 7 yet (can move thieves without cards)
 			this.newThievesLocation = this.game.thieves.hashCode() === 0 ? { x: 1, y: 1} : { x: 0, y: 0};
@@ -110,5 +99,7 @@ describe('Play turn management', function () {
 			}
 		});
 	});
+
+	// TODO Test settling on a colony
 
 });

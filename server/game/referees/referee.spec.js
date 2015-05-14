@@ -187,6 +187,72 @@ describe('GameReferee', function() {
 		});
 	});
 
+	describe('#hasEnoughResources', function() {
+		beforeEach(function() {
+			this.player = this.players[0];
+		});
+
+		it('returns true if there is enough', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+			expect(this.referee.hasEnoughResources(this.player, { bois: 1, ble: 3})).toBe(true);
+		});
+
+		it('returns false if there is not enough', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+			expect(this.referee.hasEnoughResources(this.player, { caillou: 1, bois: 3})).toBe(false);
+		});
+
+		it('support border cases', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+			expect(this.referee.hasEnoughResources(this.player, { bois: 2, mouton: 3 })).toBe(true);
+		});
+	});
+
+	describe('#settleColony', function() {
+		beforeEach(function() {
+			this.currentPlayer = this.referee.currentPlayer;
+
+			// Roll dice before action
+			this.referee.rollDice(8);
+			// Resets player resources
+			this.currentPlayer.useResources(this.currentPlayer.resources);
+		});
+
+		it('accepts if rules are followed', function() {
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ ble: 1, tuile: 1,  bois: 1, mouton: 1 });
+
+			expect(() => this.referee.settleColony(new Location(1, 0))).not.toThrow();
+		});
+
+		it('rejects if the player lacks resources', function() {
+			expect(() => this.referee.settleColony(new Location(1, 0))).toThrowError(/Not enough resources/i);
+		});
+
+		it('rejects if it is not the correct step', function() {
+			// End the turn of the current player to be at the beginning of the next turn
+			this.referee.endTurn();
+
+			expect(() => this.referee.settleColony(new Location(1, 0))).toThrowError(/Not the correct step/i);
+		});
+
+		it('rejects if the location is occupied', function() {
+			var location = new Location(1, 0);
+			this.board.getCity(location).owner = this.players[1];
+
+			expect(() => this.referee.settleColony(location)).toThrowError(/Cannot build colony/i);
+		});
+
+		it('rejects if the location is too close', function() {
+			this.board.getCity(new Location(0, 1)).owner = this.players[1];
+
+			expect(() => this.referee.settleColony(new Location(1, 0))).toThrowError(/Cannot build colony/i);
+		});
+
+		it('rejects if the location is invalid', function() {
+			expect(() => this.referee.settleColony(new Location(0, 0))).toThrowError(/Cannot build colony/i);
+		});
+	});
 });
 
 describe('PlacementReferee', function() {
