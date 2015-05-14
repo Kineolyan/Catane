@@ -45,7 +45,7 @@
     participant All
     Serveur->All: ws/play:turn:new\n{ player: &lt;current player id&gt; }
     Joueur->Serveur: ws/play:roll-dice
-    Serveur->All: ws/play:roll-dice\n{ diceValue: d, resources: { bois: 1, tuile: 3, ... } }
+    Serveur->All: ws/play:roll-dice\n{ dice: [ d1, d2 ], resources: { bois: 1, tuile: 3, ... } }
     Note left of All: Resources pour chaque joueur (bilan complet)
     Joueur->Serveur: Actions du joueur ...
     Joueur->Serveur: ws/play:turn:end
@@ -57,9 +57,10 @@
     Title: Ajout d'une colonie
     participant Joueur
     participant Serveur
-    participant All
+    participant Others
     Joueur->Serveur: ws/play:add:colony\n{colony: {x: 12, y: 34}}
-    Serveur->All:play:add:colony\n{player: playerId, colony: {x: 12, y: 34}}
+    Serveur->Joueur:play:add:colony\n{ _success: true, player: playerId, colony: {x: 12, y: 34}, resources: {...}}
+    Serveur->Others:play:add:colony\n{player: playerId, colony: {x: 12, y: 34}}
   </div>
 
   <div class="diagram">
