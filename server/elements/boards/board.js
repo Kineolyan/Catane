@@ -8,13 +8,14 @@ function getEntryValue(entry) {
 export default class Board {
 
 	constructor() {
-		this._tiles = [];
+		this._tiles = new Map();
 		this._cities = new Map();
 		this._paths = new Map();
+		this._thieves = null;
 	}
 
 	get tiles() {
-		return this._tiles;
+		return Array.from(this._tiles, getEntryValue);
 	}
 
 	get cities() {
@@ -23,6 +24,31 @@ export default class Board {
 
 	get paths() {
 		return Array.from(this._paths, getEntryValue);
+	}
+
+	/**
+	 * Gets the thieves location
+	 * @return {null|Location}
+	 */
+	get thieves() {
+		return this._thieves;
+	}
+
+	/**
+	 * Sets the new location for the thieves
+	 * @param {Location} location the new location
+	 */
+	set thieves(location) {
+		this._thieves = location;
+	}
+
+	/**
+	 * Gets the tile at a given location
+	 * @param location the asked location
+	 * @return {Tile} the tile at the location or undefined if emtpy
+	 */
+	getTile(location) {
+		return this._tiles.get(location.hashCode());
 	}
 
 	/**
@@ -70,8 +96,45 @@ export default class Board {
 		return cities;
 	}
 
+	/**
+	 * Gets the tiles surrounding a city.
+	 * @param location city location
+	 * @return {Array} the tiles around the city
+	 */
+	getSurroundingTiles(location) {
+		var tiles = [];
+		for (let [x, y] of geo.SURROUNDING_CITIES) {
+			let nextLocation = location.shift(x, y);
+			let nextTile = this._tiles.get(nextLocation.hashCode());
+			if (nextTile !== undefined) { tiles.push(nextTile); }
+		}
+
+		return tiles;
+	}
+
+	/**
+	 * Gets the tiles with the given dice value.
+	 * @param value the dice value to look for
+	 * @param {boolean?} excludeThieves do not include tiles with thieves
+	 * @return {Array} the tiles with that dice value.
+	 */
+	getTilesForDice(value, excludeThieves) {
+		var excludedLocationHash = excludeThieves === true ? this._thieves.hashCode() : undefined;
+		var tiles = [];
+		for (let [ hashCode, tile ] of this._tiles) {
+			if (tile.diceValue === value && hashCode !== excludedLocationHash) {
+				tiles.push(tile);
+			}
+		}
+
+		return tiles;
+	}
+
 	generate(generator) {
-		generator.forEachTile(tile => this._tiles.push(tile));
+		generator.forEachTile(tile => {
+			this._tiles.set(tile.location.hashCode(), tile);
+			if (tile.resource === 'desert') { this._thieves = tile.location; }
+		});
 		generator.forEachCity(city => this._cities.set(city.location.hashCode(), city) );
 		generator.forEachPath(path => this._paths.set(path.hashCode(), path));
 	}

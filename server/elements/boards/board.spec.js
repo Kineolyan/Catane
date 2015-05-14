@@ -3,6 +3,7 @@ import Board from './board';
 import Location from '../geo/location';
 import Path from '../geo/path.js';
 import City from '../geo/city';
+import Tile from '../geo/tile.js';
 import { RoundGenerator } from './generators/maps.js';
 
 describe('Board', function () {
@@ -31,7 +32,7 @@ describe('Board', function () {
 			this.board = new Board();
 			this.board.generate({
 				forEachTile: function (action) {
-					action("tile");
+					action(new Tile(0, 0, 'ble', 8));
 				},
 				forEachCity: function (action) {
 					action(new City(1, 2));
@@ -46,7 +47,11 @@ describe('Board', function () {
 		});
 
 		it('has all generated tiles', function () {
-			expect(this.board.tiles).toEqual([ "tile" ]);
+			expect(this.board.tiles).toHaveLength(1);
+			var tile = this.board.tiles[0];
+			expect(tile.resource).toEqual('ble');
+			expect(tile.location).toEqual(new Location(0, 0));
+			expect(tile.diceValue).toEqual(8);
 		});
 
 		it('has all generated cities', function () {
@@ -60,6 +65,21 @@ describe('Board', function () {
 				new Path(new Location(3, 4), new Location(5, 6)),
 				new Path(new Location(5, 6), new Location(7, 8))
 			]);
+		});
+	});
+
+	describe('#getTile', function () {
+		beforeEach(function () {
+			this.board = new Board();
+			this.board.generate(new RoundGenerator(1));
+		});
+
+		it('finds existing tiles', function () {
+			expect(this.board.getTile(new Location(0, 0))).not.toBeUndefined();
+		});
+
+		it('returns undefined on unexisting tiles', function () {
+			expect(this.board.getTile(new Location(0, 1))).toBeUndefined();
 		});
 	});
 
@@ -152,4 +172,66 @@ describe('Board', function () {
 		});
 	});
 
+	describe('#getSurroundingTiles', function() {
+		beforeEach(function() {
+			this.board = new Board();
+			this.board.generate(new RoundGenerator(2));
+		});
+
+		it('get correct tiles inside the board', function() {
+			// Test the two patterns
+			var tileLocations = this.board.getSurroundingTiles(new Location(1, 0))
+					.map(tile => tile.location);
+			expect(tileLocations).toHaveMembers([
+				new Location(1, 1),
+				new Location(2, -1),
+				new Location(0, 0)
+			]);
+
+			tileLocations = this.board.getSurroundingTiles(new Location(-1, 0))
+					.map(tile => tile.location);
+			expect(tileLocations).toHaveMembers([
+				new Location(-1, -1),
+				new Location(-2, 1),
+				new Location(0, 0)
+			]);
+		});
+
+		it('get correct cities on board border', function() {
+			var tileLocations = this.board.getSurroundingTiles(new Location(0, 2))
+					.map(tile => tile.location);
+			expect(tileLocations).toHaveMembers([
+				new Location(1, 1),
+				new Location(-1, 2)
+			]);
+		});
+	});
+
+	describe('#getTilesForDice', function() {
+		beforeEach(function () {
+			this.board = new Board();
+			this.board.generate({
+				forEachTile: function (action) {
+					action(new Tile(0, 0, 'desert', 8));
+					for (let i = 1; i <= 3; i += 1) {
+						action(new Tile(i, 0, 'ble', 8 - i));
+						action(new Tile(0, i, 'ble', 8 - i));
+					}
+				},
+				forEachCity: function () {},
+				forEachPath: function () {}
+			});
+		});
+
+		it('collects all tiles with a given dice value', function() {
+			var tileLocations = this.board.getTilesForDice(6).map(tile => tile.location);
+			expect(tileLocations).toHaveMembers([ new Location(2, 0), new Location(0, 2) ]);
+		});
+
+		it('can exclude the tiles with thieves', function() {
+			this.board.thieves = new Location(1, 0);
+			var tileLocations = this.board.getTilesForDice(7, true).map(tile => tile.location);
+			expect(tileLocations).toEqual([ new Location(0, 1) ]);
+		});
+	});
 });

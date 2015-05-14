@@ -9,12 +9,15 @@ export class Plays {
 			var location = new Location(request.colony.x, request.colony.y);
 			var colony = player.game.pickColony(player, location);
 
-			player.game.emit('play:pick:colony', {
+			var message = {
 				player: player.id,
 				colony: colony.location.toJson()
-			});
+			};
+			player.game.emit(player, 'play:pick:colony', message);
 
-			return undefined;
+			// Add the resources for the player
+			message.resources = player.resources;
+			return message;
 		});
 
 		player.on('play:pick:path', (request) => {
@@ -32,15 +35,17 @@ export class Plays {
 
 		player.on('play:roll-dice', () => {
 			var diceValues = player.game.rollDice(player);
-			player.game.emit('play:roll-dice', { dice: diceValues });
+			for (let p of player.game.players) {
+				if (p.id !== player.id) { p.emit('play:roll-dice', { dice: diceValues, resources: p.resources }); }
+			}
 
-			return undefined;
+			return { dice: diceValues, resources: player.resources };
 		});
 
-		player.on('play:move:thieves', () => {
-			player.game.moveThieves(player);
-			// TODO complete the implementation
-
+		player.on('play:move:thieves', (request) => {
+			var tileLocation = new Location(request.tile.x, request.tile.y);
+			player.game.moveThieves(player, tileLocation);
+			player.game.emit('play:move:thieves', { tile: tileLocation.toJson() });
 			return undefined;
 		});
 

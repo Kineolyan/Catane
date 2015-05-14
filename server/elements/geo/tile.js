@@ -7,7 +7,7 @@ export default class Tile {
 	 * @param  {Integer} x x-coordinate
 	 * @param  {Integer} y y-coordinate
 	 * @param  {String} resource the resource
-	 * @param  {String} diceValue the dice value
+	 * @param  {Number} diceValue the dice value
 	 */
 	constructor(x, y, resource, diceValue) {
 		this._location = new Location(x, y);
@@ -40,8 +40,25 @@ export default class Tile {
 		this._diceValue = value;
 	}
 
+	/**
+	 * Adds a city to the tile.
+	 * @param city the new city located in the tile.
+	 */
 	addCity(city) {
 		this._cities.push(city);
 	}
 
+	/**
+	 * Distributes the resources to colonies and cities belonging
+	 * to the tile.
+	 */
+	distributeResources() {
+		var resources = {};
+		for (let spot of this._cities) {
+			if (null !== spot.owner) {
+				resources[this._resource] = spot.isCity() ? 2 : 1;
+				spot.owner.receiveResources(resources);
+			}
+		}
+	}
 }

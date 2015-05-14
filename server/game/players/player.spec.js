@@ -22,6 +22,10 @@ describe('Player', function() {
 		it('has an id', function() {
 			expect(this.player.id).toEqual('1');
 		});
+
+		it('does not have any resources', function() {
+			expect(this.player.resources).toEqual({});
+		});
 	});
 
 	describe('#name', function() {
@@ -32,6 +36,22 @@ describe('Player', function() {
 
 		it('sets name', function() {
 			expect(this.player.name).toEqual('Olivier');
+		});
+	});
+
+	describe('#receiveResources', function() {
+		beforeEach(function() {
+			this.player = new Player(this.socket.toSocket());
+		});
+
+		it('updates the number of resources from an array', function() {
+			this.player.receiveResources([ 'ble', 'bois', 'mouton', 'ble' ]);
+			expect(this.player.resources).toEqual({ ble: 2, mouton: 1, bois: 1 });
+		});
+
+		it('updates the number of resources from a hash', function() {
+			this.player.receiveResources({ ble: 2, bois: 1, mouton: 1 });
+			expect(this.player.resources).toEqual({ ble: 2, mouton: 1, bois: 1 });
 		});
 	});
 

@@ -1,6 +1,7 @@
 import { MockSocket } from '../../com/mocks';
 
 import Server from '../../server';
+import Location from '../../elements/geo/location.js';
 
 var server = new Server();
 
@@ -22,6 +23,23 @@ export function createPlayer(name) {
 
 	return info;
 }
+
+const PICK_ARGS = [
+		// Outer city ring
+		[ 0, 2, 1, 2 ],
+		[ 2, 1, 2, 0 ],
+		[ 3, -1, 3, -2 ],
+		[ 2, -2, 2, -3 ],
+		[ 1, -3, 0, -2 ],
+		[ -1, -2, -2, -1],
+		[ -2, 0, -3, 1 ],
+		[ -3, 2, -2, 2 ],
+		[ -2, 3, -1, 1 ],
+		// Inner city ring
+		[ 1, 0, 1, -1 ],
+		[ 0, 1, -1, 0 ],
+		[ -1, 1, 0, 1 ]
+];
 
 /**
  * Creates a new game with a given number of players.
@@ -48,6 +66,39 @@ export function createGame(nbPlayers) {
 		players: players,
 		start: function() {
 			players[0].client.receive('game:start', gameId);
+
+			var message = players[0].client.lastMessage('game:start');
+			this.order = message.players;
+			for (let tile of message.board.tiles) {
+				if (tile.resource === 'desert') { this.thieves = new Location(tile.x, tile.y); }
+			}
+
+			var mappedPlayers = {};
+			for (let p of players) { mappedPlayers[p.id] = p; }
+			this.players = [];
+			for (let pId of message.players) { this.players.push(mappedPlayers[pId]); }
+		},
+		/**
+		 * Picks a city and a road for the given player.
+		 * @param player the player acting
+		 * @param cityX the x-coordinate of the city
+		 * @param cityY the y-coordinate of the city
+		 * @param toX the x-coordinate of the road end
+		 * @param toY the y-coordinate of the road end
+		 */
+		pick: function pick(player, cityX, cityY, toX, toY) {
+			player.client.receive('play:pick:colony', { colony: { x: cityX, y: cityY } });
+			player.client.receive('play:pick:path', { path: { from: { x: cityX, y: cityY }, to: { x: toX, y: toY } } });
+			player.client.receive('play:turn:end');
+		},
+		/**
+		 * Picks randomly cities for the players.
+		 */
+		randomPick: function() {
+			var nbOfPicks = this.players.length * 2;
+			for (let i = 0; i < nbOfPicks; i += 1) {
+				this.pick(this.players[i % this.players.length], ...PICK_ARGS[i]);
+			}
 		}
 	};
 }
