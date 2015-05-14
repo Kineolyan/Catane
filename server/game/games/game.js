@@ -145,6 +145,24 @@ export default class Game {
 	}
 
 	/**
+	 * Builds a road at a given path location.
+	 * @param  {Player} player the player executing the action
+	 * @param  {Path} path   the path to pick
+	 * @return {Path} the build path
+	 */
+	buildRoad(player, path) {
+		this._referee.checkTurn(player);
+		this._referee.buildRoad(path);
+
+		// Assign the path to the player
+		var pickedPath = this._board.getPath(path);
+		pickedPath.owner = player;
+		player.useResources(ResourceCosts.ROAD);
+
+		return pickedPath;
+	}
+
+	/**
 	 * Makes the player end its turn.
 	 * @param player the player ending its turn
 	 * @returns the next player whose turn has started

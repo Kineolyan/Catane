@@ -214,18 +214,19 @@ describe('GameReferee', function() {
 
 			// Roll dice before action
 			this.referee.rollDice(8);
-			// Resets player resources
-			this.currentPlayer.useResources(this.currentPlayer.resources);
+
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ ble: 1, tuile: 1,  bois: 1, mouton: 1 });
 		});
 
 		it('accepts if rules are followed', function() {
-			// Give just enough to the player
-			this.currentPlayer.receiveResources({ ble: 1, tuile: 1,  bois: 1, mouton: 1 });
-
 			expect(() => this.referee.settleColony(new Location(1, 0))).not.toThrow();
 		});
 
 		it('rejects if the player lacks resources', function() {
+			// Resets player resources
+			this.currentPlayer.useResources(this.currentPlayer.resources);
+
 			expect(() => this.referee.settleColony(new Location(1, 0))).toThrowError(/Not enough resources/i);
 		});
 
@@ -251,6 +252,90 @@ describe('GameReferee', function() {
 
 		it('rejects if the location is invalid', function() {
 			expect(() => this.referee.settleColony(new Location(0, 0))).toThrowError(/Cannot build colony/i);
+		});
+	});
+
+	describe('#buildRoad', function() {
+		beforeEach(function() {
+			this.currentPlayer = this.referee.currentPlayer;
+
+			// Roll dice before action
+			this.referee.rollDice(8);
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ tuile: 1, bois: 1 });
+
+			this.path = new Path(
+				new Location(1, 0), new Location(0, 1)
+			);
+		});
+
+		it('accepts if rules are followed', function() {
+			// Give the start to the current player
+			this.board.getCity(this.path.from).owner = this.currentPlayer;
+
+			expect(() => this.referee.buildRoad(this.path)).not.toThrow();
+		});
+
+		it('rejects if the player lacks resources', function() {
+			// Resets player resources
+			this.currentPlayer.useResources(this.currentPlayer.resources);
+
+			expect(() => {
+				this.referee.buildRoad(this.path);
+			}).toThrowError(/Not enough resources/i);
+		});
+
+		it('rejects if it is not the correct step', function() {
+			// End the turn of the current player to be at the beginning of the next turn
+			this.referee.endTurn();
+
+			expect(() => {
+				this.referee.buildRoad(this.path);
+			}).toThrowError(/Not the correct step/i);
+		});
+
+		it('rejects if the road is occupied', function() {
+			this.board.getPath(this.path).owner = this.players[1];
+
+			expect(() => this.referee.buildRoad(this.path)).toThrowError(/Cannot build road/i);
+		});
+
+		it('accepts if one of the cities belongs to player and the other is empty', function() {
+			// Give the start to the current player
+			this.board.getCity(this.path.from).owner = this.currentPlayer;
+
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ tuile: 1, bois: 1 });
+
+			expect(() => this.referee.buildRoad(this.path)).not.toThrow();
+		});
+
+		it('accepts if one of the cities belongs to the player and the other to someone else', function() {
+			// Give the start to the current player
+			this.board.getCity(this.path.from).owner = this.players[0];
+			this.board.getCity(this.path.to).owner = this.players[1];
+
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ tuile: 1, bois: 1 });
+			expect(() => this.referee.buildRoad(this.path)).not.toThrow();
+		});
+
+		it('rejects if none of the cities are occupied', function() {
+			expect(() => this.referee.buildRoad(this.path)).toThrowError(/Cannot build road/i);
+		});
+
+		it('rejects if none of the cities belongs to player', function() {
+			this.board.getPath(this.path).owner = this.players[1];
+
+			expect(() => this.referee.buildRoad(this.path)).toThrowError(/Cannot build road/i);
+		});
+
+		it('rejects if the road is invalid', function() {
+			expect(() => {
+				this.referee.buildRoad(new Path(
+					new Location(3, 0), new Location(0, -3)
+				));
+			}).toThrowError(/Cannot build road/i);
 		});
 	});
 });
@@ -312,16 +397,6 @@ describe('PlacementReferee', function() {
 
 		it('rejects picking an invalid location as city', function() {
 			expect(() => this.referee.pickColony(new Location(0, 0))).toThrowError();
-		});
-	});
-
-	describe('#pickColony', function() {
-		beforeEach(function() {
-			// p1 turn is in progress
-			// Give a city to p2
-			var cityLocation = new Location(0, 1);
-			this.board.getCity(cityLocation).owner = this.players[1];
-			this.board.getPath(new Path(cityLocation, cityLocation.shift(1, -1))).owner = this.players[1];
 		});
 	});
 

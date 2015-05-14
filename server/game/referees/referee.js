@@ -49,6 +49,34 @@ export class AReferee {
 		return surroundingSpots.every(spot => spot.owner === null); // Too close from something else
 	}
 
+	/**
+	 * Decides if the given location belongs the player
+	 * @param  {*} element the location to check
+	 * @param {Player?} player the player to check, or the current
+	 *   player if undefined
+	 * @return {Boolean} true for success
+	 */
+	belongsToPlayer(element, player) {
+		if (player === undefined) { player = this.currentPlayer; }
+		return element.owner !== null	&& element.owner.id === player.id;
+	}
+
+	/**
+	 * Decides if the current player can build the given road.
+	 * @param  {Path} path the path to build
+	 * @return {boolean} true if he can build
+	 */
+	canBuildPath(askedPath) {
+		var path = this._board.getPath(askedPath);
+		if (path === undefined) { return false; } // No path here
+
+		if (path.owner !== null) { return false; } // Already used
+
+		var ends = [ this._board.getCity(path.from), this._board.getCity(path.to) ];
+
+		return this.belongsToPlayer(ends[0]) || this.belongsToPlayer(ends[1]);
+	}
+
 	endTurn() {
 		if (!this.hasRemainingRequiredActions()) {
 			this._currentPlayerIdx = (this._currentPlayerIdx + 1) % this._players.length;
@@ -151,16 +179,37 @@ export class GameReferee extends AReferee {
 		}
 	}
 
+	/**
+	 * Checks that the current player can settle on a colony.
+	 * @param  {Location} location the colony position
+	 */
 	settleColony(location) {
 		if (this._step === GAME_STEPS.PLAY) {
-			if (!this.canBuildColony(location)) {
-				throw new Error(`Cannot build colony on ${location.toString()}`);
-			}
 			if (!this.hasEnoughResources(this.currentPlayer, ResourceCosts.COLONY)) {
 				throw new Error(`Not enough resources to build a colony`);
 			}
+			if (!this.canBuildColony(location)) {
+				throw new Error(`Cannot build colony on ${location.toString()}`);
+			}
 		} else {
 			throw new Error(`Not the correct step to settle on a colony. Current ${this._step}`);
+		}
+	}
+
+	/**
+	 * Checks that the current player can build a road.
+	 * @param  {Path} path the path of the road
+	 */
+	buildRoad(path) {
+		if (this._step === GAME_STEPS.PLAY) {
+			if (!this.hasEnoughResources(this.currentPlayer, ResourceCosts.ROAD)) {
+				throw new Error(`Not enough resources to build a road`);
+			}
+			if (!this.canBuildPath(path)) {
+				throw new Error(`Cannot build road on ${path.toString()}`);
+			}
+		} else {
+			throw new Error(`Not the correct step to build a road. Current ${this._step}`);
 		}
 	}
 

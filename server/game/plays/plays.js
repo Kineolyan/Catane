@@ -64,8 +64,19 @@ export class Plays {
 
 		player.on('play:add:colony', (request) => {
 			var location = getColonyLocation(request);
-			player.game.settleColony(player, location);
-			var message = { player: player.id, colony: location.toJson() };
+			var addedColony = player.game.settleColony(player, location);
+			var message = { player: player.id, colony: addedColony.location.toJson() };
+			player.game.emit('play:add:colony', player, message);
+
+			// Update the resources for the current player
+			message.resources = player.resources;
+			return message;
+		});
+
+		player.on('play:add:road', (request) => {
+			var path = getPath(request);
+			var builtRoad = player.game.buildRoad(player, path);
+			var message = { player: player.id, path: builtRoad.toJson() };
 			player.game.emit('play:add:colony', player, message);
 
 			// Update the resources for the current player

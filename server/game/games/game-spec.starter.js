@@ -153,7 +153,5 @@ export function createLocalGame(nbPlayers) {
 		games.join(game, p.player);
 	}
 
-	var playManager = new Plays();
-
 	return new GameEnv(players, game);
 }
