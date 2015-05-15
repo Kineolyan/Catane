@@ -82,6 +82,25 @@ export class AReferee {
 		return this.belongsToPlayer(ends[0]) || this.belongsToPlayer(ends[1]);
 	}
 
+	/**
+	 * Decides if it is possible to build a city at a specific spot.
+	 * One can build a city if the location refers to a valid
+	 * colony, is owned by the current player and not already a city.
+	 * @param {Location} location the location to consider
+	 * @param {Player?} the player to test
+	 * @returns {boolean} true if one can build the colony
+	 */
+	canBuildCity(location, player) {
+		if (player === undefined) { player = this.currentPlayer; }
+
+		var spot = this._board.getCity(location);
+		if (spot === undefined) { return false; } // No spot here
+
+		if (!this.belongsToPlayer(spot, player)) { return false; } // Not owned by the player
+
+		return !spot.isCity();
+	}
+
 	endTurn() {
 		if (!this.hasRemainingRequiredActions()) {
 			this._currentPlayerIdx = (this._currentPlayerIdx + 1) % this._players.length;
@@ -226,6 +245,23 @@ export class GameReferee extends AReferee {
 			}
 		} else {
 			throw new Error(`Not the correct step to build a road. Current ${this._step}`);
+		}
+	}
+
+	/**
+	 * Checks that the current player can build a city.
+	 * @param  {Location} location the city position
+	 */
+	buildCity(location) {
+		if (this._step === GAME_STEPS.PLAY) {
+			if (!this.hasEnoughResources(this.currentPlayer, ResourceCosts.CITY)) {
+				throw new Error(`Not enough resources to build a city`);
+			}
+			if (!this.canBuildCity(location)) {
+				throw new Error(`Cannot build city on ${location.toString()}`);
+			}
+		} else {
+			throw new Error(`Not the correct step to settle on a city. Current ${this._step}`);
 		}
 	}
 

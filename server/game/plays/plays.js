@@ -9,6 +9,10 @@ function getColonyLocation(request) {
 	return new Location(request.colony.x, request.colony.y);
 }
 
+function getCityLocation(request) {
+	return new Location(request.city.x, request.city.y);
+}
+
 function getPath(request) {
 	var fromLocation = new Location(request.path.from.x, request.path.from.y);
 	var toLocation = new Location(request.path.to.x, request.path.to.y);
@@ -65,6 +69,7 @@ export class Plays {
 		player.on('play:add:colony', (request) => {
 			var location = getColonyLocation(request);
 			var addedColony = player.game.settleColony(player, location);
+
 			var message = { player: player.id, colony: addedColony.location.toJson() };
 			player.game.emit('play:add:colony', player, message);
 
@@ -76,8 +81,21 @@ export class Plays {
 		player.on('play:add:road', (request) => {
 			var path = getPath(request);
 			var builtRoad = player.game.buildRoad(player, path);
+
 			var message = { player: player.id, path: builtRoad.toJson() };
 			player.game.emit('play:add:colony', player, message);
+
+			// Update the resources for the current player
+			message.resources = player.resources;
+			return message;
+		});
+
+		player.on('play:evolve:city', (request) => {
+			var location = getCityLocation(request);
+			var builtCity = player.game.buildCity(player, location);
+
+			var message = { player: player.id, colony: builtCity.location.toJson() };
+			player.game.emit('play:evolve:city', player, message);
 
 			// Update the resources for the current player
 			message.resources = player.resources;

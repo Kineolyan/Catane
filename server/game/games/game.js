@@ -127,7 +127,7 @@ export default class Game {
 	}
 
 	/**
-	 * Creates a new colony on the given location.
+	 * Creates a new colony at the given location.
 	 * @param player the player executing the action
 	 * @param  {Location} location the new location
 	 * @return {City} the picked colony
@@ -160,6 +160,24 @@ export default class Game {
 		player.useResources(ResourceCosts.ROAD);
 
 		return pickedPath;
+	}
+
+	/**
+	 * Evolves the colony into city at the given location.
+	 * @param player the player executing the action
+	 * @param  {Location} location the colony location
+	 * @return {City} the built city
+	 */
+	buildCity(player, location) {
+		this._referee.checkTurn(player);
+		this._referee.buildCity(location);
+
+		// Evolve the colony
+		var city = this._board.getCity(location);
+		city.evolve();
+		player.useResources(ResourceCosts.CITY);
+
+		return city;
 	}
 
 	/**

@@ -116,6 +116,38 @@ describe('AReferee', function() {
 		});
 	});
 
+	describe('#canBuildCity', function() {
+		beforeEach(function() {
+			// p1 is playing
+			this.city = new Location(0, 1);
+			// Set some cities around
+			this.board.getCity(this.city).owner = this.players[0];
+		});
+
+		it('can build on one own colony', function() {
+			expect(this.referee.canBuildCity(this.city)).toBe(true);
+		});
+
+		it('can build on a city', function() {
+			this.board.getCity(this.city).evolve();
+			expect(this.referee.canBuildCity(this.city)).toBe(false);
+		});
+
+		it('cannot build on invalid location', function() {
+			expect(this.referee.canBuildCity(new Location(0, 0))).toBe(false);
+		});
+
+		it('cannot build on someone else spot', function() {
+			var anotherCity = new Location(1, 0);
+			this.board.getCity(anotherCity).owner = this.players[1];
+			expect(this.referee.canBuildCity(anotherCity)).toBe(false);
+		});
+
+		it('cannot build on an empty spot', function() {
+			expect(this.referee.canBuildCity(new Location(1, 0))).toBe(false);
+		});
+	});
+
 	describe('#isTurn', function() {
 		it('is only turn of one player', function() {
 			for (let player of this.players) {
@@ -382,6 +414,54 @@ describe('GameReferee', function() {
 					new Location(3, 0), new Location(0, -3)
 				));
 			}).toThrowError(/Cannot build road/i);
+		});
+	});
+
+	describe('#buildCity', function() {
+		beforeEach(function() {
+			this.currentPlayer = this.referee.currentPlayer;
+
+			// Roll dice before action
+			this.referee.rollDice(8);
+
+			this.city = new Location(0, 1);
+			this.board.getCity(this.city).owner = this.currentPlayer;
+
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ ble: 2, caillou: 3 });
+		});
+
+		it('accepts if rules are followed', function() {
+			expect(() => this.referee.buildCity(this.city)).not.toThrow();
+		});
+
+		it('rejects if the player lacks resources', function() {
+			// Resets player resources
+			this.currentPlayer.useResources(this.currentPlayer.resources);
+
+			expect(() => this.referee.buildCity(this.city)).toThrowError(/Not enough resources/i);
+		});
+
+		it('rejects if it is not the correct step', function() {
+			// End the turn of the current player to be at the beginning of the next turn
+			this.referee.endTurn();
+
+			expect(() => this.referee.buildCity(this.city)).toThrowError(/Not the correct step/i);
+		});
+
+		it('rejects if the location is occupied', function() {
+			var anotherCity = new Location(1, 0);
+			this.board.getCity(anotherCity).owner = this.players[1];
+
+			expect(() => this.referee.buildCity(anotherCity)).toThrowError(/Cannot build city/i);
+		});
+
+		it('rejects if the location is invalid', function() {
+			expect(() => this.referee.buildCity(new Location(0, 0))).toThrowError(/Cannot build city/i);
+		});
+
+		it('rejects if there is no colony yet', function() {
+			expect(() => this.referee.buildCity(new Location(1, 0))).toThrowError(/Cannot build city/i);
 		});
 	});
 });

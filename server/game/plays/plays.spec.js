@@ -19,7 +19,7 @@ describe('Plays', function() {
 		[
 			'play:pick:colony', 'play:pick:path',
 			'play:roll-dice', 'play:move:thieves',
-			'play:add:colony', 'play:add:road',
+			'play:add:colony', 'play:add:road', 'play:evolve:city',
 			'play:turn:end'
 		].forEach(function(channel) {
 			it(`makes client listen to "${channel}"`, function() {
