@@ -1,4 +1,5 @@
 import * as maps from '../../util/maps.js';
+import Path from '../../elements/geo/path.js';
 
 export class AReferee {
 	constructor(board, players) {
@@ -66,7 +67,11 @@ export class AReferee {
 	 * @param  {Path} path the path to build
 	 * @return {boolean} true if he can build
 	 */
-	canBuildPath(askedPath) {
+	canBuildRoad(askedPath) {
+		/* TODO improve logic to check if a road can be build
+		 * This requires player to have at least one of the end.
+		 * It is possible to just connect paths to each other */
+
 		var path = this._board.getPath(askedPath);
 		if (path === undefined) { return false; } // No path here
 
@@ -121,9 +126,20 @@ export class PlacementReferee extends AReferee {
 		}
 	}
 
-	pickPath() {
+	/**
+	 * Picks a path at a given position.
+	 * @param  {Location|Path} from the start location or the path
+	 * @param  {Location} to the end location or undefined
+	 */
+	pickPath(from, to) {
+		var path = to === undefined ? from : new Path(from, to);
+
 		if (this._step === PLACEMENT_STEPS.PICK_PATH) {
-			this._step = PLACEMENT_STEPS.DONE;
+			if (this.canBuildRoad(path)) {
+				this._step = PLACEMENT_STEPS.DONE;
+			} else {
+				throw new Error(`Cannot pick path at ${path.toString()}`);
+			}
 		} else {
 			throw new Error(`Cannot pick path. Current step ${this._step}`);
 		}
@@ -205,7 +221,7 @@ export class GameReferee extends AReferee {
 			if (!this.hasEnoughResources(this.currentPlayer, ResourceCosts.ROAD)) {
 				throw new Error(`Not enough resources to build a road`);
 			}
-			if (!this.canBuildPath(path)) {
+			if (!this.canBuildRoad(path)) {
 				throw new Error(`Cannot build road on ${path.toString()}`);
 			}
 		} else {

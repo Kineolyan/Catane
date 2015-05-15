@@ -37,7 +37,7 @@ describe('AReferee', function() {
 		this.socket = new MockSocket();
 
 		this.board = new Board();
-		this.board.generate(new RoundGenerator(2));
+		this.board.generate(new RoundGenerator(3));
 		this.players = [
 			new Player(this.socket.toSocket(), 1),
 			new Player(this.socket.toSocket(), 2)
@@ -70,6 +70,52 @@ describe('AReferee', function() {
 		});
 	});
 
+	describe('#canBuildRoad', function() {
+		beforeEach(function() {
+			// p1 is playing
+			// Set some cities around
+			this.path = new Path(new Location(0, 1), new Location(1, 0));
+		});
+
+		it('rejects if the road is occupied', function() {
+			this.board.getPath(this.path).owner = this.players[1];
+
+			expect(this.referee.canBuildRoad(this.path)).toBe(false);
+		});
+
+		it('accepts if one of the cities belongs to player and the other is empty', function() {
+			// Give the start to the current player
+			this.board.getCity(this.path.from).owner = this.players[0];
+
+			expect(this.referee.canBuildRoad(this.path)).toBe(true);
+		});
+
+		it('accepts if one of the cities belongs to the player and the other to someone else', function() {
+			// Give the start to the current player
+			this.board.getCity(this.path.from).owner = this.players[0];
+			this.board.getCity(this.path.to).owner = this.players[1];
+
+			expect(this.referee.canBuildRoad(this.path)).toBe(true);
+		});
+
+		it('rejects if none of the cities are occupied', function() {
+			expect(this.referee.canBuildRoad(this.path)).toBe(false);
+		});
+
+		it('rejects if none of the cities belongs to player', function() {
+			this.board.getPath(this.path).owner = this.players[1];
+			// The other has no owner
+
+			expect(this.referee.canBuildRoad(this.path)).toBe(false);
+		});
+
+		it('rejects if the road is invalid', function() {
+			expect(this.referee.canBuildRoad(new Path(
+					new Location(3, 0), new Location(0, -3)
+			))).toBe(false);
+		});
+	});
+
 	describe('#isTurn', function() {
 		it('is only turn of one player', function() {
 			for (let player of this.players) {
@@ -97,7 +143,7 @@ describe('GameReferee', function() {
 		this.socket = new MockSocket();
 
 		this.board = new Board();
-		this.board.generate(new RoundGenerator(2));
+		this.board.generate(new RoundGenerator(3));
 		this.players = [
 			new Player(this.socket, 1),
 			new Player(this.socket, 2),
@@ -345,7 +391,7 @@ describe('PlacementReferee', function() {
 		this.socket = new MockSocket();
 
 		this.board = new Board();
-		this.board.generate(new RoundGenerator(2));
+		this.board.generate(new RoundGenerator(3));
 		this.players = [
 			new Player(this.socket.toSocket(), 1),
 			new Player(this.socket.toSocket(), 2)
@@ -370,6 +416,7 @@ describe('PlacementReferee', function() {
 		it('says false after picking the road', function() {
 			var city = new Location(0, 2);
 			this.referee.pickColony(city);
+			this.board.getCity(city).owner = this.referee.currentPlayer;
 			this.referee.pickPath(city, new Location(1, 2));
 
 			expect(this.referee.hasRemainingRequiredActions()).toBe(false);
@@ -403,8 +450,16 @@ describe('PlacementReferee', function() {
 	describe('#isPlacementComplete', function() {
 		beforeEach(function() {
 			this.pick = function(cityX, cityY, toX, toY) {
-				this.referee.pickColony(new Location(cityX, cityY));
-				this.referee.pickPath(new Path(new Location(cityX, cityY), new Location(toX, toY)));
+				var player = this.referee.currentPlayer;
+
+				var city = new Location(cityX, cityY);
+				this.referee.pickColony(city);
+				this.board.getCity(city).owner = player;
+
+				var path = new Path(new Location(cityX, cityY), new Location(toX, toY));
+				this.referee.pickPath(path);
+				this.board.getPath(path).owner = player;
+
 				this.referee.endTurn();
 			};
 		});
