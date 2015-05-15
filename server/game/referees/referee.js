@@ -79,7 +79,23 @@ export class AReferee {
 
 		var ends = [ this._board.getCity(path.from), this._board.getCity(path.to) ];
 
-		return this.belongsToPlayer(ends[0]) || this.belongsToPlayer(ends[1]);
+		if(this.belongsToPlayer(ends[0]) || this.belongsToPlayer(ends[1])) {
+			return true; // Path goes from a owned city
+		}
+
+		// None of the ends belong to the player
+		for (let end of ends) {
+			if (end.owner === null) { // Not belonging to another
+				var surroundingPaths = this.board.getPathsFrom(end.location);
+				for (let p of surroundingPaths) {
+					if (p.hashCode() === path.hashCode()) { continue; }
+					if (this.belongsToPlayer(p)) { return true; } // It connect to another owned path
+				}
+			}
+		}
+
+		// Nothing worked
+		return false;
 	}
 
 	/**

@@ -75,36 +75,12 @@ describe('AReferee', function() {
 			// p1 is playing
 			// Set some cities around
 			this.path = new Path(new Location(0, 1), new Location(1, 0));
+			this.player = this.players[0];
+			this.other = this.players[1];
 		});
 
 		it('rejects if the road is occupied', function() {
-			this.board.getPath(this.path).owner = this.players[1];
-
-			expect(this.referee.canBuildRoad(this.path)).toBe(false);
-		});
-
-		it('accepts if one of the cities belongs to player and the other is empty', function() {
-			// Give the start to the current player
-			this.board.getCity(this.path.from).owner = this.players[0];
-
-			expect(this.referee.canBuildRoad(this.path)).toBe(true);
-		});
-
-		it('accepts if one of the cities belongs to the player and the other to someone else', function() {
-			// Give the start to the current player
-			this.board.getCity(this.path.from).owner = this.players[0];
-			this.board.getCity(this.path.to).owner = this.players[1];
-
-			expect(this.referee.canBuildRoad(this.path)).toBe(true);
-		});
-
-		it('rejects if none of the cities are occupied', function() {
-			expect(this.referee.canBuildRoad(this.path)).toBe(false);
-		});
-
-		it('rejects if none of the cities belongs to player', function() {
-			this.board.getPath(this.path).owner = this.players[1];
-			// The other has no owner
+			this.board.getPath(this.path).owner = this.other;
 
 			expect(this.referee.canBuildRoad(this.path)).toBe(false);
 		});
@@ -113,6 +89,66 @@ describe('AReferee', function() {
 			expect(this.referee.canBuildRoad(new Path(
 					new Location(3, 0), new Location(0, -3)
 			))).toBe(false);
+		});
+
+		describe('with no path around', function() {
+			it('accepts if one of the cities belongs to player and the other is empty', function() {
+				// Give the start to the current player
+				this.board.getCity(this.path.from).owner = this.player;
+
+				expect(this.referee.canBuildRoad(this.path)).toBe(true);
+			});
+
+			it('accepts if one of the cities belongs to the player and the other to someone else', function() {
+				// Give the start to the current player
+				this.board.getCity(this.path.from).owner = this.player;
+				this.board.getCity(this.path.to).owner = this.other;
+
+				expect(this.referee.canBuildRoad(this.path)).toBe(true);
+			});
+
+			it('rejects if none of the cities are occupied', function() {
+				expect(this.referee.canBuildRoad(this.path)).toBe(false);
+			});
+
+			it('rejects if none of the cities belongs to player', function() {
+				this.board.getPath(this.path).owner = this.other;
+				// The other has no owner
+
+				expect(this.referee.canBuildRoad(this.path)).toBe(false);
+			});
+		});
+
+		describe('with previous connected paths', function() {
+			beforeEach(function() {
+				this.anotherPath = new Path(new Location(1, 0), new Location(2, 0));
+			});
+
+			describe('belonging to the player', function() {
+				beforeEach(function() {
+					this.board.getPath(this.anotherPath).owner = this.player;
+				});
+
+				it('accepts if a path leads to it', function() {
+					expect(this.referee.canBuildRoad(this.path)).toBe(true);
+				});
+
+				it('rejects if the city is owned by someone else', function() {
+					this.board.getCity(new Location(1, 0)).owner = this.other;
+
+					expect(this.referee.canBuildRoad(this.path)).toBe(false);
+				});
+			});
+
+			describe('belonging to someone else', function() {
+				beforeEach(function() {
+					this.board.getPath(this.anotherPath).owner = this.other;
+				});
+
+				it('rejects the build', function() {
+					expect(this.referee.canBuildRoad(this.path)).toBe(false);
+				});
+			});
 		});
 	});
 
