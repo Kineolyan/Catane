@@ -30,7 +30,7 @@
     Game->Serveur: ws/player:nickname\n"new name"
     Serveur->Game: ws/player:nickname\n{ _success: true }
     Note left of Others: Notifie les autres membres de la partie
-    Serveur->Others: { players: [{ id: .., name: .. }] }
+    Serveur->Others: ws/player:nickname\n{ player: { id: .., name: .. } }
   </div>
 
   <script src="libs/jquery.min.js"></script>

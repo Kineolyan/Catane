@@ -1,6 +1,6 @@
 'use strict';
 
-/* 
+/*
   React component containing the whole game interface
 */
 import React from 'react';
@@ -17,15 +17,15 @@ export default class Room extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { 
-      players: []
+    this.state = {
+      players: new Map()
     };
   }
 
   /**
    * Triggered when the component is rendered, initialize the component
    */
-  componentDidMount() { 
+  componentDidMount() {
     this.initSocket();
   }
 
@@ -39,30 +39,30 @@ export default class Room extends React.Component {
         players = this.state.players,
         startButton;
 
-    //include himself if no players in the room 
-    if(players.length === 0) {
-      players.push({
+    //include himself if no players in the room
+    if(players.size === 0) {
+      players.set(this.props.player.getId(), {
         id: this.props.player.getId(),
         name: this.props.player.getName()
       });
     }
 
-    playersRendered = players.map((player) => {
-      return (<li className={'player-elem'} key={player.id}><Glyphicon glyph="user" /> {player.name}</li>);
-    });
+    playersRendered = [];
+    for (let player of players.values()) {
+      playersRendered.push(<li className={'player-elem'} key={player.id}><Glyphicon glyph="user" /> {player.name}</li>);
+    }
 
-    if(players.length >= 2) {
+    if(players.size >= 2) {
       startButton = (<Button bsSize={'small'} className={'pull-right'} bsStyle={'success'} ref="startButton" onClick={this.start.bind(this)}>
                         Start <Glyphicon glyph="arrow-right" />
                      </Button>);
-
     } else {
       playersRendered.push(<li key={'waiting'}>Waiting for more players...</li>);
     }
 
     return (
       <div className={'room'}>
-        
+
         <ul className={'list-info'}>
           {playersRendered}
         </ul>
@@ -97,13 +97,24 @@ export default class Room extends React.Component {
   initSocket() {
     //list of players
     Socket.on(Globals.socket.gamePlayers, (response) => {
-        this.setState({players: response.players});
+      var players = new Map();
+      response.players.forEach((player) => players.set(player.id, player));
+
+      this.setState({players: players});
+    });
+
+    Socket.on(Globals.socket.playerNickname, (response) => {
+      var updatedPlayer = response.player;
+      var players = this.state.players;
+      players.get(updatedPlayer.id).name = updatedPlayer.name;
+
+      this.setState({ players: players });
     });
 
     //game started
     Socket.on(Globals.socket.gameStart, (response) => {
         var other = this.state.players.filter(e => parseInt(e.id, 10) !== this.props.player.getId());
-        this.props.onStart(response.board, {other: other, 
+        this.props.onStart(response.board, {other: other,
                                             me: {
                                                   id: this.props.player.getId(),
                                                   name: this.props.player.getName()
@@ -122,6 +133,7 @@ export default class Room extends React.Component {
    */
   componentWillUnmount() {
     Socket.removeAllListeners(Globals.socket.gamePlayers);
+    Socket.removeAllListeners(Globals.socket.playerNickname);
     Socket.removeAllListeners(Globals.socket.gameStart);
     Socket.removeAllListeners(Globals.socket.gameQuit);
   }
