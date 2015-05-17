@@ -67,6 +67,12 @@ export default class Player {
 		return this._resources;
 	}
 
+	/**
+	 * Adds new resources to the player belongings.
+	 * @param  {Array|Object} resources the new resources as
+	 *   an array of resource names or a map giving the number
+	 *   per name.
+	 */
 	receiveResources(resources) {
 		if (resources.constructor === Array) {
 			for (let resource of resources) {
@@ -75,6 +81,24 @@ export default class Player {
 		} else {
 			for (let [resource, value] of maps.entries(resources)) {
 				this._updateResource(resource, value);
+			}
+		}
+	}
+
+	/**
+	 * Removes resources from the player belongings.
+	 * @param  {Array|Object} resources the used resources as
+	 *   an array of resource names or a map giving the number
+	 *   per name.
+	 */
+	useResources(resources) {
+		if (resources.constructor === Array) {
+			for (let resource of resources) {
+				this._updateResource(resource, -1);
+			}
+		} else {
+			for (let [resource, value] of maps.entries(resources)) {
+				this._updateResource(resource, -value);
 			}
 		}
 	}

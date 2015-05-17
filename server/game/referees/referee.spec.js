@@ -37,7 +37,7 @@ describe('AReferee', function() {
 		this.socket = new MockSocket();
 
 		this.board = new Board();
-		this.board.generate(new RoundGenerator(2));
+		this.board.generate(new RoundGenerator(3));
 		this.players = [
 			new Player(this.socket.toSocket(), 1),
 			new Player(this.socket.toSocket(), 2)
@@ -70,6 +70,120 @@ describe('AReferee', function() {
 		});
 	});
 
+	describe('#canBuildRoad', function() {
+		beforeEach(function() {
+			// p1 is playing
+			// Set some cities around
+			this.path = new Path(new Location(0, 1), new Location(1, 0));
+			this.player = this.players[0];
+			this.other = this.players[1];
+		});
+
+		it('rejects if the road is occupied', function() {
+			this.board.getPath(this.path).owner = this.other;
+
+			expect(this.referee.canBuildRoad(this.path)).toBe(false);
+		});
+
+		it('rejects if the road is invalid', function() {
+			expect(this.referee.canBuildRoad(new Path(
+					new Location(3, 0), new Location(0, -3)
+			))).toBe(false);
+		});
+
+		describe('with no path around', function() {
+			it('accepts if one of the cities belongs to player and the other is empty', function() {
+				// Give the start to the current player
+				this.board.getCity(this.path.from).owner = this.player;
+
+				expect(this.referee.canBuildRoad(this.path)).toBe(true);
+			});
+
+			it('accepts if one of the cities belongs to the player and the other to someone else', function() {
+				// Give the start to the current player
+				this.board.getCity(this.path.from).owner = this.player;
+				this.board.getCity(this.path.to).owner = this.other;
+
+				expect(this.referee.canBuildRoad(this.path)).toBe(true);
+			});
+
+			it('rejects if none of the cities are occupied', function() {
+				expect(this.referee.canBuildRoad(this.path)).toBe(false);
+			});
+
+			it('rejects if none of the cities belongs to player', function() {
+				this.board.getPath(this.path).owner = this.other;
+				// The other has no owner
+
+				expect(this.referee.canBuildRoad(this.path)).toBe(false);
+			});
+		});
+
+		describe('with previous connected paths', function() {
+			beforeEach(function() {
+				this.anotherPath = new Path(new Location(1, 0), new Location(2, 0));
+			});
+
+			describe('belonging to the player', function() {
+				beforeEach(function() {
+					this.board.getPath(this.anotherPath).owner = this.player;
+				});
+
+				it('accepts if a path leads to it', function() {
+					expect(this.referee.canBuildRoad(this.path)).toBe(true);
+				});
+
+				it('rejects if the city is owned by someone else', function() {
+					this.board.getCity(new Location(1, 0)).owner = this.other;
+
+					expect(this.referee.canBuildRoad(this.path)).toBe(false);
+				});
+			});
+
+			describe('belonging to someone else', function() {
+				beforeEach(function() {
+					this.board.getPath(this.anotherPath).owner = this.other;
+				});
+
+				it('rejects the build', function() {
+					expect(this.referee.canBuildRoad(this.path)).toBe(false);
+				});
+			});
+		});
+	});
+
+	describe('#canBuildCity', function() {
+		beforeEach(function() {
+			// p1 is playing
+			this.city = new Location(0, 1);
+			// Set some cities around
+			this.board.getCity(this.city).owner = this.players[0];
+		});
+
+		it('can build on one own colony', function() {
+			expect(this.referee.canBuildCity(this.city)).toBe(true);
+		});
+
+		it('can build on a city', function() {
+			this.board.getCity(this.city).evolve();
+			expect(this.referee.canBuildCity(this.city)).toBe(false);
+		});
+
+		it('cannot build on invalid location', function() {
+			expect(this.referee.canBuildCity(new Location(0, 0))).toBe(false);
+		});
+
+		it('cannot build on someone else spot', function() {
+			var anotherCity = new Location(1, 0);
+			this.board.getCity(anotherCity).owner = this.players[1];
+			expect(this.referee.canBuildCity(anotherCity)).toBe(false);
+		});
+
+		it('cannot build on an empty spot', function() {
+			expect(this.referee.canBuildCity(new Location(1, 0))).toBe(false);
+		});
+	});
+
 	describe('#isTurn', function() {
 		it('is only turn of one player', function() {
 			for (let player of this.players) {
@@ -97,7 +211,7 @@ describe('GameReferee', function() {
 		this.socket = new MockSocket();
 
 		this.board = new Board();
-		this.board.generate(new RoundGenerator(2));
+		this.board.generate(new RoundGenerator(3));
 		this.players = [
 			new Player(this.socket, 1),
 			new Player(this.socket, 2),
@@ -187,6 +301,205 @@ describe('GameReferee', function() {
 		});
 	});
 
+	describe('#hasEnoughResources', function() {
+		beforeEach(function() {
+			this.player = this.players[0];
+		});
+
+		it('returns true if there is enough', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+			expect(this.referee.hasEnoughResources(this.player, { bois: 1, ble: 3})).toBe(true);
+		});
+
+		it('returns false if there is not enough', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+			expect(this.referee.hasEnoughResources(this.player, { caillou: 1, bois: 3})).toBe(false);
+		});
+
+		it('support border cases', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+			expect(this.referee.hasEnoughResources(this.player, { bois: 2, mouton: 3 })).toBe(true);
+		});
+	});
+
+	describe('#settleColony', function() {
+		beforeEach(function() {
+			this.currentPlayer = this.referee.currentPlayer;
+
+			// Roll dice before action
+			this.referee.rollDice(8);
+
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ ble: 1, tuile: 1,  bois: 1, mouton: 1 });
+		});
+
+		it('accepts if rules are followed', function() {
+			expect(() => this.referee.settleColony(new Location(1, 0))).not.toThrow();
+		});
+
+		it('rejects if the player lacks resources', function() {
+			// Resets player resources
+			this.currentPlayer.useResources(this.currentPlayer.resources);
+
+			expect(() => this.referee.settleColony(new Location(1, 0))).toThrowError(/Not enough resources/i);
+		});
+
+		it('rejects if it is not the correct step', function() {
+			// End the turn of the current player to be at the beginning of the next turn
+			this.referee.endTurn();
+
+			expect(() => this.referee.settleColony(new Location(1, 0))).toThrowError(/Not the correct step/i);
+		});
+
+		it('rejects if the location is occupied', function() {
+			var location = new Location(1, 0);
+			this.board.getCity(location).owner = this.players[1];
+
+			expect(() => this.referee.settleColony(location)).toThrowError(/Cannot build colony/i);
+		});
+
+		it('rejects if the location is too close', function() {
+			this.board.getCity(new Location(0, 1)).owner = this.players[1];
+
+			expect(() => this.referee.settleColony(new Location(1, 0))).toThrowError(/Cannot build colony/i);
+		});
+
+		it('rejects if the location is invalid', function() {
+			expect(() => this.referee.settleColony(new Location(0, 0))).toThrowError(/Cannot build colony/i);
+		});
+	});
+
+	describe('#buildRoad', function() {
+		beforeEach(function() {
+			this.currentPlayer = this.referee.currentPlayer;
+
+			// Roll dice before action
+			this.referee.rollDice(8);
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ tuile: 1, bois: 1 });
+
+			this.path = new Path(
+				new Location(1, 0), new Location(0, 1)
+			);
+		});
+
+		it('accepts if rules are followed', function() {
+			// Give the start to the current player
+			this.board.getCity(this.path.from).owner = this.currentPlayer;
+
+			expect(() => this.referee.buildRoad(this.path)).not.toThrow();
+		});
+
+		it('rejects if the player lacks resources', function() {
+			// Resets player resources
+			this.currentPlayer.useResources(this.currentPlayer.resources);
+
+			expect(() => {
+				this.referee.buildRoad(this.path);
+			}).toThrowError(/Not enough resources/i);
+		});
+
+		it('rejects if it is not the correct step', function() {
+			// End the turn of the current player to be at the beginning of the next turn
+			this.referee.endTurn();
+
+			expect(() => {
+				this.referee.buildRoad(this.path);
+			}).toThrowError(/Not the correct step/i);
+		});
+
+		it('rejects if the road is occupied', function() {
+			this.board.getPath(this.path).owner = this.players[1];
+
+			expect(() => this.referee.buildRoad(this.path)).toThrowError(/Cannot build road/i);
+		});
+
+		it('accepts if one of the cities belongs to player and the other is empty', function() {
+			// Give the start to the current player
+			this.board.getCity(this.path.from).owner = this.currentPlayer;
+
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ tuile: 1, bois: 1 });
+
+			expect(() => this.referee.buildRoad(this.path)).not.toThrow();
+		});
+
+		it('accepts if one of the cities belongs to the player and the other to someone else', function() {
+			// Give the start to the current player
+			this.board.getCity(this.path.from).owner = this.players[0];
+			this.board.getCity(this.path.to).owner = this.players[1];
+
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ tuile: 1, bois: 1 });
+			expect(() => this.referee.buildRoad(this.path)).not.toThrow();
+		});
+
+		it('rejects if none of the cities are occupied', function() {
+			expect(() => this.referee.buildRoad(this.path)).toThrowError(/Cannot build road/i);
+		});
+
+		it('rejects if none of the cities belongs to player', function() {
+			this.board.getPath(this.path).owner = this.players[1];
+
+			expect(() => this.referee.buildRoad(this.path)).toThrowError(/Cannot build road/i);
+		});
+
+		it('rejects if the road is invalid', function() {
+			expect(() => {
+				this.referee.buildRoad(new Path(
+					new Location(3, 0), new Location(0, -3)
+				));
+			}).toThrowError(/Cannot build road/i);
+		});
+	});
+
+	describe('#buildCity', function() {
+		beforeEach(function() {
+			this.currentPlayer = this.referee.currentPlayer;
+
+			// Roll dice before action
+			this.referee.rollDice(8);
+
+			this.city = new Location(0, 1);
+			this.board.getCity(this.city).owner = this.currentPlayer;
+
+			// Give just enough to the player
+			this.currentPlayer.receiveResources({ ble: 2, caillou: 3 });
+		});
+
+		it('accepts if rules are followed', function() {
+			expect(() => this.referee.buildCity(this.city)).not.toThrow();
+		});
+
+		it('rejects if the player lacks resources', function() {
+			// Resets player resources
+			this.currentPlayer.useResources(this.currentPlayer.resources);
+
+			expect(() => this.referee.buildCity(this.city)).toThrowError(/Not enough resources/i);
+		});
+
+		it('rejects if it is not the correct step', function() {
+			// End the turn of the current player to be at the beginning of the next turn
+			this.referee.endTurn();
+
+			expect(() => this.referee.buildCity(this.city)).toThrowError(/Not the correct step/i);
+		});
+
+		it('rejects if the location is occupied', function() {
+			var anotherCity = new Location(1, 0);
+			this.board.getCity(anotherCity).owner = this.players[1];
+
+			expect(() => this.referee.buildCity(anotherCity)).toThrowError(/Cannot build city/i);
+		});
+
+		it('rejects if the location is invalid', function() {
+			expect(() => this.referee.buildCity(new Location(0, 0))).toThrowError(/Cannot build city/i);
+		});
+
+		it('rejects if there is no colony yet', function() {
+			expect(() => this.referee.buildCity(new Location(1, 0))).toThrowError(/Cannot build city/i);
+		});
+	});
 });
 
 describe('PlacementReferee', function() {
@@ -194,7 +507,7 @@ describe('PlacementReferee', function() {
 		this.socket = new MockSocket();
 
 		this.board = new Board();
-		this.board.generate(new RoundGenerator(2));
+		this.board.generate(new RoundGenerator(3));
 		this.players = [
 			new Player(this.socket.toSocket(), 1),
 			new Player(this.socket.toSocket(), 2)
@@ -219,6 +532,7 @@ describe('PlacementReferee', function() {
 		it('says false after picking the road', function() {
 			var city = new Location(0, 2);
 			this.referee.pickColony(city);
+			this.board.getCity(city).owner = this.referee.currentPlayer;
 			this.referee.pickPath(city, new Location(1, 2));
 
 			expect(this.referee.hasRemainingRequiredActions()).toBe(false);
@@ -249,21 +563,19 @@ describe('PlacementReferee', function() {
 		});
 	});
 
-	describe('#pickColony', function() {
-		beforeEach(function() {
-			// p1 turn is in progress
-			// Give a city to p2
-			var cityLocation = new Location(0, 1);
-			this.board.getCity(cityLocation).owner = this.players[1];
-			this.board.getPath(new Path(cityLocation, cityLocation.shift(1, -1))).owner = this.players[1];
-		});
-	});
-
 	describe('#isPlacementComplete', function() {
 		beforeEach(function() {
 			this.pick = function(cityX, cityY, toX, toY) {
-				this.referee.pickColony(new Location(cityX, cityY));
-				this.referee.pickPath(new Path(new Location(cityX, cityY), new Location(toX, toY)));
+				var player = this.referee.currentPlayer;
+
+				var city = new Location(cityX, cityY);
+				this.referee.pickColony(city);
+				this.board.getCity(city).owner = player;
+
+				var path = new Path(new Location(cityX, cityY), new Location(toX, toY));
+				this.referee.pickPath(path);
+				this.board.getPath(path).owner = player;
+
 				this.referee.endTurn();
 			};
 		});
