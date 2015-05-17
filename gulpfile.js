@@ -131,7 +131,9 @@ gulp.task('watch:jsx', function() {
   gulp.watch(PATHS.client.js('components/**/*.js'), ['watch:jsx:test']);
 });
 
-gulp.task('watch:jsx:test', ['build:browserify'], testUnit);
+gulp.task('watch:jsx:test', ['build:browserify'], function() {
+  return testUnit(false);
+});
 
 gulp.task('watch:sass', function() {
   gulp.watch(PATHS.client.components('*.scss'), ['build:sass']);

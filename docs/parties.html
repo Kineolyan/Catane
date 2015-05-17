@@ -55,7 +55,7 @@
     participant All
     Game->Serveur: ws/game:start\ngame_id
     Note left of All: Notifies players of the game\nSee play documentation
-    Serveur->All: ws/game:start\n{ tiles: [...], cities: [...], paths: [...] }
+    Serveur->All: ws/game:start\n{ board: { tiles: [...], cities: [...], paths: [...] } },\nplayers: [ id1, id2, ... ] }
   </div>
 
   <script src="libs/jquery.min.js"></script>

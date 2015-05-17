@@ -4,16 +4,19 @@ import * as maps from '../../util/maps.js';
 export default class Player {
 
 	constructor(socket, id) {
-		var player = this;
 		this._socket = socket;
 		this._id = id;
 		this._name = `Player ${id}`;
 		this._game = undefined;
 		this._resources = {};
 
-		socket.on('player:nickname', function(name) {
-			player.name = name;
-			messages.ok(player._socket, 'player:nickname');
+		socket.on('player:nickname', (name) => {
+			this._name = name;
+			var message = {	player: { id: this._id, name: this._name } };
+			this.broadcast('player:nickname', message);
+
+			message._success = true;
+			return message;
 		});
 	}
 

@@ -74,7 +74,9 @@ describe('Player', function() {
 
 	describe('->player:nickname', function() {
 		beforeEach(function() {
-			this.player = new Player(this.socket.toSocket());
+			this.player = new Player(this.socket.toSocket(), 1);
+			this.another = new MockSocket();
+
 			this.socket.receive('player:nickname', 'Olivier');
 		});
 
@@ -85,6 +87,17 @@ describe('Player', function() {
 		it('sends success', function() {
 			var message = this.socket.lastMessage('player:nickname');
 			expect(message._success).toEqual(true);
+		});
+
+		it('sends the new name', function() {
+			var message = this.socket.lastMessage('player:nickname');
+			expect(message.player.name).toEqual('Olivier');
+			expect(message.player.id).toEqual(1);
+		});
+
+		it('notifies others of the change', function() {
+			var message = this.another.lastMessage('player:nickname');
+			expect(message.player).toEqual({ id: 1, name: 'Olivier' });
 		});
 	});
 
