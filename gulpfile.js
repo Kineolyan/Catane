@@ -63,16 +63,27 @@ function buildJsx() {
     .pipe(gulp.dest(PATHS.build.client('js/components')));
 }
 
-/** Performs all unit tests */
-function testUnit(verbose) {
+function runTests(stream, verbose) {
   if (verbose === undefined) { verbose = true; }
 
-  return gulp.src([
+  return stream
+    .pipe(jas({includeStackTrace: true, verbose: verbose}));
+}
+
+function testJsServer(verbose) {
+  return runTests(gulp.src([
       PATHS.specs('env.js'),
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
+    ]), verbose);
+}
+
+function testJsClient(verbose) {
+  return runTests(gulp.src([
+      PATHS.specs('env.js'),
+      PATHS.specs.matchers('**/*.js'),
       PATHS.build.client('**/*.spec.js')
-    ]).pipe(jas({includeStackTrace: true, verbose: verbose}));
+    ]), verbose);
 }
 
 function cleanCache() {
@@ -88,19 +99,7 @@ function cleanOutput(done) {
 
 /* --  Build tasks -- */
 
-gulp.task('build:js', buildJs);
-
-// Special task to order properly tasks
-gulp.task('watch:js:test', ['build:js'], function() {
-  return testUnit(false);
-});
-
-gulp.task('watch:js', function() {
-  gulp.watch([
-      PATHS.server('**/*.js'),
-      PATHS.specs('**/*.js')
-    ], ['build:js', 'watch:js:test']);
-});
+gulp.task('build:js:server', buildJs);
 
 gulp.task('build:sass', function () {
   return gulp.src([
@@ -113,9 +112,11 @@ gulp.task('build:sass', function () {
       .pipe(gulp.dest(PATHS.build.client('css')));
 });
 
-gulp.task('build:jsx', buildJsx);
+gulp.task('build:js:client', buildJsx);
 
-gulp.task('build:browserify', ['build:jsx'], function() {
+gulp.task('build:js', ['build:js:server', 'build:js:client']);
+
+gulp.task('build:browserify', ['build:js:client'], function() {
   return browserify({
       entries: './' + PATHS.build.client('js/components/main.js'),
       debug: true
@@ -126,41 +127,58 @@ gulp.task('build:browserify', ['build:jsx'], function() {
 
 gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
-/* -- Watcher -- */
-gulp.task('watch:jsx', function() {
-  gulp.watch(PATHS.client.js('components/**/*.js'), ['watch:jsx:test']);
-});
-
-gulp.task('watch:jsx:test', ['build:browserify'], function() {
-  return testUnit(false);
-});
-
-gulp.task('watch:sass', function() {
-  gulp.watch(PATHS.client.components('*.scss'), ['build:sass']);
-});
-
-gulp.task('watch', ['watch:js', 'watch:jsx', 'watch:sass']);
-
-
 /* -- Test task -- */
 
-gulp.task('test:jsx', testUnit);
-gulp.task('test:unit', testUnit);
+gulp.task('test:js:server', ['build:js:client'], testJsServer);
 
+gulp.task('test:js:client', ['build:js:client', 'test:js:server'] , testJsClient);
+
+gulp.task('test:js', ['test:js:server', 'test:js:client']);
 
 gulp.task('test:lint', function() {
   return gulp.src([
-  		PATHS.bin('*.js'),
-  		PATHS.client('**/*.js'),
-  		PATHS.server('**/*.js')
-  	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
+      PATHS.bin('*.js'),
+      PATHS.client('**/*.js'),
+      PATHS.server('**/*.js')
+    ]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
     .pipe(jshint({linter : require('jshint-jsx').JSXHINT }))
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'))
     .pipe(plumber.stop());
 });
 
-gulp.task('test', ['test:unit', 'test:lint']);
+gulp.task('test', ['test:js', 'test:lint']);
+
+/* -- Watcher -- */
+
+// Special task to order properly tasks
+gulp.task('watch:js:test-server', ['build:js'], function() {
+  return testJsServer(false);
+});
+
+gulp.task('watch:js:test-client', ['build:js'], function() {
+  return testJsClient(false);
+});
+
+gulp.task('watch:js:test-all', ['watch:js:test-server'], function() {
+  return testJsClient(false);
+})
+
+gulp.task('watch:js', function() {
+  gulp.watch([
+      PATHS.server('**/*.js'), // Tests server and client when server changes
+      PATHS.specs('**/*.js') // Run all tests when spec helper changes
+    ], ['watch:js:test-all']);
+  gulp.watch([
+      PATHS.client('**/*.js'), // Tests only client when client changes
+    ], ['watch:js:test-client']);
+});
+
+gulp.task('watch:sass', function() {
+  gulp.watch(PATHS.client.components('*.scss'), ['build:sass']);
+});
+
+gulp.task('watch', ['watch:js', 'watch:sass']);
 
 /* -- Documentation -- */
 
