@@ -19,7 +19,7 @@
     participant Serveur
     Note left of Game: Le client charge la page
     Game->Serveur: nouvelle socket
-    Serveur->Game: ws/init\n{ message: "welcome", name: "default name", id: id }
+    Serveur->Game: ws/init\n{ message: "welcome", player: { name: "default name", id: id }, server: { id: id } }
   </div>
 
   <div class="diagram">

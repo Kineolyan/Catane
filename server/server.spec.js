@@ -3,7 +3,19 @@ import { MockSocket } from './com/mocks';
 
 describe('Server', function() {
 	beforeEach(function() {
-		this.server = new Server();
+		this.server = new Server(4213);
+	});
+
+	describe('constructor', function() {
+		it('uses time as id if nothing provided', function() {
+			var server = new Server();
+			var currentTime = (new Date()).getTime();
+			expect(server.id).toBeClose(currentTime, 2500)
+		});
+
+		it('uses the given id', function() {
+			expect(this.server.id).toEqual(4213);
+		});
 	});
 
 	describe('connection of new client', function() {
@@ -20,11 +32,15 @@ describe('Server', function() {
 		});
 
 		it('gives the player\'s name', function() {
-			expect(this.message.name).toMatch(/^Player [0-9]+$/);
+			expect(this.message.player.name).toMatch(/^Player [0-9]+$/);
 		});
 
 		it('gives the player\'s id', function() {
-			expect(this.message.id).toMatch(/^[0-9]+$/);
+			expect(this.message.player.id).toMatch(/^[0-9]+$/);
+		});
+
+		it('sends server info', function() {
+			expect(this.message.server).toEqual({ id: 4213 });
 		});
 
 		it('adds the client to its players list', function() {

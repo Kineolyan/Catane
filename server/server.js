@@ -6,7 +6,8 @@ import { idGenerator } from './game/util';
 const logger = global.logger;
 
 export default class Server {
-	constructor() {
+	constructor(id = (new Date()).getTime()) {
+		this._id = id;
 		this._players = {};
 		this._nextPlayerId = idGenerator();
 
@@ -14,6 +15,10 @@ export default class Server {
 			new Games(),
 			new Plays()
 		];
+	}
+
+	get id() {
+		return this._id;
 	}
 
 	get players() {
@@ -28,7 +33,11 @@ export default class Server {
 		var player = new Player(socket, this._nextPlayerId().toString());
 		this.players[socket.id] = player;
 		logger.log(`[Server] ${player.name} is connected`);
-		socket.emit('init', { message: 'welcome', name: player.name, id: player.id });
+		socket.emit('init', {
+			message: 'welcome',
+			server: { id: this.id },
+			player: { name: player.name, id: player.id }
+		});
 
 		for (let resource of this._resources) {
 			resource.register(player);
