@@ -58,7 +58,7 @@ function buildJs() {
 function buildJsx() {
   return gulp.src(PATHS.client.js('components/**/*.js'))
     .pipe(plumber({errorHandler: notify.onError("Build:jsx : <%= error.message %>")}))
-    .pipe(babel())
+    .pipe(babel({stage: 1}))
     .pipe(plumber.stop())
     .pipe(gulp.dest(PATHS.build.client('js/components')));
 }
