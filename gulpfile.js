@@ -129,7 +129,7 @@ gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
 /* -- Test task -- */
 
-gulp.task('test:js:server', ['build:js:client'], testJsServer);
+gulp.task('test:js:server', ['build:js:server'], testJsServer);
 
 gulp.task('test:js:client', ['build:js:client', 'test:js:server'] , testJsClient);
 
