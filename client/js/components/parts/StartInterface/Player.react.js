@@ -7,6 +7,9 @@ import React from 'react';
 import Globals from '../../libs/globals';
 import Socket from '../../libs/socket';
 import reactBoostrap from 'react-bootstrap';
+import Morearty from 'morearty';
+import reactMixin from 'react-mixin';
+import Immutable from 'immutable';
 
 var Button = reactBoostrap.Button;
 var Glyphicon = reactBoostrap.Glyphicon;
@@ -15,9 +18,6 @@ export default class Player extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      name: this.props.initialName
-    };
   }
 
   /**
@@ -33,21 +33,21 @@ export default class Player extends React.Component {
    */
   render() {
     var btn, 
-        room;
-    if(this.props.canChangeName) {
-      btn = (<Button bsSize="small" className={'pull-right'} ref="modify" onClick={this.triggerChangeName.bind(this)}>
+        room,
+        binding = this.getDefaultBinding();
+
+    btn = (<Button bsSize="small" className={'pull-right'} ref="modify" onClick={this.triggerChangeName.bind(this)}>
                 Change <Glyphicon glyph="pencil" />
             </Button>);
-    }
 
-    if(this.props.game.id) {
-      room = <span>/ Room #{this.props.game.id}</span>;
+    if(binding.get('gameChosen').id) {
+      room = <span>/ Room #{binding.get('gameChosen.id')}</span>;
     }
 
     return (
       <div className={'player clearfix'}>
         <div className={'name pull-left'}>
-          {this.state.name} {room}
+          {binding.get('init.name')} {room}
           
         </div>
         {btn}
@@ -68,28 +68,13 @@ export default class Player extends React.Component {
   }
 
   /**
-   * Get the name
-   * @return {String} the name
-   */
-  getName() {
-    return this.state.name;
-  }
-
-  /**
-   * Get the id
-   * @return {Int} the id
-   */
-  getId() {
-    return this.props.id;
-  }
-
-  /**
    * Init the socket receiver for the game
    */
   initSocket() {
+    var binding = this.getDefaultBinding();
+
     Socket.on(Globals.socket.playerNickname, () => {
-        this.setState({name: this.tmpName});
-        this.props.onChange(Globals.step.chooseLobby);
+        binding.set('name', Immutable.fromJS(this.tmpName));
     });
   }
 
@@ -102,15 +87,5 @@ export default class Player extends React.Component {
 
 }
 
-Player.propTypes = {
-    initialName: React.PropTypes.string.isRequired,
-    id: React.PropTypes.number.isRequired,
-    onChange: React.PropTypes.func,
-    canChangeName: React.PropTypes.bool.isRequired
-};
-
-Player.defaultProps = {
-      game: {}
-};
-
 Player.displayName = 'Player';
+reactMixin(Player.prototype, Morearty.Mixin);

@@ -7,23 +7,13 @@
 import StartInterface from './StartInterface/StartInterface.react';
 import GameInterface from './GameInterface/GameInterface.react';
 import React from 'react';
+import Morearty from 'morearty';
+import reactMixin from 'react-mixin';
 
 export default class Game extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      started: false,
-      board: [],
-      players: {other: [], me: {}}
-    };
-  }
-
-  /**
-   * Start the game
-   */
-  start(board, players) {
-    this.setState({started:true, board: board, players: players});
+  constructor(props, context) {
+    super(props, context);
   }
 
   /**
@@ -44,21 +34,18 @@ export default class Game extends React.Component {
    * @return {React.Element} the rendered element
    */
   renderStart() {
-    if(!this.state.started) {
-        return (<StartInterface init={this.props.init} onStart={this.start.bind(this)} />);
+    var binding = this.getDefaultBinding();
+
+    if(!binding.get('started')) {
+        return (<StartInterface binding={binding.sub('start')} />);
     } else {
-        return (<GameInterface board={this.state.board} players={this.state.players} />);
+        return (<GameInterface binding={binding} />);
     }
   }
-
-
 }
 
-Game.propTypes = {
-    init: React.PropTypes.shape({
-      id: React.PropTypes.string.isRequired,
-      name: React.PropTypes.string.isRequired
-    })
-};
-
+Game.contextTypes = {
+  morearty: React.PropTypes.any
+}
 Game.displayName = 'Game';
+reactMixin(Game.prototype, Morearty.Mixin);

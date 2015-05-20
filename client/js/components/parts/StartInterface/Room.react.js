@@ -7,6 +7,9 @@ import React from 'react';
 import Globals from '../../libs/globals';
 import Socket from '../../libs/socket';
 import reactBootstrap from 'react-bootstrap';
+import Morearty from 'morearty';
+import reactMixin from 'react-mixin';
+import Immutable from 'immutable';
 
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;
@@ -16,10 +19,6 @@ export default class Room extends React.Component {
 
   constructor(props) {
     super(props);
-
-    this.state = {
-      players: new Map()
-    };
   }
 
   /**
@@ -29,6 +28,7 @@ export default class Room extends React.Component {
     this.initSocket();
   }
 
+
   /**
    * Render the room interface
    * @return {React.Element} the rendered element
@@ -36,14 +36,16 @@ export default class Room extends React.Component {
   render() {
 
     var playersRendered,
-        players = this.state.players,
+        binding = this.getDefaultBinding(),
+        players = binding.get('players'),
         startButton;
 
     //include himself if no players in the room
     if(players.size === 0) {
-      players.set(this.props.player.getId(), {
-        id: this.props.player.getId(),
-        name: this.props.player.getName()
+      var init = binding.sub('init');
+      players.set(init.get('id'), {
+        id: init.get('id'),
+        name: init.get('name')
       });
     }
 
@@ -70,7 +72,7 @@ export default class Room extends React.Component {
         <ButtonToolbar className={'pull-right'}>
           {startButton}
           <Button bsSize="small" className={'pull-right'} bsStyle="info" ref="leaveButton" onClick={this.leave.bind(this)}>
-            Leave Game #{this.props.game.id} <Glyphicon glyph="arrow-left" />
+            Leave Game #{binding.get('gameChosen.id')} <Glyphicon glyph="arrow-left" />
           </Button>
         </ButtonToolbar>
       </div>
@@ -81,7 +83,8 @@ export default class Room extends React.Component {
    * Start button
    */
   start() {
-    Socket.emit(Globals.socket.gameStart, this.props.game.id);
+    var binding = this.getDefaultBinding();
+    Socket.emit(Globals.socket.gameStart, binding.get('gameChosen').id);
   }
 
   /**
@@ -96,11 +99,12 @@ export default class Room extends React.Component {
    */
   initSocket() {
     //list of players
+    var binding = this.getDefaultBinding();
     Socket.on(Globals.socket.gamePlayers, (response) => {
       var players = new Map();
       response.players.forEach((player) => players.set(player.id, player));
 
-      this.setState({players: players});
+      binding.set('players', Immutable.fromJS(players));
     });
 
     Socket.on(Globals.socket.playerNickname, (response) => {
@@ -108,23 +112,27 @@ export default class Room extends React.Component {
       var players = this.state.players;
       players.get(updatedPlayer.id).name = updatedPlayer.name;
 
-      this.setState({ players: players });
+      binding.set('players', Immutable.fromJS(players));
     });
 
     //game started
     Socket.on(Globals.socket.gameStart, (response) => {
         var other = this.state.players.filter(e => parseInt(e.id, 10) !== this.props.player.getId());
-        this.props.onStart(response.board, {other: other,
+        binding.atomically()
+               .set('board', Immutable.fromJS(response.board))
+               .set('playersList', Immutable.fromJS({other: other,
                                             me: {
                                                   id: this.props.player.getId(),
                                                   name: this.props.player.getName()
                                                 }
-                                            });
+                }))
+               .set('started', true)
+               .commit();
     });
 
     //game leave
     Socket.on(Globals.socket.gameQuit, () => {
-        this.props.onLeave();
+        binding.set('gameChosen', Immutable.fromJS({}));
     });
   }
 
@@ -140,12 +148,6 @@ export default class Room extends React.Component {
 
 }
 
-Room.propTypes = {
-    player: React.PropTypes.any.isRequired,
-    game: React.PropTypes.any.isRequired,
-    onStart: React.PropTypes.func,
-    onLeave: React.PropTypes.func
-
-};
-
 Room.displayName = 'Room';
+
+reactMixin(Room.prototype, Morearty.Mixin);

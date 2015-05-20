@@ -1,7 +1,8 @@
 'use strict';
 
 /* 
-  A tile of the map 
+  The dices 
+  TODO: Make a x dice
 */
 
 import React from 'react';
@@ -10,6 +11,7 @@ import Rectangle from 'react-art/shapes/rectangle';
 
 import Globals from '../../libs/globals';
 import Socket from '../../libs/socket';
+
 
 export default class Dice extends React.Component {
 
@@ -98,7 +100,7 @@ export default class Dice extends React.Component {
 
   initSocket() {
     Socket.on(Globals.socket.mapDice, (data) => {
-        this.result({first: data.dice[0], second: data.dice[1]});
+        this.result({first: data.dice[0], second: data.dice[1]}, () => this.props.onFinish(data.resources));
     });
   }
 
@@ -116,7 +118,8 @@ Dice.defaultProps = {
     size: 10,
     startTime: 200,
     rolls: 10,
-    selectable: false
+    selectable: false,
+    onFinish() {}
 };
 
 Dice.displayName = 'Dice';

@@ -9,6 +9,10 @@ import Socket from '../../libs/socket';
 import Globals from '../../libs/globals';
 import reactBootstrap from 'react-bootstrap';
 
+import Morearty from 'morearty';
+import reactMixin from 'react-mixin';
+import Immutable from 'immutable';
+
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;
 
@@ -16,9 +20,6 @@ export default class Lobby extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      gameAvailables: []
-    };
   }
 
   /**
@@ -35,11 +36,13 @@ export default class Lobby extends React.Component {
    */
   render() {
     var index = 0;
-    var games = this.state.gameAvailables.map((game) => {
+    var binding = this.getDefaultBinding();
+
+    var games = binding.get('games').map((game) => {
         return (<li className={'game-elem'} key={game.id} data-index={index} onClick={this.chooseGame.bind(this)}>
                   Join Game {game.id} <Glyphicon glyph="arrow-right" />
                 </li>);
-    });
+    }).toArray();
 
     //no games availables
     if(games.length === 0) {
@@ -71,7 +74,10 @@ export default class Lobby extends React.Component {
    * @param  {Event} the click event
    */
   chooseGame(event) {
-    this.tmpGame = this.state.gameAvailables[event.currentTarget.dataset.index];
+    var binding = this.getDefaultBinding();
+    var games = binding.get('games').toArray();
+    this.tmpGame = games[event.currentTarget.dataset.index];
+
     Socket.emit(Globals.socket.gameJoin, this.tmpGame.id);
   }
 
@@ -82,17 +88,17 @@ export default class Lobby extends React.Component {
 
     //game create
     Socket.on(Globals.socket.gameCreate, (response) => {
-        this.props.onGameChosen(response.game);
+        this.getDefaultBinding().set('gameChosen', Immutable.fromJS(response.game));
     });
 
     //list of game
     Socket.on(Globals.socket.gameList, (response) => {
-        this.setState({gameAvailables: response.games});
+        this.getDefaultBinding().set('games', Immutable.fromJS(response.games));
     });
 
     //game chosen
     Socket.on(Globals.socket.gameJoin, () => {
-        this.props.onGameChosen(this.tmpGame);
+        this.getDefaultBinding().set('gameChosen', Immutable.fromJS(this.tmpGame));
     });
   }
 
@@ -106,8 +112,5 @@ export default class Lobby extends React.Component {
   }
 }
 
-Lobby.propTypes = {
-    onGameChosen: React.PropTypes.func.isRequired
-};
-
 Lobby.displayName = 'Lobby';
+reactMixin(Lobby.prototype, Morearty.Mixin);

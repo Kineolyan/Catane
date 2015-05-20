@@ -11,6 +11,10 @@ import Globals from '../../libs/globals';
 import Room from './Room.react';
 import reactBoostrap from 'react-bootstrap';
 
+import Morearty from 'morearty';
+import reactMixin from 'react-mixin';
+
+
 var Jumbotron = reactBoostrap.Jumbotron;
 var Grid = reactBoostrap.Grid;
 var Row = reactBoostrap.Row;
@@ -20,66 +24,25 @@ export default class StartInterface extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      step: Globals.step.init,
-      game: {}
-    };
   }
-
-  /**
-   * Change the minamal step where the game should be
-   * @param  {Globals.step} the minamal step 
-   */
-  setMinimalStep(step) {
-    if(this.state.step <= step) {
-      this.setState({step: step});
-    }
-  }
-
-  /**
-   * Start the game with the selected game 
-   * @param  {Int} the game id
-   */
-  chooseGame(game) {
-    this.setMinimalStep(Globals.step.inLobby);
-    this.setState({game: game});
-  }
-
-
-  /**
-   * Start the game with the selected game 
-  */
-  startGame(board, players) {
-    this.setMinimalStep(Globals.step.started);
-    this.props.onStart(board, players);
-  }
-
- /**
-   * Start the game with the selected game 
-  */
-  leaveRoom() {
-    this.setState({step: Globals.step.chooseLobby, game: {}});
-  }
-
 
   /**
    * Render the interface of the selection of game
    * @return {React.Element} the rendered element
    */
   render() {
+    var binding = this.getDefaultBinding();
+               // {this.renderInLobby()}
+
     return (
       <div className={'start-interface'}>
         <Grid>
           <Row>
             <Col md={4} mdOffset={4}>
               <Jumbotron>
-                <Player ref="player" onChange={this.setMinimalStep.bind(this)} initialName={this.props.init.name} 
-                        id={parseInt(this.props.init.id, 10)} 
-                        canChangeName={Globals.step.inStep(this.state.step, Globals.step.inLobby, Globals.step.init)}
-                        game={this.state.game} />
+                <Player binding={binding} />
 
                 {this.renderChooseLobby()}
-                {this.renderInLobby()}
 
               </Jumbotron>
 
@@ -97,8 +60,10 @@ export default class StartInterface extends React.Component {
    * @return {React.Element} the rendered element
    */
   renderChooseLobby() {
-    if(Globals.step.inStep(this.state.step, Globals.step.chooseLobby, Globals.step.init)) {
-      return (<Lobby onGameChosen={this.chooseGame.bind(this)} />);
+    console.log('chooselobby');
+    var binding = this.getDefaultBinding();
+    if(!binding.get('gameChosen.id')) {
+      return (<Lobby binding={binding} />);
     }
   }
 
@@ -107,22 +72,14 @@ export default class StartInterface extends React.Component {
    * @return {React.Element} the rendered element
    */
   renderInLobby() {
-    if(Globals.step.inStep(this.state.step, Globals.step.inLobby, Globals.step.inLobby)) {
-      return (<Room game={this.state.game} player={this.refs.player} onStart={this.startGame.bind(this)} onLeave={this.leaveRoom.bind(this)}/>);
+    var binding = this.getDefaultBinding();
+
+    if(binding.get('gameChosen.id')) {
+      return (<Room binding={binding} />);
     }
   }
 
 }
 
-StartInterface.propTypes = {
-
-    init: React.PropTypes.shape({
-      id: React.PropTypes.string.isRequired,
-      name: React.PropTypes.string.isRequired
-    }), 
-
-    onStart: React.PropTypes.func.isRequired
-    
-};
-
 StartInterface.displayName = 'StartInterface';
+reactMixin(StartInterface.prototype, Morearty.Mixin);
