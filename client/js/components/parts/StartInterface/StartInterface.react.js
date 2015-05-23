@@ -22,18 +22,12 @@ var Col = reactBoostrap.Col;
 
 export default class StartInterface extends React.Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   /**
    * Render the interface of the selection of game
    * @return {React.Element} the rendered element
    */
   render() {
     var binding = this.getDefaultBinding();
-               // {this.renderInLobby()}
-
     return (
       <div className={'start-interface'}>
         <Grid>
@@ -43,7 +37,7 @@ export default class StartInterface extends React.Component {
                 <Player binding={binding} />
 
                 {this.renderChooseLobby()}
-
+                {this.renderInLobby()}
               </Jumbotron>
 
             </Col>
@@ -60,8 +54,7 @@ export default class StartInterface extends React.Component {
    * @return {React.Element} the rendered element
    */
   renderChooseLobby() {
-    console.log('chooselobby');
-    var binding = this.getDefaultBinding();
+    var binding = this.getDefaultBinding().sub('start');
     if(!binding.get('gameChosen.id')) {
       return (<Lobby binding={binding} />);
     }
@@ -74,7 +67,7 @@ export default class StartInterface extends React.Component {
   renderInLobby() {
     var binding = this.getDefaultBinding();
 
-    if(binding.get('gameChosen.id')) {
+    if(binding.get('start.gameChosen.id')) {
       return (<Room binding={binding} />);
     }
   }
@@ -82,4 +75,4 @@ export default class StartInterface extends React.Component {
 }
 
 StartInterface.displayName = 'StartInterface';
-reactMixin(StartInterface.prototype, Morearty.Mixin);
+reactMixin.onClass(StartInterface, Morearty.Mixin);

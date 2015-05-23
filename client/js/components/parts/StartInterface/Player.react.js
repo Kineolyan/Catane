@@ -16,17 +16,6 @@ var Glyphicon = reactBoostrap.Glyphicon;
 
 export default class Player extends React.Component {
 
-  constructor(props) {
-    super(props);
-  }
-
-  /**
-   * Triggered when the component is rendered, initialize the componenent
-   */
-  componentDidMount() { 
-    this.initSocket();
-  }
-
   /**
    * Render the player interface
    * @return {React.Element} the rendered element
@@ -34,20 +23,21 @@ export default class Player extends React.Component {
   render() {
     var btn, 
         room,
-        binding = this.getDefaultBinding();
+        binding = this.getDefaultBinding(),
+        me = binding.get('players').toJS().getMe();
 
     btn = (<Button bsSize="small" className={'pull-right'} ref="modify" onClick={this.triggerChangeName.bind(this)}>
                 Change <Glyphicon glyph="pencil" />
             </Button>);
 
-    if(binding.get('gameChosen').id) {
-      room = <span>/ Room #{binding.get('gameChosen.id')}</span>;
+    if(binding.get('start.gameChosen.id')) {
+      room = <span>/ Room #{binding.get('start.gameChosen.id')}</span>;
     }
 
     return (
       <div className={'player clearfix'}>
         <div className={'name pull-left'}>
-          {binding.get('init.name')} {room}
+          {me.name} {room}
           
         </div>
         {btn}
@@ -60,32 +50,12 @@ export default class Player extends React.Component {
    * Ask to change the name
    */
   triggerChangeName() {
-    this.tmpName = window.prompt('What\'s your name ?');
+    var name = window.prompt('What\'s your name ?');
 
-    if(this.tmpName) {
-      Socket.emit(Globals.socket.playerNickname, this.tmpName);
-    }
-  }
-
-  /**
-   * Init the socket receiver for the game
-   */
-  initSocket() {
-    var binding = this.getDefaultBinding();
-
-    Socket.on(Globals.socket.playerNickname, () => {
-        binding.set('name', Immutable.fromJS(this.tmpName));
-    });
-  }
-
-  /**
-   * When the component is destroyed
-   */
-  componentWillUnmount() {
-    Socket.removeAllListeners(Globals.socket.playerNickname);
+    Socket.emit(Globals.socket.playerNickname, name);
   }
 
 }
 
 Player.displayName = 'Player';
-reactMixin(Player.prototype, Morearty.Mixin);
+reactMixin.onClass(Player, Morearty.Mixin);

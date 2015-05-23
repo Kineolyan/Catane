@@ -18,15 +18,10 @@ var Glyphicon = reactBootstrap.Glyphicon;
 
 export default class Lobby extends React.Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   /**
    * Triggered when the component is rendered, initialize the componenent
    */
   componentDidMount() {
-    this.initSocket();
     Socket.emit(Globals.socket.gameList);
   }
 
@@ -39,8 +34,8 @@ export default class Lobby extends React.Component {
     var binding = this.getDefaultBinding();
 
     var games = binding.get('games').map((game) => {
-        return (<li className={'game-elem'} key={game.id} data-index={index} onClick={this.chooseGame.bind(this)}>
-                  Join Game {game.id} <Glyphicon glyph="arrow-right" />
+        return (<li className={'game-elem'} key={game.get('id')} data-index={index} onClick={this.chooseGame.bind(this)}>
+                  Join Game {game.get('id')} <Glyphicon glyph="arrow-right" />
                 </li>);
     }).toArray();
 
@@ -75,42 +70,14 @@ export default class Lobby extends React.Component {
    */
   chooseGame(event) {
     var binding = this.getDefaultBinding();
-    var games = binding.get('games').toArray();
-    this.tmpGame = games[event.currentTarget.dataset.index];
+    var games = binding.get('games').toJS();
+    var game = games[event.currentTarget.dataset.index];
 
-    Socket.emit(Globals.socket.gameJoin, this.tmpGame.id);
+    Socket.emit(Globals.socket.gameJoin, game.id, game);
   }
 
-  /**
-   * Init the socket receiver for the game
-   */
-  initSocket() {
-
-    //game create
-    Socket.on(Globals.socket.gameCreate, (response) => {
-        this.getDefaultBinding().set('gameChosen', Immutable.fromJS(response.game));
-    });
-
-    //list of game
-    Socket.on(Globals.socket.gameList, (response) => {
-        this.getDefaultBinding().set('games', Immutable.fromJS(response.games));
-    });
-
-    //game chosen
-    Socket.on(Globals.socket.gameJoin, () => {
-        this.getDefaultBinding().set('gameChosen', Immutable.fromJS(this.tmpGame));
-    });
-  }
-
-  /**
-   * When the component is destroyed
-   */
-  componentWillUnmount() {
-    Socket.removeAllListeners(Globals.socket.gameList);
-    Socket.removeAllListeners(Globals.socket.gameCreate);
-    Socket.removeAllListeners(Globals.socket.gameJoin);
-  }
+  
 }
 
 Lobby.displayName = 'Lobby';
-reactMixin(Lobby.prototype, Morearty.Mixin);
+reactMixin.onClass(Lobby, Morearty.Mixin);

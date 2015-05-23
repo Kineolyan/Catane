@@ -1,0 +1,14 @@
+import StartManager from './startManager';
+
+
+export default class Listener {
+
+  constructor(context) {
+
+    this._startManager = new StartManager(context);
+  }
+
+  startListen() {
+    this._startManager.startListen();
+  }
+}

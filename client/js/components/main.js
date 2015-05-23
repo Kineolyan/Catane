@@ -13,29 +13,31 @@ import Globals from './libs/globals';
 import React from 'react';
 import GameReact from './parts/Game.react';
 import Morearty from 'morearty';
-
-
+import Listener from './listener/listener';
+import Players from './common/players';
 
 Socket.on(Globals.socket.init, (data) => {
     console.log('game start !');
 
+    Players.myId = parseInt(data.id, 10);
+    Players.createPlayer(Players.myId, data.name);
+
     var ctx = Morearty.createContext({
       initialState: {
         start: {
-          init: {
-            id: parseInt(data.id, 10),
-            name: data.name
-          },
-          started: false,
-          players: {},
-          board: [],
           games: [],
-          gameChosen: {}
-        }
+          gameChosen: {},
+        },
+        board: [],
+        players: Players,
+        started: false
       }
     });
 
     var Game = ctx.bootstrap(GameReact);
+
+    var listener = new Listener(ctx);
+    listener.startListen();
 
     React.render(<Game />, document.getElementById('content'));
 });

@@ -21,6 +21,10 @@ class Player {
     return this._name;
   }
 
+  set name(val) {
+    this._name = val;
+  }
+
   isMe() {
     return this._id === manager.myId;
   }
@@ -48,6 +52,12 @@ manager = {
 
   getMe() {
     return this.getPlayer(this.myId);
+  },
+
+  deleteOthers() {
+    var me = this.getMe();
+    players.clear();
+    players.set(me.id, me);
   }
 };
 
