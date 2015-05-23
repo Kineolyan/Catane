@@ -35,7 +35,7 @@ var server = new Server();
 export function createPlayer(name) {
 	var client = new MockSocket();
 	server.connect(client.toSocket());
-	var id = client.lastMessage('init').id;
+	var id = client.lastMessage('init').player.id;
 
 	var info = { client: client, id: id };
 	if (name !== undefined) {

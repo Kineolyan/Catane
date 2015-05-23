@@ -9,7 +9,7 @@ var utils = React.addons.TestUtils;
 describe('A game', function() {
 
   beforeEach(function() {
-    var data = {id: 'id', name: 'player'};
+    var data = { player: {id: 'id', name: 'player'} };
 
     this.game = utils.renderIntoDocument(<Game init={data}/>);
   });

@@ -1,6 +1,6 @@
 'use strict';
 
-/* 
+/*
   React component containing the whole game interface
 */
 
@@ -55,10 +55,12 @@ export default class Game extends React.Component {
 }
 
 Game.propTypes = {
-    init: React.PropTypes.shape({
+  init: React.PropTypes.shape({
+    player: {
       id: React.PropTypes.string.isRequired,
       name: React.PropTypes.string.isRequired
-    })
+    }
+  })
 };
 
 Game.displayName = 'Game';

@@ -10,7 +10,7 @@ describe('Server', function() {
 		it('uses time as id if nothing provided', function() {
 			var server = new Server();
 			var currentTime = (new Date()).getTime();
-			expect(server.id).toBeClose(currentTime, 2500)
+			expect(server.id).toBeClose(currentTime, 2500);
 		});
 
 		it('uses the given id', function() {
@@ -18,7 +18,7 @@ describe('Server', function() {
 		});
 	});
 
-	describe('connection of new client', function() {
+	describe('#connect', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
 			this.socket = this.client.toSocket();
@@ -40,7 +40,7 @@ describe('Server', function() {
 		});
 
 		it('sends server info', function() {
-			expect(this.message.server).toEqual({ id: 4213 });
+			expect(this.message.server).toEqual({ id: 4213, sid: this.socket.id });
 		});
 
 		it('adds the client to its players list', function() {
@@ -48,17 +48,102 @@ describe('Server', function() {
 		});
 	});
 
-	describe('disconnection of a client', function() {
+	describe('#doDisconnect', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
 			this.socket = this.client.toSocket();
 			this.server.connect(this.socket);
 
-			this.server.disconnect(this.socket);
+			this.server.doDisconnect(this.socket);
 		});
 
 		it('removes client from the list', function() {
 			expect(this.server.players).not.toHaveKey(this.socket.id);
+		});
+	});
+
+	describe('#disconnect', function() {
+		beforeEach(function() {
+			this.client = new MockSocket();
+			this.socket = this.client.toSocket();
+			this.server.connect(this.socket);
+		});
+
+		it('removes the player if it does not belong to a game', function() {
+			this.server.disconnect(this.socket);
+			expect(this.server.players).not.toHaveKey(this.socket.id);
+		});
+
+		it('removes the player if it joined an unstarted game', function() {
+			var player = this.server.players[this.socket.id];
+			player.game = {
+				isStarted: function() { return false; },
+				remove: function() {}
+			};
+
+			this.server.disconnect(this.socket);
+			expect(this.server.players).not.toHaveKey(this.socket.id);
+		});
+
+		it('keeps the player if the game has started', function() {
+			var player = this.server.players[this.socket.id];
+			player.game = {
+				isStarted: function() { return true; },
+				remove: function() {}
+			};
+
+			this.server.disconnect(this.socket);
+			expect(this.server.players).toHaveKey(this.socket.id);
+		});
+
+		it('removes the player after the timeout', function(done) {
+			var player = this.server.players[this.socket.id];
+			player.game = {
+				isStarted: function() { return true; },
+				remove: function() {}
+			};
+
+			this.server.disconnect(this.socket);
+			setTimeout(() => {
+				expect(this.server.players).not.toHaveKey(this.socket.id);
+				done();
+			}, global.TIME_TO_RECONNECT * 1.5);
+		});
+	});
+
+	describe('#reconnect', function() {
+		beforeEach(function() {
+			// Connect for the first time
+			this.client = new MockSocket();
+			this.socket = this.client.toSocket();
+			this.server.connect(this.socket);
+
+			// Simulate a game start
+			this.player = this.server.players[this.socket.id];
+			this.player.game = {
+				isStarted: function() { return true; },
+				remove: function() {}
+			};
+
+			// Reconnect
+			this.newClient = new MockSocket();
+			this.newSocket = this.newClient.toSocket();
+			this.server.reconnect(this.newSocket, this.socket.id);
+		});
+
+		it('connects player to the new socket id', function() {
+			var newPlayer = this.server.players[this.newSocket.id];
+			expect(newPlayer.id).toEqual(this.player.id);
+		});
+
+		it('removes player from the old connection', function() {
+			var players = this.server.players;
+			expect(players).not.toHaveKey(this.socket.id);
+		});
+
+		it('sets the new socket for the player comm', function() {
+			var player = this.server.players[this.newSocket.id];
+			expect(player.socket.id).toEqual(this.newSocket.id);
 		});
 	});
 
@@ -83,7 +168,7 @@ describe('Server', function() {
 
 		describe('after first disconnects', function() {
 			beforeEach(function() {
-				this.server.disconnect(this.socket);
+				this.server.doDisconnect(this.socket);
 			});
 
 			it('does not contains first anymore', function() {
@@ -92,7 +177,7 @@ describe('Server', function() {
 
 			describe('after second disconnects', function() {
 				beforeEach(function() {
-					this.server.disconnect(this.anotherSocket);
+					this.server.doDisconnect(this.anotherSocket);
 				});
 
 				it('does not contains first anymore', function() {

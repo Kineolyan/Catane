@@ -17,6 +17,10 @@ describe('Game', function() {
 			var players = Array.from(this.game.players, (player) => player);
 			expect(players).toBeEmpty();
 		});
+
+		it('is not marked as started', function() {
+			expect(this.game.isStarted()).toBe(false);
+		});
 	});
 
 	describe('#add', function() {
@@ -89,6 +93,10 @@ describe('Game', function() {
 
 				expect(this.game.add(this.players[1])).toBe(true);
 				this.game.start();
+			});
+
+			it('is marked as started', function() {
+				expect(this.game.isStarted()).toBe(true);
 			});
 
 			describe('started multiple times', function() {

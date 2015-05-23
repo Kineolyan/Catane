@@ -7,6 +7,7 @@ exports.appServer = function() {
 	// Create environment
 	var logging = require('./build/server/util/log/logger');
 	global.logger = logging.createLogger();
+	global.TIME_TO_RECONNECT = 15 /*min*/ * 60 /*sec*/ * 1000;
 
 	// Create application
 	var Server = require("./build/server/server");

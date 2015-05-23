@@ -34,6 +34,14 @@ export default class Game {
 	}
 
 	/**
+	 * Indicates if the game has started.
+	 * @return {Boolean} true if the game started, false otherwise
+	 */
+	isStarted() {
+		return this._started;
+	}
+
+	/**
 	 * Adds a new player to the game.
 	 * @param {Player} player the player to add
 	 * @return {boolean} true if the player is added, false if it was already
