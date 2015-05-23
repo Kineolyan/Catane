@@ -7,7 +7,7 @@ const logger = global.logger;
 const TIME_TO_RECONNECT = global.TIME_TO_RECONNECT;
 
 export default class Server {
-	constructor(id = (new Date()).getTime()) {
+	constructor(id = Date.now()) {
 		this._id = id;
 		this._players = {};
 		this._nextPlayerId = idGenerator();
