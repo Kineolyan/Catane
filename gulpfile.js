@@ -43,6 +43,7 @@ PATHS.docs = pathItem('docs');
 PATHS.docs.libs = pathItem('libs');
 PATHS.specs = pathItem('specs');
 PATHS.specs.matchers = pathItem('matchers');
+PATHS.bower = pathItem('bower');
 
 /* -- Actions -- */
 
@@ -116,7 +117,12 @@ gulp.task('build:js:client', buildJsx);
 
 gulp.task('build:js', ['build:js:server', 'build:js:client']);
 
-gulp.task('build:browserify', ['build:js:client'], function() {
+gulp.task('build:dependencies', function() {
+  return gulp.src([ PATHS.bower('/*/dist/**/*') ])
+    .pipe(gulp.dest(PATHS.build.client('bower')));
+});
+
+gulp.task('build:browserify', ['build:js:client', 'build:dependencies'], function() {
   return browserify({
       entries: './' + PATHS.build.client('js/components/main.js'),
       debug: true
