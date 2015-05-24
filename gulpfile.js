@@ -27,22 +27,25 @@ function pathItem(name) {
 
 var PATHS = pathItem('.');
 PATHS.bin = pathItem('bin');
-PATHS.client = pathItem('client');
+
 PATHS.server = pathItem('server');
+
+PATHS.client = pathItem('client');
+PATHS.client.scssLib = pathItem('scss_lib');
+PATHS.client.scss = pathItem('scss');
+PATHS.client.js = pathItem('js');
+
 PATHS.build = pathItem('build');
 PATHS.build.server = pathItem('server');
 PATHS.build.client = pathItem('client');
+PATHS.build.client.js = pathItem('js');
 
-PATHS.client.scssLib = pathItem('scss_lib');
-PATHS.client.components = pathItem('scss');
-
-PATHS.client.js = pathItem('js');
-PATHS.server = pathItem('server');
-PATHS.specs = pathItem('specs');
-PATHS.docs = pathItem('docs');
-PATHS.docs.libs = pathItem('libs');
 PATHS.specs = pathItem('specs');
 PATHS.specs.matchers = pathItem('matchers');
+
+PATHS.docs = pathItem('docs');
+PATHS.docs.libs = pathItem('libs');
+
 PATHS.bower = pathItem('bower');
 
 /* -- Actions -- */
@@ -83,7 +86,7 @@ function testJsClient(verbose) {
   return runTests(gulp.src([
       PATHS.specs('env.js'),
       PATHS.specs.matchers('**/*.js'),
-      PATHS.build.client('**/*.spec.js')
+      PATHS.build.client.js('**/*.spec.js')
     ]), verbose);
 }
 
@@ -104,7 +107,7 @@ gulp.task('build:js:server', buildJs);
 
 gulp.task('build:sass', function () {
   return gulp.src([
-        PATHS.client.components('*.scss'),
+        PATHS.client.scss('*.scss'),
         PATHS.client.scssLib('**/*.scss')
       ])
   		.pipe(sass({
@@ -181,7 +184,7 @@ gulp.task('watch:js', function() {
 });
 
 gulp.task('watch:sass', function() {
-  gulp.watch(PATHS.client.components('*.scss'), ['build:sass']);
+  gulp.watch(PATHS.client.scss('*.scss'), ['build:sass']);
 });
 
 gulp.task('watch', ['watch:js', 'watch:sass']);
