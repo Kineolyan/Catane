@@ -30,7 +30,6 @@ describe('Board', function () {
 	describe('#generate', function () {
 		beforeEach(function () {
 			this.board = new Board();
-			var player = { id: 23 };
 			this.board.generate({
 				forEachTile: function (action) {
 					action(new Tile(0, 0, 'ble', 8));
