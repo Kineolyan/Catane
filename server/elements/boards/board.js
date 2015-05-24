@@ -1,5 +1,5 @@
-import Path from '../geo/path.js';
-import * as geo from '../geo/geo';
+import Path from 'server/elements/geo/path.js';
+import * as geo from 'server/elements/geo/geo';
 
 export default class Board {
 

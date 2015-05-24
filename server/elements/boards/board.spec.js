@@ -1,10 +1,10 @@
 import Board from './board';
 
-import Location from '../geo/location';
-import Path from '../geo/path.js';
-import City from '../geo/city';
-import Tile from '../geo/tile.js';
-import { RoundGenerator } from './generators/maps.js';
+import Location from 'server/elements/geo/location';
+import Path from 'server/elements/geo/path.js';
+import City from 'server/elements/geo/city';
+import Tile from 'server/elements/geo/tile.js';
+import { RoundGenerator } from 'server/elements/boards/generators/maps.js';
 
 describe('Board', function () {
 

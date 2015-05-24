@@ -1,10 +1,10 @@
-import Location from '../../geo/location';
-import Tile from '../../geo/tile';
-import City from '../../geo/city';
-import Path from '../../geo/path';
+import Location from 'server/elements/geo/location';
+import Tile from 'server/elements/geo/tile';
+import City from 'server/elements/geo/city';
+import Path from 'server/elements/geo/path';
 import { catane } from './dices';
 import { RandomResources } from './resources';
-import * as geo from '../../geo/geo';
+import * as geo from 'server/elements/geo/geo';
 
 export class RoundGenerator {
 	constructor(nbRings) {

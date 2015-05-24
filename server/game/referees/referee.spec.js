@@ -1,11 +1,11 @@
 import { AReferee, GameReferee, PlacementReferee } from './referee';
 
-import { MockSocket } from '../../com/mocks';
-import Player from '../players/player';
-import Board from '../../elements/boards/board';
-import Location from '../../elements/geo/location.js';
-import Path from '../../elements/geo/path.js';
-import { RoundGenerator } from '../../elements/boards/generators/maps.js';
+import { MockSocket } from 'server/com/mocks';
+import Player from 'server/game/players/player';
+import Board from 'server/elements/boards/board';
+import Location from 'server/elements/geo/location.js';
+import Path from 'server/elements/geo/path.js';
+import { RoundGenerator } from 'server/elements/boards/generators/maps.js';
 
 class TestReferee extends AReferee {
 	constructor(board, players) {

@@ -1,5 +1,11 @@
 'use strict';
 
+// Sets the paths for absolute requires
+var path = require('path');
+process.env.NODE_PATH = path.join(__dirname, 'build');
+// Resets the module paths
+require('module').Module._initPaths();
+
 var fs = require('fs');
 var path = require('path');
 var gulp = require('gulp');

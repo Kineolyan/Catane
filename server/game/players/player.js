@@ -1,4 +1,4 @@
-import * as maps from '../../util/maps.js';
+import * as maps from 'server/util/maps.js';
 
 export default class Player {
 

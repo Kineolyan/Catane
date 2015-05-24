@@ -1,4 +1,4 @@
-import * as starter from '../games/game-spec.starter.js';
+import * as starter from 'server/game/games/game-spec.starter.js';
 
 describe('Play turn management', function () {
 	beforeEach(function () {
