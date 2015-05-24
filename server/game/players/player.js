@@ -81,6 +81,16 @@ export default class Player {
 		return this._resources;
 	}
 
+	toString() {
+		return `Player '${this._name}' [${this._id}]`;
+	}
+
+	toJson() {
+		return {
+			id: this._id, name: this._name
+		};
+	}
+
 	/**
 	 * Adds new resources to the player belongings.
 	 * @param  {Array|Object} resources the new resources as

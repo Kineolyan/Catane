@@ -1,10 +1,6 @@
 import Path from '../geo/path.js';
 import * as geo from '../geo/geo';
 
-function getEntryValue(entry) {
-	return entry[1];
-}
-
 export default class Board {
 
 	constructor() {
@@ -15,15 +11,15 @@ export default class Board {
 	}
 
 	get tiles() {
-		return Array.from(this._tiles, getEntryValue);
+		return Array.from(this._tiles.values());
 	}
 
 	get cities() {
-		return Array.from(this._cities, getEntryValue);
+		return Array.from(this._cities.values());
 	}
 
 	get paths() {
-		return Array.from(this._paths, getEntryValue);
+		return Array.from(this._paths.values());
 	}
 
 	/**
@@ -40,6 +36,41 @@ export default class Board {
 	 */
 	set thieves(location) {
 		this._thieves = location;
+	}
+
+	toJson() {
+		var description = { tiles: [], cities: [], paths: [] };
+		for (let tile of this._tiles.values()) {
+			description.tiles.push({
+				x: tile.location.x,
+				y: tile.location.y,
+				resource: tile.resource,
+				diceValue: tile.diceValue
+			});
+		}
+		for (let city of this._cities.values()) {
+			let cityDescription = {
+				x: city.location.x,
+				y: city.location.y
+			};
+			if (city.owner !== null) { cityDescription.owner = city.owner.id; }
+
+			description.cities.push(cityDescription);
+		}
+		for (let path of this._paths.values()) {
+			let pathDescription = {
+				from: { x: path.from.x, y: path.from.y },
+				to: { x: path.to.x, y: path.to.y }
+			};
+			if (path.owner !== null) { pathDescription.owner = path.owner.id; }
+			description.paths.push(pathDescription);
+		}
+
+		if (this._thieves !== null) {
+			description.thieves = this._thieves.toJson();
+		}
+
+		return description;
 	}
 
 	/**
