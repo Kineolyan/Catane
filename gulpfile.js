@@ -55,7 +55,9 @@ function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
     .pipe(cached('server-js'))
     .pipe(remember('server-js'))
+    .pipe(plumber({errorHandler: notify.onError("Build server : <%= error.message %>")}))
     .pipe(babel({ sourceRoot: PATHS.server() }))
+    .pipe(plumber.stop())
     .pipe(gulp.dest(PATHS.build.server()));
 }
 
@@ -161,15 +163,15 @@ gulp.task('test', ['test:js', 'test:lint']);
 /* -- Watcher -- */
 
 // Special task to order properly tasks
-gulp.task('watch:js:test-server', ['build:js'], function() {
+gulp.task('watch:js:test-server', ['build:js:server'], function() {
   return testJsServer(false);
 });
 
-gulp.task('watch:js:test-client', ['build:js'], function() {
+gulp.task('watch:js:test-client', ['build:js:client'], function() {
   return testJsClient(false);
 });
 
-gulp.task('watch:js:test-all', ['watch:js:test-server'], function() {
+gulp.task('watch:js:test-all', ['build:js', 'watch:js:test-server'], function() {
   return testJsClient(false);
 })
 
@@ -177,7 +179,9 @@ gulp.task('watch:js', function() {
   gulp.watch([
       PATHS.server('**/*.js'), // Tests server and client when server changes
       PATHS.specs('**/*.js') // Run all tests when spec helper changes
-    ], ['watch:js:test-all']);
+    ], ['watch:js:test-server']);
+  /* Changes in server should also run client tests or at least integration tests but apparently, there are none of them. */
+
   gulp.watch([
       PATHS.client('**/*.js'), // Tests only client when client changes
     ], ['watch:js:test-client']);
