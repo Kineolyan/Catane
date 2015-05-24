@@ -25,8 +25,10 @@ var arrayMatchers = {
 				var result = { pass: actualLength === length };
 				result.message = 'Expecting item'
 					+ (result.pass === true ? ' not' : '')
-					+ ' to have length of ' + length
-					+ '. Actual is ' + actualLength;
+					+ ' to have length of ' + length;
+				if (!result.pass) {
+					result.message += '. Actual is ' + actualLength;
+				}
 
 				return result;
 			}
@@ -39,6 +41,9 @@ var arrayMatchers = {
 				result.message = 'Expecting ' + actual
 					+ (result.pass === true ? ' not' : '')
 					+ ' to have size of ' + size;
+				if (!result.pass) {
+					result.message += '. Actual is ' + actual.size;
+				}
 
 				return result;
 			}
