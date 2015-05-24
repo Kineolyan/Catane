@@ -6,6 +6,7 @@
 
 import StartInterface from './StartInterface/StartInterface.react';
 import GameInterface from './GameInterface/GameInterface.react';
+import Reconnect from './reconnect.react.js';
 import React from 'react';
 
 export default class Game extends React.Component {
@@ -45,7 +46,12 @@ export default class Game extends React.Component {
    */
   renderStart() {
     if(!this.state.started) {
-        return (<StartInterface init={this.props.init} onStart={this.start.bind(this)} />);
+        return (
+          <div>
+            <Reconnect init={this.props.init.server} />
+            <StartInterface init={this.props.init} onStart={this.start.bind(this)} />
+          </div>
+        );
     } else {
         return (<GameInterface board={this.state.board} players={this.state.players} />);
     }
@@ -59,6 +65,10 @@ Game.propTypes = {
     player: {
       id: React.PropTypes.string.isRequired,
       name: React.PropTypes.string.isRequired
+    },
+    server: {
+      id: React.PropTypes.number.isRequired,
+      sid: React.PropTypes.number.isRequired
     }
   })
 };
