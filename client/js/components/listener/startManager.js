@@ -2,6 +2,7 @@ import Globals from '../libs/globals';
 import Immutable from 'immutable';
 import Manager from './manager';
 import Socket from '../libs/socket';
+import MapHelper from '../common/map';
 
 export default class StartManager extends Manager {
 
@@ -43,8 +44,8 @@ export default class StartManager extends Manager {
 
   startGame(response) {
     this._binding.atomically()
-                .set('board', Immutable.fromJS(response.board))
-                .set('started', true)
+                .set('board', Immutable.fromJS(new MapHelper(response.board)))
+                .set('step', Globals.step.prepare)
                 .commit();
   }
 

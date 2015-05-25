@@ -11,8 +11,7 @@ import Globals from '../../libs/globals';
 import Room from './Room.react';
 import reactBoostrap from 'react-bootstrap';
 
-import Morearty from 'morearty';
-import reactMixin from 'react-mixin';
+import MoreartyComponent from '../MoreartyComponent.react';
 
 
 var Jumbotron = reactBoostrap.Jumbotron;
@@ -20,7 +19,7 @@ var Grid = reactBoostrap.Grid;
 var Row = reactBoostrap.Row;
 var Col = reactBoostrap.Col;
 
-export default class StartInterface extends React.Component {
+export default class StartInterface extends MoreartyComponent {
 
   /**
    * Render the interface of the selection of game
@@ -75,4 +74,3 @@ export default class StartInterface extends React.Component {
 }
 
 StartInterface.displayName = 'StartInterface';
-reactMixin.onClass(StartInterface, Morearty.Mixin);

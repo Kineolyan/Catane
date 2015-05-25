@@ -9,14 +9,13 @@ import Socket from '../../libs/socket';
 import Globals from '../../libs/globals';
 import reactBootstrap from 'react-bootstrap';
 
-import Morearty from 'morearty';
-import reactMixin from 'react-mixin';
+import MoreartyComponent from '../MoreartyComponent.react';
 import Immutable from 'immutable';
 
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;
 
-export default class Lobby extends React.Component {
+export default class Lobby extends MoreartyComponent {
 
   /**
    * Triggered when the component is rendered, initialize the componenent
@@ -80,4 +79,3 @@ export default class Lobby extends React.Component {
 }
 
 Lobby.displayName = 'Lobby';
-reactMixin.onClass(Lobby, Morearty.Mixin);

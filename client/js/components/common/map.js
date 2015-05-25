@@ -6,7 +6,7 @@ var unitSize = 60;
  */
 class MapHelpher  {
 
-  constructor(board, margin) {
+  constructor(board, margin = 10) {
     if(!board.tiles) {
       return {};
     }

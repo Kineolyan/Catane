@@ -7,15 +7,16 @@ import React from 'react';
 import Globals from '../../libs/globals';
 import Socket from '../../libs/socket';
 import reactBootstrap from 'react-bootstrap';
-import Morearty from 'morearty';
-import reactMixin from 'react-mixin';
+
+import MoreartyComponent from '../MoreartyComponent.react';
+
 import Immutable from 'immutable';
 
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;
 var ButtonToolbar = reactBootstrap.ButtonToolbar;
 
-export default class Room extends React.Component {
+export default class Room extends MoreartyComponent {
 
   /**
    * Render the room interface
@@ -79,5 +80,3 @@ export default class Room extends React.Component {
 }
 
 Room.displayName = 'Room';
-
-reactMixin.onClass(Room, Morearty.Mixin);

@@ -30,7 +30,7 @@ Socket.on(Globals.socket.init, (data) => {
         },
         board: [],
         players: Players,
-        started: false
+        step: Globals.step.init
       }
     });
 

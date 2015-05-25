@@ -7,14 +7,14 @@ import React from 'react';
 import Globals from '../../libs/globals';
 import Socket from '../../libs/socket';
 import reactBoostrap from 'react-bootstrap';
-import Morearty from 'morearty';
-import reactMixin from 'react-mixin';
+
+import MoreartyComponent from '../MoreartyComponent.react';
 import Immutable from 'immutable';
 
 var Button = reactBoostrap.Button;
 var Glyphicon = reactBoostrap.Glyphicon;
 
-export default class Player extends React.Component {
+export default class Player extends MoreartyComponent {
 
   /**
    * Render the player interface
@@ -58,4 +58,3 @@ export default class Player extends React.Component {
 }
 
 Player.displayName = 'Player';
-reactMixin.onClass(Player, Morearty.Mixin);

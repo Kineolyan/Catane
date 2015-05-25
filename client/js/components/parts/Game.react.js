@@ -7,10 +7,11 @@
 import StartInterface from './StartInterface/StartInterface.react';
 import GameInterface from './GameInterface/GameInterface.react';
 import React from 'react';
-import Morearty from 'morearty';
-import reactMixin from 'react-mixin';
+import Globals from '../libs/globals';
 
-export default class Game extends React.Component {
+import MoreartyComponent from './MoreartyComponent.react';
+
+export default class Game extends MoreartyComponent {
 
   /**
    * Render the whole interface of the game
@@ -32,7 +33,7 @@ export default class Game extends React.Component {
   renderStart() {
     var binding = this.getDefaultBinding();
 
-    if(!binding.get('started')) {
+    if(binding.get('step') === Globals.step.init) {
         return (<StartInterface binding={binding} />);
     } else {
         return (<GameInterface binding={binding} />);
@@ -41,5 +42,3 @@ export default class Game extends React.Component {
 }
 
 Game.displayName = 'Game';
-
-reactMixin.onClass(Game, Morearty.Mixin);

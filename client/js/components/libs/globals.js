@@ -6,10 +6,7 @@ var GLOBALS = {};
 // Step const for the game
 GLOBALS.step = {
   init: 0,
-  chooseLobby: 1,
-  inLobby: 2,
-  started: 3,
-  ended: 4,
+  prepare: 1,
   inStep(step, max, min) {
     return (step >= min && step <= max);
   }
