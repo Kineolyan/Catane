@@ -1,5 +1,5 @@
-import Location from '../../elements/geo/location';
-import Path from '../../elements/geo/path';
+import Location from 'server/elements/geo/location';
+import Path from 'server/elements/geo/path';
 
 function getTileLocation(request) {
 	return new Location(request.tile.x, request.tile.y);

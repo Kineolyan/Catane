@@ -1,8 +1,8 @@
-import Board from '../../elements/boards/board';
-import { RoundGenerator } from '../../elements/boards/generators/maps';
-import Dice from '../../elements/dice/dice';
-import { PlacementReferee, GameReferee, ResourceCosts } from '../referees/referee';
-import { shuffle } from '../../util/arrays';
+import Board from 'server/elements/boards/board';
+import { RoundGenerator } from 'server/elements/boards/generators/maps';
+import Dice from 'server/elements/dice/dice';
+import { PlacementReferee, GameReferee, ResourceCosts } from 'server/game/referees/referee';
+import { shuffle } from 'server/util/arrays';
 
 const logger = global.logger;
 

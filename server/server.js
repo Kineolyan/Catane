@@ -1,6 +1,6 @@
-import Player from './game/players/player';
-import Games from './game/games/games';
-import Plays from './game/plays/plays';
+import Player from 'server/game/players/player';
+import Games from 'server/game/games/games';
+import Plays from 'server/game/plays/plays';
 import { idGenerator } from './game/util';
 
 const logger = global.logger;

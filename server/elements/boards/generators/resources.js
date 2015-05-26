@@ -1,4 +1,4 @@
-import { shuffle } from '../../../util/arrays';
+import { shuffle } from 'server/util/arrays';
 
 export class RandomResources {
 

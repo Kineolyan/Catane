@@ -1,7 +1,7 @@
 import Game from './game';
 
 import { MockSocket } from '../../com/mocks';
-import Player from '../players/player';
+import Player from 'server/game/players/player';
 import * as starter from './game-spec.starter.js';
 
 describe('Game', function() {
