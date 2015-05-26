@@ -52,6 +52,7 @@ export class Plays {
 
 		player.on('play:roll-dice', () => {
 			var diceValues = player.game.rollDice(player);
+
 			for (let p of player.game.players) {
 				if (p.id !== player.id) { p.emit('play:roll-dice', { dice: diceValues, resources: p.resources }); }
 			}
@@ -100,6 +101,13 @@ export class Plays {
 			// Update the resources for the current player
 			message.resources = player.resources;
 			return message;
+		});
+
+		player.on('play:resources:drop', request => {
+			var resources = request.resources;
+			var remaining = player.game.dropResources(player, resources);
+
+			return { resources: player.resources, remaining: remaining };
 		});
 
 		player.on('play:turn:end', () => {

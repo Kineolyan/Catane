@@ -50,6 +50,27 @@ describe('Player', function() {
 		});
 	});
 
+	describe('#hasResources', function() {
+		beforeEach(function() {
+			this.player = new Player(this.socket.toSocket());
+		});
+
+		it('returns true if there is enough', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+			expect(this.player.hasResources({ bois: 1, ble: 3})).toBe(true);
+		});
+
+		it('returns false if there is not enough', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+			expect(this.player.hasResources({ caillou: 1, bois: 3})).toBe(false);
+		});
+
+		it('support border cases', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+			expect(this.player.hasResources({ bois: 2, mouton: 3 })).toBe(true);
+		});
+	});
+
 	describe('#receiveResources', function() {
 		beforeEach(function() {
 			this.player = new Player(this.socket.toSocket());

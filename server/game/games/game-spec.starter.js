@@ -7,6 +7,7 @@ import Player from 'server/game/players/player.js';
 // Managers
 import Games from './games.js';
 import Plays from 'server/game/plays/plays.js';
+import * as maps from 'server/util/maps.js';
 
 export const PICK_ARGS = [
 		// Outer city ring
@@ -56,10 +57,7 @@ GameEnv.prototype = {
 		this.players[0].client.receive('game:start', this.game.id);
 
 		var message = this.players[0].client.lastMessage('game:start');
-		this.order = message.players;
-		for (let tile of message.board.tiles) {
-			if (tile.resource === 'desert') { this.thieves = new Location(tile.x, tile.y); }
-		}
+		this.thieves = new Location(message.board.thieves.x, message.board.thieves.y);
 
 		// Order players with game order
 		var mappedPlayers = {};
@@ -97,11 +95,41 @@ GameEnv.prototype = {
 		var message = player.client.lastMessage('play:roll-dice');
 		var dice = message.dice[0] + message.dice[1];
 		if (dice === 7) {
-			let newThievesLocation = this.thieves.hashCode() === 0 ?
-				new Location(1, 1) : new Location(0, 0);
-			player.client.receive('play:move:thieves', { tile: newThievesLocation.toJson() });
-			this.thieves = newThievesLocation;
+			// Drop the resoures for all players
+			for (let p of this.players) {
+				let resources = p.client.lastMessage('play:roll-dice').resources;
+				let total = 0;
+				for (let [, count] of maps.entries(resources)) { total += count; }
+				total = total > 7 ? Math.floor(total / 2) : 0;
+				if (total > 0) {
+					let dropped = {};
+					for (let [res, count] of maps.entries(resources)) {
+						if (count <= total) {
+							dropped[res] = count;
+							total -= count;
+						} else {
+							dropped[res] = total;
+							break;
+						}
+					}
+
+					p.client.receive('play:resources:drop', dropped);
+				}
+			}
+
+			this.moveThieves(player);
 		}
+	},
+	moveThieves: function(player) {
+		let newThievesLocation = this.thieves.hashCode() === 0 ?
+				new Location(1, 1) : new Location(0, 0);
+		player.client.receive('play:move:thieves', { tile: newThievesLocation.toJson() });
+		this.thieves = newThievesLocation;
+	},
+	setPlayerResources: function(index, resources) {
+		var player = this.players[index].player;
+		player.useResources(player.resources);
+		player.receiveResources(resources);
 	}
 };
 
