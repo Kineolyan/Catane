@@ -27,22 +27,26 @@ function pathItem(name) {
 
 var PATHS = pathItem('.');
 PATHS.bin = pathItem('bin');
-PATHS.client = pathItem('client');
+
 PATHS.server = pathItem('server');
+
+PATHS.client = pathItem('client');
+PATHS.client.scssLib = pathItem('scss_lib');
+PATHS.client.scss = pathItem('scss');
+PATHS.client.js = pathItem('js');
+
 PATHS.build = pathItem('build');
 PATHS.build.server = pathItem('server');
 PATHS.build.client = pathItem('client');
+PATHS.build.client.js = pathItem('js');
 
-PATHS.client.scssLib = pathItem('scss_lib');
-PATHS.client.components = pathItem('scss');
-
-PATHS.client.js = pathItem('js');
-PATHS.server = pathItem('server');
-PATHS.specs = pathItem('specs');
-PATHS.docs = pathItem('docs');
-PATHS.docs.libs = pathItem('libs');
 PATHS.specs = pathItem('specs');
 PATHS.specs.matchers = pathItem('matchers');
+
+PATHS.docs = pathItem('docs');
+PATHS.docs.libs = pathItem('libs');
+
+PATHS.bower = pathItem('bower');
 
 /* -- Actions -- */
 
@@ -51,7 +55,9 @@ function buildJs() {
   return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
     .pipe(cached('server-js'))
     .pipe(remember('server-js'))
+    .pipe(plumber({errorHandler: notify.onError("Build server : <%= error.message %>")}))
     .pipe(babel({ sourceRoot: PATHS.server() }))
+    .pipe(plumber.stop())
     .pipe(gulp.dest(PATHS.build.server()));
 }
 
@@ -63,16 +69,27 @@ function buildJsx() {
     .pipe(gulp.dest(PATHS.build.client('js/components')));
 }
 
-/** Performs all unit tests */
-function testUnit(verbose) {
+function runTests(stream, verbose) {
   if (verbose === undefined) { verbose = true; }
 
-  return gulp.src([
+  return stream
+    .pipe(jas({includeStackTrace: true, verbose: verbose}));
+}
+
+function testJsServer(verbose) {
+  return runTests(gulp.src([
       PATHS.specs('env.js'),
       PATHS.specs.matchers('**/*.js'),
       PATHS.build.server('**/*.spec.js'),
-      PATHS.build.client('**/*.spec.js')
-    ]).pipe(jas({includeStackTrace: true, verbose: verbose}));
+    ]), verbose);
+}
+
+function testJsClient(verbose) {
+  return runTests(gulp.src([
+      PATHS.specs('env.js'),
+      PATHS.specs.matchers('**/*.js'),
+      PATHS.build.client.js('**/*.spec.js')
+    ]), verbose);
 }
 
 function cleanCache() {
@@ -88,23 +105,11 @@ function cleanOutput(done) {
 
 /* --  Build tasks -- */
 
-gulp.task('build:js', buildJs);
-
-// Special task to order properly tasks
-gulp.task('watch:js:test', ['build:js'], function() {
-  return testUnit(false);
-});
-
-gulp.task('watch:js', function() {
-  gulp.watch([
-      PATHS.server('**/*.js'),
-      PATHS.specs('**/*.js')
-    ], ['build:js', 'watch:js:test']);
-});
+gulp.task('build:js:server', buildJs);
 
 gulp.task('build:sass', function () {
   return gulp.src([
-        PATHS.client.components('*.scss'),
+        PATHS.client.scss('*.scss'),
         PATHS.client.scssLib('**/*.scss')
       ])
   		.pipe(sass({
@@ -113,9 +118,16 @@ gulp.task('build:sass', function () {
       .pipe(gulp.dest(PATHS.build.client('css')));
 });
 
-gulp.task('build:jsx', buildJsx);
+gulp.task('build:js:client', buildJsx);
 
-gulp.task('build:browserify', ['build:jsx'], function() {
+gulp.task('build:js', ['build:js:server', 'build:js:client']);
+
+gulp.task('build:dependencies', function() {
+  return gulp.src([ PATHS.bower('/*/dist/**/*') ])
+    .pipe(gulp.dest(PATHS.build.client('bower')));
+});
+
+gulp.task('build:browserify', ['build:js:client', 'build:dependencies'], function() {
   return browserify({
       entries: './' + PATHS.build.client('js/components/main.js'),
       debug: true
@@ -126,41 +138,60 @@ gulp.task('build:browserify', ['build:jsx'], function() {
 
 gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
-/* -- Watcher -- */
-gulp.task('watch:jsx', function() {
-  gulp.watch(PATHS.client.js('components/**/*.js'), ['watch:jsx:test']);
-});
-
-gulp.task('watch:jsx:test', ['build:browserify'], function() {
-  return testUnit(false);
-});
-
-gulp.task('watch:sass', function() {
-  gulp.watch(PATHS.client.components('*.scss'), ['build:sass']);
-});
-
-gulp.task('watch', ['watch:js', 'watch:jsx', 'watch:sass']);
-
-
 /* -- Test task -- */
 
-gulp.task('test:jsx', testUnit);
-gulp.task('test:unit', testUnit);
+gulp.task('test:js:server', ['build:js:server'], testJsServer);
 
+gulp.task('test:js:client', ['build:js:client', 'test:js:server'] , testJsClient);
+
+gulp.task('test:js', ['test:js:server', 'test:js:client']);
 
 gulp.task('test:lint', function() {
   return gulp.src([
-  		PATHS.bin('*.js'),
-  		PATHS.client('**/*.js'),
-  		PATHS.server('**/*.js')
-  	]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
+      PATHS.bin('*.js'),
+      PATHS.client('**/*.js'),
+      PATHS.server('**/*.js')
+    ]).pipe(plumber({errorHandler: notify.onError("test:lint : <%= error.message %>")}))
     .pipe(jshint({linter : require('jshint-jsx').JSXHINT }))
     .pipe(jshint.reporter('default'))
     .pipe(jshint.reporter('fail'))
     .pipe(plumber.stop());
 });
 
-gulp.task('test', ['test:unit', 'test:lint']);
+gulp.task('test', ['test:js', 'test:lint']);
+
+/* -- Watcher -- */
+
+// Special task to order properly tasks
+gulp.task('watch:js:test-server', ['build:js:server'], function() {
+  return testJsServer(false);
+});
+
+gulp.task('watch:js:test-client', ['build:js:client'], function() {
+  return testJsClient(false);
+});
+
+gulp.task('watch:js:test-all', ['build:js', 'watch:js:test-server'], function() {
+  return testJsClient(false);
+})
+
+gulp.task('watch:js', function() {
+  gulp.watch([
+      PATHS.server('**/*.js'), // Tests server and client when server changes
+      PATHS.specs('**/*.js') // Run all tests when spec helper changes
+    ], ['watch:js:test-server']);
+  /* Changes in server should also run client tests or at least integration tests but apparently, there are none of them. */
+
+  gulp.watch([
+      PATHS.client('**/*.js'), // Tests only client when client changes
+    ], ['watch:js:test-client']);
+});
+
+gulp.task('watch:sass', function() {
+  gulp.watch(PATHS.client.scss('*.scss'), ['build:sass']);
+});
+
+gulp.task('watch', ['watch:js', 'watch:sass']);
 
 /* -- Documentation -- */
 

@@ -30,6 +30,7 @@ describe('Board', function () {
 	describe('#generate', function () {
 		beforeEach(function () {
 			this.board = new Board();
+			var player = { id: 23 };
 			this.board.generate({
 				forEachTile: function (action) {
 					action(new Tile(0, 0, 'ble', 8));
@@ -65,6 +66,57 @@ describe('Board', function () {
 				new Path(new Location(3, 4), new Location(5, 6)),
 				new Path(new Location(5, 6), new Location(7, 8))
 			]);
+		});
+	});
+
+	describe('#toJson', function () {
+		beforeEach(function () {
+			this.board = new Board();
+			var player = { id: 23 };
+			this.board.generate({
+				forEachTile: function (action) {
+					action(new Tile(0, 0, 'ble', 8));
+				},
+				forEachCity: function (action) {
+					action(new City(1, 2));
+					var ownedCity = new City(3, 4);
+					ownedCity.owner = player;
+					action(ownedCity);
+				},
+				forEachPath: function (action) {
+					action(new Path(new Location(1, 2), new Location(3, 4)));
+					var ownedPath = new Path(new Location(5, 6), new Location(7, 8));
+					ownedPath.owner = player;
+					action(ownedPath);
+				}
+			});
+			this.board.thieves = new Location(9, 8);
+
+			this.json = this.board.toJson();
+		});
+
+		it('has all tiles', function () {
+			expect(this.json.tiles).toEqual([
+				{ x: 0, y: 0, resource: 'ble', diceValue: 8 }
+			]);
+		});
+
+		it('has all cities', function () {
+			expect(this.json.cities).toEqual([
+				{ x: 1, y: 2 },
+				{ x: 3, y: 4, owner: 23 }
+			]);
+		});
+
+		it('has all paths', function () {
+			expect(this.json.paths).toEqual([
+				{ from: { x: 1, y: 2 }, to: { x: 3, y: 4 } },
+				{ from: { x: 5, y: 6 }, to: { x: 7, y: 8 }, owner: 23 }
+			]);
+		});
+
+		it('has thieves location', function() {
+			expect(this.json.thieves).toEqual({ x: 9, y: 8 });
 		});
 	});
 

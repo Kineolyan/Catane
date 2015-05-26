@@ -15,6 +15,18 @@ var numberMatcher = {
 				return result;
 			}
 		}
+	},
+	toBeClose: function(util, equalityTesters) {
+		return {
+			compare: function(actual, value, gap) {
+				var result = { pass: Math.abs(actual - value) <= gap };
+				result.message = 'Expecting ' + actual
+					+ (result.pass ? ' not' : '')
+					+ ' to equal ' + value + ' (+/- ' + gap + ')';
+
+				return result;
+			}
+		}
 	}
 };
 

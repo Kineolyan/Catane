@@ -1,6 +1,6 @@
 'use strict';
 
-/* 
+/*
   React component containing the whole game interface
 */
 
@@ -28,7 +28,7 @@ export default class StartInterface extends React.Component {
 
   /**
    * Change the minamal step where the game should be
-   * @param  {Globals.step} the minamal step 
+   * @param  {Globals.step} the minamal step
    */
   setMinimalStep(step) {
     if(this.state.step <= step) {
@@ -37,7 +37,7 @@ export default class StartInterface extends React.Component {
   }
 
   /**
-   * Start the game with the selected game 
+   * Start the game with the selected game
    * @param  {Int} the game id
    */
   chooseGame(game) {
@@ -47,7 +47,7 @@ export default class StartInterface extends React.Component {
 
 
   /**
-   * Start the game with the selected game 
+   * Start the game with the selected game
   */
   startGame(board, players) {
     this.setMinimalStep(Globals.step.started);
@@ -55,7 +55,7 @@ export default class StartInterface extends React.Component {
   }
 
  /**
-   * Start the game with the selected game 
+   * Start the game with the selected game
   */
   leaveRoom() {
     this.setState({step: Globals.step.chooseLobby, game: {}});
@@ -73,8 +73,8 @@ export default class StartInterface extends React.Component {
           <Row>
             <Col md={4} mdOffset={4}>
               <Jumbotron>
-                <Player ref="player" onChange={this.setMinimalStep.bind(this)} initialName={this.props.init.name} 
-                        id={parseInt(this.props.init.id, 10)} 
+                <Player ref="player" onChange={this.setMinimalStep.bind(this)} initialName={this.props.init.player.name}
+                        id={parseInt(this.props.init.player.id, 10)}
                         canChangeName={Globals.step.inStep(this.state.step, Globals.step.inLobby, Globals.step.init)}
                         game={this.state.game} />
 
@@ -84,7 +84,7 @@ export default class StartInterface extends React.Component {
               </Jumbotron>
 
             </Col>
-        
+
           </Row>
         </Grid>
 
@@ -116,13 +116,15 @@ export default class StartInterface extends React.Component {
 
 StartInterface.propTypes = {
 
-    init: React.PropTypes.shape({
+  init: React.PropTypes.shape({
+    player: {
       id: React.PropTypes.string.isRequired,
       name: React.PropTypes.string.isRequired
-    }), 
+    }
+  }),
 
-    onStart: React.PropTypes.func.isRequired
-    
+  onStart: React.PropTypes.func.isRequired
+
 };
 
 StartInterface.displayName = 'StartInterface';

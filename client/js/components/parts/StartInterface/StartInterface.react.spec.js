@@ -12,7 +12,7 @@ var utils = React.addons.TestUtils;
 describe('The start interface', function() {
 
   beforeEach(function() {
-    var data = {id: 'id', name: 'player'};
+    var data = { player: {id: 'id', name: 'player'} };
 
     this.start = () => {};
     spyOn(this, 'start');

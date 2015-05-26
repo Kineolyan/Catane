@@ -1,6 +1,7 @@
 @import 'vars';
 @import 'startInterface';
 @import 'gameinterface';
+
 body {
   color: $body_color;
   background-color: #fff;
@@ -10,3 +11,8 @@ body, html, #content {
   height: 100%;
 }
 
+#reconnect {
+	position: fixed;
+	top: 5px;
+	right: 5px;
+}

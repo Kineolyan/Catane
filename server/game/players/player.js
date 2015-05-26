@@ -1,4 +1,3 @@
-import { messages } from '../../com/messages.js';
 import * as maps from '../../util/maps.js';
 
 export default class Player {
@@ -26,6 +25,18 @@ export default class Player {
 	 */
 	get id() {
 		return this._id;
+	}
+
+	/**
+	 * Gets the socket used for communtication.
+	 * @return {Socket} the socket
+	 */
+	get socket() {
+		return this._socket;
+	}
+
+	set socket(socket) {
+		this._socket = socket;
 	}
 
 	/**
@@ -68,6 +79,16 @@ export default class Player {
 
 	get resources() {
 		return this._resources;
+	}
+
+	toString() {
+		return `Player '${this._name}' [${this._id}]`;
+	}
+
+	toJson() {
+		return {
+			id: this._id, name: this._name
+		};
 	}
 
 	/**

@@ -8,6 +8,14 @@ if(typeof global.window === 'undefined') {
       global.location = { protocol: 'http:', host: 'localhost:3000', port: 3000};
 }
 
+if (global.window.localStorage === undefined) {
+  global.window.localStorage = {
+    removeItem: function(key) {
+      delete this[key];
+    }
+  };
+}
+
 var tests = {
   jsdom: jsdom,
   getRenderedElements(inst, type) { //get react sub elements as an array

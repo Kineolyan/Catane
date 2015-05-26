@@ -2,6 +2,7 @@ import Game from './game';
 
 import { MockSocket } from '../../com/mocks';
 import Player from '../players/player';
+import * as starter from './game-spec.starter.js';
 
 describe('Game', function() {
 	beforeEach(function() {
@@ -16,6 +17,10 @@ describe('Game', function() {
 		it('has no players', function() {
 			var players = Array.from(this.game.players, (player) => player);
 			expect(players).toBeEmpty();
+		});
+
+		it('is not marked as started', function() {
+			expect(this.game.isStarted()).toBe(false);
 		});
 	});
 
@@ -91,6 +96,10 @@ describe('Game', function() {
 				this.game.start();
 			});
 
+			it('is marked as started', function() {
+				expect(this.game.isStarted()).toBe(true);
+			});
+
 			describe('started multiple times', function() {
 				it('throws an Error', function() {
 					expect(() => this.game.start()).toThrowError(/already started/i);
@@ -103,6 +112,63 @@ describe('Game', function() {
 			it('fails with Error', function() {
 				expect(() => this.game.start()).toThrowError(/not enough players/i);
 			});
+		});
+	});
+
+	describe('#reload', function() {
+		beforeEach(function() {
+			this.env = starter.createLocalGame(2);
+			this.env.start();
+			this.env.randomPick();
+			this.p = this.env.players[0];
+
+			this.description = this.env.game.reload();
+		});
+
+		it('describes the tiles', function() {
+			var tiles = this.description.board.tiles;
+			expect(tiles).toHaveLength(19);
+			expect(tiles[0]).toHaveKeys(['x', 'y', 'resource', 'diceValue']);
+		});
+
+		it('describes the cities', function() {
+			var cities = this.description.board.cities;
+			expect(cities).toHaveLength(54);
+			expect(cities[0]).toContainKeys(['x', 'y']);
+
+			var citiesWithOwner = 0;
+			for (let city of cities) {
+				citiesWithOwner += city.owner !== undefined ? 1 : 0;
+			}
+			expect(citiesWithOwner).toEqual(4);
+		});
+
+		it('describes the paths', function() {
+			var paths = this.description.board.paths;
+			expect(paths).toHaveLength(72);
+			expect(paths[0]).toContainKeys(['from', 'to']);
+
+			var pathsWithOwner = 0;
+			for (let path of paths) {
+				pathsWithOwner += path.owner !== undefined ? 1 : 0;
+			}
+			expect(pathsWithOwner).toEqual(4);
+		});
+
+		it('locates the thieves', function() {
+			expect(this.description.board.thieves).toEqual({ x: 0, y: 0 });
+		});
+
+		it('gives the players in order', function() {
+			var orderedPlayers = this.env.players.map(p => ({
+				id: p.player.id, name: p.player.name
+			}));
+
+			expect(this.description.players).toEqual(orderedPlayers);
+		});
+
+		it('indicates the current player', function() {
+			expect(this.description.currentPlayer).toBe(this.p.player.id);
 		});
 	});
 

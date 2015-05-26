@@ -39,6 +39,17 @@ describe('Player', function() {
 		});
 	});
 
+	describe('#toJson', function() {
+		beforeEach(function() {
+			this.player = new Player(this.socket.toSocket(), 1342);
+			this.player.name = 'Olivier';
+		});
+
+		it('returns basic object with name and id', function() {
+			expect(this.player.toJson()).toEqual({ id: 1342, name: 'Olivier' });
+		});
+	});
+
 	describe('#receiveResources', function() {
 		beforeEach(function() {
 			this.player = new Player(this.socket.toSocket());
