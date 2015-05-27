@@ -6,13 +6,14 @@ import {Group} from 'react-art';
  */
 export default class MapElement extends React.Component {
 
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.state = {mouseIn: false};
   }
 
   render() {
+
     return (<Group {...this.props} onMouseOver={this.mouseEnter.bind(this)} 
                                    onMouseOut={this.mouseLeave.bind(this)} >
               {this.props.children}

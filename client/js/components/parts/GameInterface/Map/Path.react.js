@@ -44,7 +44,7 @@ export default class PathR extends React.Component {
     path.close();
 
     return (
-      <Element {...this.props} type={'path'} onClick={this.handleClick.bind(this)}>
+      <Element {...this.props} type={'path'} onClick={this.handleClick.bind(this)} selectable={path.selectable}>
         <Shape d={path} 
                fill={color}
               />

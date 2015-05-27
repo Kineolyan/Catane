@@ -7,10 +7,7 @@ import MapHelper from '../common/map';
 export default class StartManager extends Manager {
 
   constructor(context) {
-    this._context = context;
-    this._binding = context.getBinding();
-
-    super();
+    super(context);
   }
 
   startListen() {
@@ -42,9 +39,9 @@ export default class StartManager extends Manager {
     this._binding.set('players', Immutable.fromJS(players));
   }
 
-  startGame(response) {
+  startGame({board: board}) {
     this._binding.atomically()
-                .set('board', Immutable.fromJS(new MapHelper(response.board)))
+                .set('game.board', Immutable.fromJS(new MapHelper(board)))
                 .set('step', Globals.step.prepare)
                 .commit();
   }
@@ -60,12 +57,12 @@ export default class StartManager extends Manager {
 
   }
 
-  gameCreate(game) {
-    this._binding.set('start.gameChosen', Immutable.fromJS(game.game));
+  gameCreate({game: game}) {
+    this._binding.set('start.gameChosen', Immutable.fromJS(game));
   }
 
-  updateGameList(list) {
-    this._binding.set('start.games', Immutable.fromJS(list.games));
+  updateGameList({games: games}) {
+    this._binding.set('start.games', Immutable.fromJS(games));
   }
 
   gameJoin() {

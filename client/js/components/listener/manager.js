@@ -2,8 +2,11 @@ import Socket from '../libs/socket';
 
 export default class Manager {
 
-  constructor() {
+  constructor(context) {
     this._events = new Set();
+
+    this._context = context;
+    this._binding = context.getBinding();
   }
 
   listenToSocket(event, callback) {

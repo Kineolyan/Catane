@@ -19,6 +19,7 @@ import Players from './common/players';
 Socket.on(Globals.socket.init, (data) => {
     console.log('game start !');
 
+    Players.deleteAll();
     Players.myId = parseInt(data.id, 10);
     Players.createPlayer(Players.myId, data.name);
 
@@ -28,7 +29,17 @@ Socket.on(Globals.socket.init, (data) => {
           games: [],
           gameChosen: {},
         },
-        board: [],
+
+        game: {
+          board: [],
+          dice: {
+            enabled: false,
+            rolling: false, 
+            values: [1,1]
+          },
+          message: 'Hello'
+        },
+
         players: Players,
         step: Globals.step.init
       }

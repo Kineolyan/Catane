@@ -22,14 +22,14 @@ export default class City extends React.Component {
     }
 
     return (
-      <Element x={city.ortho.x} y={city.ortho.y} {...this.props} onClick={this.handleClick.bind(this)}>
+      <Element x={city.ortho.x} y={city.ortho.y} {...this.props} onClick={this.handleClick.bind(this)} selectable={city.selectable}>
         <Circle radius={this.props.radius} fill={color}/>
       </Element>
     );
   }
 
   handleClick() {
-    if(this.props.selectable) {
+    if(this.props.city.selectable) {
       Socket.emit(Globals.socket.playPickColony, {colony: this.props.city.key});
     }
   }

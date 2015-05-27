@@ -9,108 +9,53 @@ import {Surface} from 'react-art';
 import MapReact from './Map/Map.react';
 import DiceReact from './Dice.react';
 import PlayersInfo from './PlayersInfo/PlayersInfo.react';
-import MessageV from './MessageV.react';
+import Message from './Message.react';
 
-import Players from '../../common/players';
-import Message from '../../common/message';
-import Socket from '../../libs/socket';
-import Globals from '../../libs/globals';
+import MoreartyComponent from '../MoreartyComponent.react';
 
-export default class GameInterface extends React.Component {
+export default class GameInterface extends MoreartyComponent {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-      prepare: true
-    };
-
-  }
-
-  /**
-   * Resize event
-   */
-  handleResize() {
-    this.setState({width: window.innerWidth, height: window.innerHeight});
-  }
-
-  componentDidMount() {
-    this.initSocket();
-
-  }
-
+  
   /**
    * Render the whole interface of the game
    * @return {React.Element} the rendered element
    */
   render() {
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    var binding = this.getDefaultBinding();
 
     return (
       <div>
-        <Surface x={0} y={0} width={this.state.width} height={this.state.height}>
+        <Surface x={0} y={0} width={width} height={height}>
             <DiceReact x={10} 
                        y={10} 
-                       size={50} 
-                       ref="dice"/>
+                       size={50}
+                       binding={binding.sub('game.dice')}
+                       ref="dice"
+                       />
 
             <MapReact ref="map" 
-                      board={this.props.board} 
-                      width={this.state.width} 
-                      height={this.state.height} 
+                      binding={binding.sub('game.board')}
+                      width={width} 
+                      height={height} 
                       margin={50}
-                      prepare={this.state.prepare}/>
+                      />
             
-            <MessageV y={120} />
+            <Message y={120}
+                     x={20} 
+                     binding={binding.sub('game.message')}
+                     />
+
             <PlayersInfo ref="player" 
-                        players={this.props.players} 
-                        prepare={this.state.prepare}
-                        onMyTurn={this.changeMap}
+                        binding={binding}
                         y={90} 
-                        x={20}/>
+                        x={20}
+                        />
         </Surface>
       </div>
     );
   }
-
-  initSocket() {
-    Socket.on(Globals.socket.gamePrepare, this.prepareGame.bind(this));
-    Socket.on(Globals.socket.playTurnNew, this.playNewTurn.bind(this));
-    Socket.on(Globals.socket.gamePlay, this.launchGame.bind(this));
-  }
-
-  /**
-   * Launch the game
-   */
-  launchGame() {
-    this.setState({prepare: false});
-  }
-
-  /**
-   * Set the game in the preparation mode
-   */
-  prepareGame() {
-    this.setState({prepare: true});
-  }
-
-  /**
-   * New player started to play
-   */
-  playNewTurn(res) {
-    var playing = Players.getPlayer(res.player);
-
-    if(playing.isMe()) {
-      if(this.state.prepare) {
-        Message.content = `Choose a colony then a path`;
-      } else {
-        Message.content = `Roll the dice`;
-        this.refs.dice.enable();
-      }
-    } else {
-        Message.content = `Playing : ${playing.name}`;
-    }
-  }
-
 }
 
 GameInterface.displayName = 'GameInterface';

@@ -12,59 +12,37 @@ import Tile from './Tile.react';
 import City from './City.react';
 import Path from './Path.react';
 
-import Socket from '../../../libs/socket';
 import Globals from '../../../libs/globals';
 import Players from '../../../common/players';
+import MoreartyComponent from '../../MoreartyComponent.react';
 
-export default class MapR extends React.Component {
+export default class MapR extends MoreartyComponent {
 
-  constructor(props) {
-    super(props);
-
-    this._board = new MapHelper(this.props.board, this.props.margin);
-
-    this.state = {
-      board: this._board,
-      selectable: {city: false, path: false, tile: false}
-    };
-
-  }
-
-  /**
-   * Refresh the board
-   */
-  refreshBoard() {
-    this.setState({board: this._board});
-  }
-
-  componentDidMount() {
-    this.initSocket();
-  }
   /**
    * Render the whole map of the game
    * @return {React.Element} the rendered element
    */
   render() {
-    var board = this.state.board,
+    var board = this.getDefaultBinding().get(),
         tiles = [],
         paths = [],
         cities = [];
 
     if(board.tiles) {
         board.tiles.forEach((elem) => {
-          tiles.push(<Tile key={elem.index} tile={elem} selectable={this.state.selectable.tile}/>);
+          tiles.push(<Tile key={elem.index} tile={elem} />);
         });
     }
   
     if(board.paths) {
         board.paths.forEach((elem) => {
-          paths.push(<Path key={elem.index} path={elem} selectable={this.state.selectable.path && !elem.player} />);
+          paths.push(<Path key={elem.index} path={elem} />);
         });
     }
 
     if(board.cities) {
         board.cities.forEach((elem) => {
-          cities.push(<City key={elem.index} city={elem} selectable={this.state.selectable.city && !elem.player} />);
+          cities.push(<City key={elem.index} city={elem} />);
         });
     }
     
@@ -78,53 +56,8 @@ export default class MapR extends React.Component {
     );
   }
 
-  initSocket() {
-    Socket.on(Globals.socket.playTurnNew, this.playTurnNew.bind(this));
-    Socket.on(Globals.socket.playPickColony, this.playPickElement.bind(this));
-    Socket.on(Globals.socket.playPickPath, this.playPickElement.bind(this));
-  }
+  
 
-  /**
-   * A player picked somehting on the map
-   */
-  playPickElement(res) {
-    if(this.props.prepare) {
-        var player = Players.getPlayer(res.player);
-        var key;
-        var payload;
-
-        if(res.colony) {
-          key = 'cities';
-          payload = res.colony;
-          this.setState({selectable: {path: true}});
-        } else if(res.path) {
-          key = 'paths';
-          payload = res.path;
-          Socket.emit(Globals.socket.playTurnEnd);
-        }
-
-        this._board.giveElement(key, payload, player);
-        this.refreshBoard();
-    }
-  }
-
-  /**
-   * New player is starting to play
-   */
-  playTurnNew(res) {
-    if(this.props.prepare) {
-        var player = Players.getPlayer(res.player);
-        if(player.isMe()) {
-          this.setState({selectable: {city: true}});
-        } else {
-          this.setState({selectable: {}});
-        }
-    }
-  }
 }
-
-MapR.propTypes = {
-  board: React.PropTypes.any.isRequired
-};
 
 MapR.displayName = 'Map';

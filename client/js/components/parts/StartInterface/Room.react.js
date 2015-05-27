@@ -66,7 +66,7 @@ export default class Room extends MoreartyComponent {
    */
   start() {
     var binding = this.getDefaultBinding();
-    Socket.emit(Globals.socket.gameStart, binding.get('gameChosen.id'));
+    Socket.emit(Globals.socket.gameStart, binding.get('start.gameChosen.id'));
   }
 
   /**

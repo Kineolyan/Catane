@@ -7,6 +7,7 @@ var GLOBALS = {};
 GLOBALS.step = {
   init: 0,
   prepare: 1,
+  started: 2,
   inStep(step, max, min) {
     return (step >= min && step <= max);
   }

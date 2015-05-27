@@ -66,6 +66,14 @@ class MapHelpher  {
     }
   }
 
+  setSelectableType(type) {
+    for(let [elemsType, elems] of this._elements.entries()) {
+      for(let [,part] of elems.entries()) {
+        part.selectable = (type === elemsType && !part.player);
+      }
+
+    }
+  }
 }
 
 /**
@@ -148,6 +156,7 @@ class MapElement {
 
 
     this._player = null;
+    this._selectable = null;
   }
 
   set player(val) {
@@ -157,6 +166,16 @@ class MapElement {
   get player() {
     return this._player;
   }
+
+  set selectable(val) {
+    this._selectable = val;
+  }
+
+  get selectable() {
+    return this._selectable;
+  }
+
+
 
 
 }
@@ -173,6 +192,8 @@ class Tile extends MapElement {
     this.vertex.push(convert(- 1, 1));
     this.vertex.push(convert(- 1, 0));
   }
+
+
 }
 
 //A city with orthogonal coordinate

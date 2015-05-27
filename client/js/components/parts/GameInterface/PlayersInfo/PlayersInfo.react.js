@@ -13,40 +13,9 @@ import OtherPlayer from './OtherPlayer.react';
 
 import Players from '../../../common/players';
 import Globals from '../../../libs/globals';
+import MoreartyComponent from '../../MoreartyComponent.react';
 
-export default class PlayersInfo extends React.Component {
-
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      cards: []
-    };
-
-  }
-
-  componentWillMount() {
-
-    var p = this.props.players;
-    var players = p.other.slice();
-
-    if(p.me.name) {
-      players.push(p.me);
-    }
-
-    players = players.sort((a, b) => a.id - b.id);
-
-
-    Players.deleteAll();
-    Players.myId = p.me.id;
-    //create all the players in the players bag
-    players.forEach((element, i) => {
-      Players.createPlayer(element.id, element.name, Globals.interface.player.colors[i]);
-    });
-
-
-  }
+export default class PlayersInfo extends MoreartyComponent {
 
   /**
    * Render the whole map of the game
@@ -54,10 +23,12 @@ export default class PlayersInfo extends React.Component {
    */
   render() {
 
+    var binding = this.getDefaultBinding();
+    var players = binding.get('players').toJS();
     var index = 0, 
         renderedPlayers = [],
         color = 'white',
-        me = Players.getMe(),
+        me = players.getMe(),
         name = '';
 
     if(me) {
@@ -65,7 +36,7 @@ export default class PlayersInfo extends React.Component {
       name = me.name;
     }
 
-    Players.getMap().forEach((element) => {
+    players.getMap().forEach((element) => {
       if(!element.isMe()) {
         renderedPlayers.push(<OtherPlayer key={index}
                                           index={index}
@@ -82,7 +53,7 @@ export default class PlayersInfo extends React.Component {
         
         <Text ref="name" y={-5} x={15} fill="black" font={{'font-size':  '12px'}}>{name}</Text>
         
-        <Deck cards={this.state.cards} width={window.innerWidth / 2} height={40} />
+        <Deck cards={me.cards} width={window.innerWidth / 2} height={40} />
 
         <Group y={60}>
           {renderedPlayers}
@@ -94,8 +65,7 @@ export default class PlayersInfo extends React.Component {
 
 PlayersInfo.defaultProps = {
     x: 0,
-    y: 0,
-    players: {other: [], me: {}}
+    y: 0
 };
 
 PlayersInfo.displayName = 'PlayersInfo';

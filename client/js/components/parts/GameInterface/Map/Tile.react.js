@@ -39,7 +39,7 @@ export default class Tile extends React.Component {
     }
 
     return (
-      <Element x={tile.ortho.x} y={tile.ortho.y} {...this.props}>
+      <Element x={tile.ortho.x} y={tile.ortho.y} {...this.props} selectable={tile.selectable}>
         <Shape d={path}
                fill={color}
                stroke='#FFFFFF'

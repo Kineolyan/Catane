@@ -11,49 +11,43 @@ import Rectangle from 'react-art/shapes/rectangle';
 
 import Globals from '../../libs/globals';
 import Socket from '../../libs/socket';
+import MoreartyComponent from '../MoreartyComponent.react';
 
-
-export default class Dice extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      first: 1,
-      second: 1,
-      rolling: false,
-      enabled: false
-    };
-  }
+export default class Dice extends MoreartyComponent {
 
   componentDidMount() {
-    this.initSocket();
+    var binding = this.getDefaultBinding();
+    this.addBindingListener(binding, 'rolling', () => {
+      if(binding.get('rolling')) {
+        this.result();
+      }
+    });
   }
-
   /**
    * Make the dice rolling
    * @example
    * result({first: 1, second: 3})
    */
-  result(dice, done) {
+  result() {
     var round = this.props.rolls;
-    done = done || function() {};
-
-    this.setState({rolling: true});
+    var binding = this.getDefaultBinding();
+    var initValues = binding.get('values');
+    binding.set('rolling', true);
 
     var chg = (time, result) => {
       setTimeout(() => {
-        this.setState({
-          first: result ? result.first : parseInt(Math.random() * 6 + 1),
-          second: result ? result.second : parseInt(Math.random() * 6 + 1),
-        });
 
+        var values = [result ? result[0] : parseInt(Math.random() * 6 + 1),
+                      result ? result[1] : parseInt(Math.random() * 6 + 1)];
+
+        binding.set('values', Immutable.fromJS(values));
         round -= 1;
         if(round > 0) {
           chg(parseInt(time * 1.15, 10));
         } else if (round === 0) {
-          chg(parseInt(time, 10), dice);
+          chg(parseInt(time, 10), initValues);
         } else {
-          this.setState({rolling: false}, done);
+            binding.set('rolling', false);
         }
 
       }, time);
@@ -68,48 +62,39 @@ export default class Dice extends React.Component {
    * @return {[type]}
    */
   launch() {
-    if(!this.state.rolling && this.state.enabled) {
-      this.setState({enabled: false});
+    var binding = this.getDefaultBinding();
+    if(!binding.get('rolling') && binding.get('enabled')) {
+      binding.set('enabled', false);
       Socket.emit(Globals.socket.mapDice);
     }
   }
 
   render() {
-    
+    var binding = this.getDefaultBinding();
     var size = this.props.size,
         margin = size + 10,
-        color = this.state.rolling ? '#FBF896' : '#D1FFA3',
-        cursor = this.state.enabled ? 'pointer' : 'auto';
+        color = binding.get('rolling') ? '#FBF896' : '#D1FFA3',
+        cursor = binding.get('enabled') ? 'pointer' : 'auto';
+
+    var dices = binding.get('values').map((elem, index) => {
+
+      return (<Group key={index}>
+                <Rectangle x={margin * index} width={size} height={size} stroke="black" fill={color} />
+                <Text y={size / 4} x={margin * index + size / 2} fill="black" alignment="center" font={{'font-size': size / 2 + 'px'}}>
+                  {elem.toString()}
+                </Text>
+              </Group>)
+    }).toArray();
 
     return (
       <Group x={this.props.x} y={this.props.y} onClick={this.launch.bind(this)} cursor={cursor}>  
         
-        <Rectangle width={size} height={size} stroke="black" fill={color} />
-        <Text y={size / 4} x={size / 2} fill="black" alignment="center" font={{'font-size': size / 2 + 'px'}}>
-          {this.state.first.toString()}
-        </Text>
-
-        <Rectangle x={margin} width={size} height={size} stroke="black" fill={color} />
-        <Text y={size / 4} x={margin + size / 2} fill="black" alignment="center" font={{'font-size': size / 2 + 'px'}}>
-          {this.state.second.toString()}
-        </Text>
+        {dices}
+        
       </Group>
       );
   }
 
-
-  initSocket() {
-    Socket.on(Globals.socket.mapDice, (data) => {
-        this.result({first: data.dice[0], second: data.dice[1]}, () => this.props.onFinish(data.resources));
-    });
-  }
-
-  /**
-   * Enable the dice
-   */
-  enable() {
-    this.setState({enabled: true});
-  }
 }
 
 Dice.defaultProps = {
@@ -118,8 +103,7 @@ Dice.defaultProps = {
     size: 10,
     startTime: 200,
     rolls: 10,
-    selectable: false,
-    onFinish() {}
+    selectable: false
 };
 
 Dice.displayName = 'Dice';

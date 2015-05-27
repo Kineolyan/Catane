@@ -21,6 +21,7 @@ var Col = reactBoostrap.Col;
 
 export default class StartInterface extends MoreartyComponent {
 
+  
   /**
    * Render the interface of the selection of game
    * @return {React.Element} the rendered element
