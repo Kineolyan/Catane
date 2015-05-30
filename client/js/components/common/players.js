@@ -59,6 +59,7 @@ manager = {
     players.clear();
     players.set(me.id, me);
   }
+
 };
 
 export default manager;

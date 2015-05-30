@@ -15,7 +15,7 @@ import MoreartyComponent from '../MoreartyComponent.react';
 
 export default class GameInterface extends MoreartyComponent {
 
-  
+
   /**
    * Render the whole interface of the game
    * @return {React.Element} the rendered element

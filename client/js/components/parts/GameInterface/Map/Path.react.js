@@ -13,22 +13,22 @@ import Globals from '../../../libs/globals';
 export default class PathR extends React.Component {
 
   render() {
-    var p = this.props.path,
-        path = new Path(),
+    var path = this.props.path,
+        p = new Path(),
         coef,
         color = 'black', 
         thickness = this.props.thickness;
 
-    if(p.player) {
-      color = p.player.color;
+    if(path.player) {
+      color = path.player.color;
     }
 
     /**
      * The idea is to draw a rectangle in any direction using path
      */
     //get the direction of the path
-    if(p.to.ortho.y - p.from.ortho.y) {
-      coef = -1 * (p.to.ortho.x - p.from.ortho.x) / (p.to.ortho.y - p.from.ortho.y);
+    if(path.to.ortho.y - path.from.ortho.y) {
+      coef = -1 * (path.to.ortho.x - path.from.ortho.x) / (path.to.ortho.y - path.from.ortho.y);
     } else {
       coef = 1;
       thickness *= 1.5;
@@ -37,15 +37,15 @@ export default class PathR extends React.Component {
     var diff = Math.sqrt(Math.pow(thickness, 2) / (1 + Math.pow(coef, 2)));
 
     //draw
-    path.moveTo(p.ortho.x - diff, p.ortho.y - diff * coef);
-    path.lineTo(p.ortho.x + diff, p.ortho.y + diff * coef);
-    path.lineTo(p.to.ortho.x + diff, p.to.ortho.y + diff * coef);
-    path.lineTo(p.to.ortho.x - diff, p.to.ortho.y - diff * coef);
-    path.close();
+    p.moveTo(path.ortho.x - diff, path.ortho.y - diff * coef);
+    p.lineTo(path.ortho.x + diff, path.ortho.y + diff * coef);
+    p.lineTo(path.to.ortho.x + diff, path.to.ortho.y + diff * coef);
+    p.lineTo(path.to.ortho.x - diff, path.to.ortho.y - diff * coef);
+    p.close();
 
     return (
-      <Element {...this.props} type={'path'} onClick={this.handleClick.bind(this)} selectable={path.selectable}>
-        <Shape d={path} 
+      <Element {...this.props} onClick={this.handleClick.bind(this)} selectable={path.selectable}>
+        <Shape d={p} 
                fill={color}
               />
       </Element>
@@ -53,7 +53,8 @@ export default class PathR extends React.Component {
   }
 
   handleClick() {
-    if(this.props.selectable) {
+
+    if(this.props.path.selectable) {
       Socket.emit(Globals.socket.playPickPath, {path: this.props.path.key});
     }
   }

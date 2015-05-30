@@ -58,21 +58,24 @@ class MapHelpher  {
       var elem = this._elements.get(type).get(JSON.stringify(key));
       if(elem) {
         elem.player = player;
-      } else {
-        return false;
-      }
+      } 
     } else {
       throw new Error(`No elements of type: ${type}`);
     }
+
+    return this;
   }
 
   setSelectableType(type) {
+
     for(let [elemsType, elems] of this._elements.entries()) {
       for(let [,part] of elems.entries()) {
         part.selectable = (type === elemsType && !part.player);
       }
 
     }
+
+    return this;
   }
 }
 
@@ -225,4 +228,14 @@ class Path extends MapElement {
   
 }
 
-export default MapHelpher;
+export default {
+  board: null,
+  init() {
+    this.board = new MapHelpher(...arguments);
+    return this;
+  },
+
+  getBoard() {
+    return this.board;
+  }
+};

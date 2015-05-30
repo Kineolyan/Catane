@@ -5,10 +5,6 @@ import Socket from '../libs/socket';
 
 export default class GameManager extends Manager {
 
-  constructor(context) {
-    super(context);
-  }
-
   startListen() {
     this.listenToSocket(Globals.socket.gamePrepare, this.gamePrepare.bind(this));
     this.listenToSocket(Globals.socket.gamePlay, this.launchGame.bind(this));
@@ -24,18 +20,20 @@ export default class GameManager extends Manager {
    * A player picked somehting on the map
    */
   playPickElement(res) {
+
     if(this._binding.get('step') === Globals.step.prepare) {
         var players = this._binding.get('players').toJS();
-        var board = this._binding.get('game.board');
+        var boardContainer = this._binding.get('game.board').toJS();
+        var board = boardContainer.getBoard();
 
-        var player = players.getPlayer(player);
+        var player = players.getPlayer(res.player);
         var key;
         var payload;
 
         if(res.colony) {
           key = 'cities';
           payload = res.colony;
-          board.setSelectableType('paths')
+          board.setSelectableType('paths');
         } else if(res.path) {
           key = 'paths';
           payload = res.path;
@@ -44,8 +42,9 @@ export default class GameManager extends Manager {
         }
 
         board.giveElement(key, payload, player);
-        this._binding.set('game.board', Immutable.fromJS(board));
+        this._binding.set('game.board', Immutable.fromJS(boardContainer));
     }
+
   }
 
   /**
@@ -77,7 +76,8 @@ export default class GameManager extends Manager {
    */
   playTurnNew({player: player}) {
     var players = this._binding.get('players').toJS();
-    var board = this._binding.get('game.board');
+    var boardContainer = this._binding.get('game.board').toJS();
+    var board = boardContainer.getBoard();
 
     var playing = players.getPlayer(player);
 
@@ -98,7 +98,7 @@ export default class GameManager extends Manager {
         board.setSelectableType(null);
     }
     
-    transaction.set('game.board', Immutable.fromJS(board));
+    transaction.set('game.board', Immutable.fromJS(boardContainer));
     transaction.commit();
   }
 

@@ -23,7 +23,7 @@ export default class MapR extends MoreartyComponent {
    * @return {React.Element} the rendered element
    */
   render() {
-    var board = this.getDefaultBinding().get(),
+    var board = this.getDefaultBinding().get().toJS().getBoard(),
         tiles = [],
         paths = [],
         cities = [];

@@ -6,9 +6,6 @@ import MapHelper from '../common/map';
 
 export default class StartManager extends Manager {
 
-  constructor(context) {
-    super(context);
-  }
 
   startListen() {
     this.listenToSocket(Globals.socket.gamePlayers, this.updatePlayerList.bind(this));
@@ -41,7 +38,7 @@ export default class StartManager extends Manager {
 
   startGame({board: board}) {
     this._binding.atomically()
-                .set('game.board', Immutable.fromJS(new MapHelper(board)))
+                .set('game.board', Immutable.fromJS(MapHelper.init(board)))
                 .set('step', Globals.step.prepare)
                 .commit();
   }
