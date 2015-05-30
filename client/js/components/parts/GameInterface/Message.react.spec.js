@@ -1,7 +1,7 @@
 import '../../libs/test';
 
 import React from 'react/addons';
-import MessageV from './MessageV.react';
+import MessageV from './Message.react';
 
 var utils = React.addons.TestUtils;
 

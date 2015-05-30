@@ -1,4 +1,11 @@
 import jsdom from 'jsdom';
+import Morearty from 'morearty';
+import Globals from './globals';
+import Players from '../common/players';
+import React from 'react/addons';
+
+var TestUtils = React.addons.TestUtils;
+
 
 jasmine.getEnv().defaultTimeoutInterval = 1000;
 if(typeof global.window === 'undefined') {
@@ -10,6 +17,7 @@ if(typeof global.window === 'undefined') {
 
 var tests = {
   jsdom: jsdom,
+  ctx: null,
   getRenderedElements(inst, type) { //get react sub elements as an array
 
     if (!inst) {
@@ -33,7 +41,54 @@ var tests = {
     }
 
     return ret;
+  },
+  getCtx() {
+
+    Players.deleteAll();
+    Players.myId = parseInt(1, 10);
+    Players.createPlayer(Players.myId, 'Bob');
+
+    this.ctx = Morearty.createContext({
+            initialState: {
+              start: {
+                games: [],
+                gameChosen: {},
+              },
+
+              game: {
+                board: [],
+                dice: {
+                  enabled: false,
+                  rolling: false, 
+                  values: [1,1]
+                },
+                message: 'Hello'
+              },
+
+              players: Players,
+              step: Globals.step.init
+        }
+      });
+
+    return this.ctx;
+  },
+  mockRender(instanceFn) {
+      var self = this;
+      var boot = React.createClass({
+            childContextTypes: {
+              morearty: React.PropTypes.any
+            },
+            getChildContext() {
+              return {morearty: self.ctx};
+            },
+            render() {
+              return instanceFn();
+            },
+      });
+
+      return TestUtils.renderIntoDocument(React.createElement(boot));
   }
 };
+
 
 export default tests;
