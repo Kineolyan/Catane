@@ -1,50 +1,58 @@
-import '../../libs/test';
+import tests from '../../libs/test';
 
 import React from 'react/addons';
 import Room from './Room.react';
 import Player from './Player.react';
+
+import Immutable from 'immutable';
 
 var utils = React.addons.TestUtils;
 
 describe('A room', function() {
 
   beforeEach(function() {
-    this.change = () => {};
-    spyOn(this, 'change');
+    this._ctx = tests.getCtx();
+    var RoomB = this._ctx.bootstrap(Room);
+    this.room= utils.renderIntoDocument(<RoomB />);
 
-
-    this.player = utils.renderIntoDocument(<Player id={2} initialName='tom' canChangeName={true} onChange={this.change}/>);
-    this.room = utils.renderIntoDocument(<Room game={{id: 3,name: 'game'}} player={this.player} onStart={this.change}/>);
   });
 
-  it('should have an initial player ', function() {
-      expect(this.room.props.player.getId()).toEqual(2);
-  });
+  describe('should display the correct number of player', function() {
 
-  it('should render the list of players', function(done) {
-    var players = new Map();
-    players.set(1, { id: 1, name: 'jean' });
-    players.set(2, { id: 2, name: 'tom' });
-    players.set(3, { id: 3, name: 'marcel' });
-    this.room.setState({players: players}, () => {
-      expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'player-elem').length).toBe(3);
-      done();
+    it('#2 players', function(done) {
+      var binding = this._ctx.getBinding();
+      var players = binding.get('players').toJS();
+      players.deleteAll();
+      players.createPlayer(1, 'bob', 'green');
+      players.createPlayer(2, 'tom', 'yellow');
+
+      binding.set('players', Immutable.fromJS(players));
+      setTimeout(() => {
+        expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'player-elem').length).toBe(2);
+        done();
+      }, 100);
     });
+
+    it('#3 players', function(done) {
+      var binding = this._ctx.getBinding();
+      var players = binding.get('players').toJS();
+      players.deleteAll();
+      players.createPlayer(1, 'bob', 'green');
+      players.createPlayer(2, 'tom', 'yellow');
+      players.createPlayer(3, 'lolo', 'blue');
+
+      binding.set('players', Immutable.fromJS(players));
+      setTimeout(() => {
+        expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'player-elem').length).toBe(3);
+        done();
+      }, 100);
+    });
+
   });
 
   it('shouldn\'t render start button when there are less than 2 players', function() {
-    expect(this.room.refs.startButton).toBeUndefined();
+      expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'start').length).toBe(0);
   });
 
-  it('should render start button  when there 2 players or more', function(done) {
-    var players = new Map();
-    players.set(1, { id: 1, name: 'jean' });
-    players.set(2, { id: 2, name: 'tom' });
-    players.set(3, { id: 3, name: 'marcel' });
-    this.room.setState({players: players}, () => {
-      expect(this.room.refs.startButton).toBeDefined();
-      done();
-    });
-  });
 
 });

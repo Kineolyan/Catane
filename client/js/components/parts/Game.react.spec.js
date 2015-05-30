@@ -11,10 +11,8 @@ describe('A game', function() {
 
   beforeEach(function() {
     this._ctx = tests.getCtx();
-    var Ga = this._ctx.bootstrap(Game);
-    this.game= utils.renderIntoDocument(<Ga />);
-    //this.game = tests.mockRender(() => <Game binding={this._binding} />);
-
+    var GameB = this._ctx.bootstrap(Game);
+    this.game= utils.renderIntoDocument(<GameB />);
   });
 
   it('should start with the start interface', function() {
@@ -26,7 +24,7 @@ describe('A game', function() {
       setTimeout(() => {
         expect(utils.scryRenderedComponentsWithType(this.game, StartInterface).length).toBe(0);
         done();
-      }, 1000);
+      }, 200);
   });
 
 });

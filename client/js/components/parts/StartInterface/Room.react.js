@@ -35,7 +35,7 @@ export default class Room extends MoreartyComponent {
     }
 
     if(players.size >= 2) {
-      startButton = (<Button bsSize={'small'} className={'pull-right'} bsStyle={'success'} ref="startButton" onClick={this.start.bind(this)}>
+      startButton = (<Button bsSize={'small'} className={'pull-right start'} bsStyle={'success'} ref="startButton" onClick={this.start.bind(this)}>
                         Start <Glyphicon glyph="arrow-right" />
                      </Button>);
     } else {

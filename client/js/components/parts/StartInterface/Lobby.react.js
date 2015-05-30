@@ -31,7 +31,7 @@ export default class Lobby extends MoreartyComponent {
     var index = 0;
     var binding = this.getDefaultBinding();
 
-    var games = binding.get('games').map((game) => {
+    var games = binding.get('start.games').map((game) => {
         return (<li className={'game-elem'} key={game.get('id')} data-index={index} onClick={this.chooseGame.bind(this)}>
                   Join Game {game.get('id')} <Glyphicon glyph="arrow-right" />
                 </li>);
@@ -68,7 +68,7 @@ export default class Lobby extends MoreartyComponent {
    */
   chooseGame(event) {
     var binding = this.getDefaultBinding();
-    var games = binding.get('games').toJS();
+    var games = binding.get('start.games').toJS();
     var game = games[event.currentTarget.dataset.index];
 
     Socket.emit(Globals.socket.gameJoin, game.id, game);

@@ -55,8 +55,8 @@ export default class StartInterface extends MoreartyComponent {
    * @return {React.Element} the rendered element
    */
   renderChooseLobby() {
-    var binding = this.getDefaultBinding().sub('start');
-    if(!binding.get('gameChosen.id')) {
+    var binding = this.getDefaultBinding();
+    if(!binding.get('start.gameChosen.id')) {
       return (<Lobby binding={binding} />);
     }
   }
