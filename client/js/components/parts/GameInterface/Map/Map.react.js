@@ -6,14 +6,11 @@
 
 import React from 'react';
 import {Group} from 'react-art';
-import MapHelper from '../../../common/map';
 
 import Tile from './Tile.react';
 import City from './City.react';
 import Path from './Path.react';
 
-import Globals from '../../../libs/globals';
-import Players from '../../../common/players';
 import MoreartyComponent from '../../MoreartyComponent.react';
 
 export default class MapR extends MoreartyComponent {

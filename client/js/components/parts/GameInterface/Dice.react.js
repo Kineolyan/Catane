@@ -83,7 +83,7 @@ export default class Dice extends MoreartyComponent {
                 <Text y={size / 4} x={margin * index + size / 2} fill="black" alignment="center" font={{'font-size': size / 2 + 'px'}}>
                   {elem.toString()}
                 </Text>
-              </Group>)
+              </Group>);
     }).toArray();
 
     return (

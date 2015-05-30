@@ -11,8 +11,6 @@ import Circle from 'react-art/shapes/circle';
 import Deck from './Deck.react';
 import OtherPlayer from './OtherPlayer.react';
 
-import Players from '../../../common/players';
-import Globals from '../../../libs/globals';
 import MoreartyComponent from '../../MoreartyComponent.react';
 
 export default class PlayersInfo extends MoreartyComponent {

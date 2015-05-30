@@ -8,7 +8,7 @@ export default class GameManager extends Manager {
   startListen() {
     this.listenToSocket(Globals.socket.gamePrepare, this.gamePrepare.bind(this));
     this.listenToSocket(Globals.socket.gamePlay, this.launchGame.bind(this));
-    this.listenToSocket(Globals.socket.playTurnNew, this.playTurnNew.bind(this))
+    this.listenToSocket(Globals.socket.playTurnNew, this.playTurnNew.bind(this));
     this.listenToSocket(Globals.socket.mapDice, this.rollDice.bind(this));
     this.listenToSocket(Globals.socket.playPickColony, this.playPickElement.bind(this));
     this.listenToSocket(Globals.socket.playPickPath, this.playPickElement.bind(this));
@@ -37,7 +37,7 @@ export default class GameManager extends Manager {
         } else if(res.path) {
           key = 'paths';
           payload = res.path;
-          board.setSelectableType(null)
+          board.setSelectableType(null);
           Socket.emit(Globals.socket.playTurnEnd);
         }
 

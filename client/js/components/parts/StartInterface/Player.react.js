@@ -9,7 +9,6 @@ import Socket from '../../libs/socket';
 import reactBoostrap from 'react-bootstrap';
 
 import MoreartyComponent from '../MoreartyComponent.react';
-import Immutable from 'immutable';
 
 var Button = reactBoostrap.Button;
 var Glyphicon = reactBoostrap.Glyphicon;

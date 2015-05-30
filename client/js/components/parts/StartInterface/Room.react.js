@@ -10,8 +10,6 @@ import reactBootstrap from 'react-bootstrap';
 
 import MoreartyComponent from '../MoreartyComponent.react';
 
-import Immutable from 'immutable';
-
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;
 var ButtonToolbar = reactBootstrap.ButtonToolbar;

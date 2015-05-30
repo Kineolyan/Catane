@@ -7,7 +7,7 @@
 import Player from './Player.react';
 import Lobby from './Lobby.react';
 import React from 'react';
-import Globals from '../../libs/globals';
+
 import Room from './Room.react';
 import reactBoostrap from 'react-bootstrap';
 

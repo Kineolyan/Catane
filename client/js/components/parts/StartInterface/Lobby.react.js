@@ -10,7 +10,6 @@ import Globals from '../../libs/globals';
 import reactBootstrap from 'react-bootstrap';
 
 import MoreartyComponent from '../MoreartyComponent.react';
-import Immutable from 'immutable';
 
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;
