@@ -27,6 +27,7 @@ export default class StartInterface extends MoreartyComponent {
    * @return {React.Element} the rendered element
    */
   render() {
+
     var binding = this.getDefaultBinding();
     return (
       <div className={'start-interface'}>

@@ -10,8 +10,10 @@ var utils = React.addons.TestUtils;
 describe('A game', function() {
 
   beforeEach(function() {
-    var binding = tests.getCtx().getBinding();
-    this.game = tests.mockRender(() => <Game binding={binding} />);
+    this._ctx = tests.getCtx();
+    var Ga = this._ctx.bootstrap(Game);
+    this.game= utils.renderIntoDocument(<Ga />);
+    //this.game = tests.mockRender(() => <Game binding={this._binding} />);
 
   });
 
@@ -19,9 +21,12 @@ describe('A game', function() {
       expect(utils.scryRenderedComponentsWithType(this.game, StartInterface).length).toBe(1);
   });
 
-  it('should remove the start interface when it started', function() {
-      tests.ctx.getBinding().set('step', Globals.step.prepare)
-      expect(utils.scryRenderedComponentsWithType(this.game, StartInterface).length).toBe(0);
+  it('should remove the start interface when it started', function(done) {
+      this._ctx.getBinding().set('step', Globals.step.prepare);
+      setTimeout(() => {
+        expect(utils.scryRenderedComponentsWithType(this.game, StartInterface).length).toBe(0);
+        done();
+      }, 1000);
   });
 
 });

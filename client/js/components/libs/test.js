@@ -1,10 +1,6 @@
 import jsdom from 'jsdom';
-import Morearty from 'morearty';
 import Globals from './globals';
 import Players from '../common/players';
-import React from 'react/addons';
-
-var TestUtils = React.addons.TestUtils;
 
 
 jasmine.getEnv().defaultTimeoutInterval = 1000;
@@ -14,6 +10,8 @@ if(typeof global.window === 'undefined') {
       global.navigator = global.window.navigator;// jshint ignore:line
       global.location = { protocol: 'http:', host: 'localhost:3000', port: 3000};
 }
+
+import Morearty from 'morearty';
 
 var tests = {
   jsdom: jsdom,
@@ -71,22 +69,6 @@ var tests = {
       });
 
     return this.ctx;
-  },
-  mockRender(instanceFn) {
-      var self = this;
-      var boot = React.createClass({
-            childContextTypes: {
-              morearty: React.PropTypes.any
-            },
-            getChildContext() {
-              return {morearty: self.ctx};
-            },
-            render() {
-              return instanceFn();
-            },
-      });
-
-      return TestUtils.renderIntoDocument(React.createElement(boot));
   }
 };
 

@@ -18,7 +18,6 @@ export default class Game extends MoreartyComponent {
    * @return {React.Element} the rendered element
    */
   render() {
-
     return (
       <div>
         {this.renderStart()}
@@ -32,7 +31,6 @@ export default class Game extends MoreartyComponent {
    */
   renderStart() {
     var binding = this.getDefaultBinding();
-
     if(binding.get('step') === Globals.step.init) {
         return (<StartInterface binding={binding} />);
     } else {
