@@ -12,6 +12,7 @@ import Rectangle from 'react-art/shapes/rectangle';
 import Globals from '../../libs/globals';
 import Socket from '../../libs/socket';
 import MoreartyComponent from '../MoreartyComponent.react';
+import Immutable from 'immutable';
 
 export default class Dice extends MoreartyComponent {
 
@@ -31,8 +32,7 @@ export default class Dice extends MoreartyComponent {
   result() {
     var round = this.props.rolls;
     var binding = this.getDefaultBinding();
-    var initValues = binding.get('values');
-    binding.set('rolling', true);
+    var initValues = binding.get('values').toJS();
 
     var chg = (time, result) => {
       setTimeout(() => {
@@ -47,7 +47,7 @@ export default class Dice extends MoreartyComponent {
         } else if (round === 0) {
           chg(parseInt(time, 10), initValues);
         } else {
-            binding.set('rolling', false);
+          binding.set('rolling', false);
         }
 
       }, time);
@@ -102,8 +102,7 @@ Dice.defaultProps = {
     y: 0,
     size: 10,
     startTime: 200,
-    rolls: 10,
-    selectable: false
+    rolls: 10
 };
 
 Dice.displayName = 'Dice';

@@ -8,7 +8,6 @@ var inlinePayloads = new Map();
 var sockets = {
   on(event, callback) {
     socket.on(event, (response) => {
-
         if(response && response._success === false) {
           window.alert('Error :' + response.message);
         } else {

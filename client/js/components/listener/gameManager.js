@@ -84,13 +84,14 @@ export default class GameManager extends Manager {
     var transaction = this._binding.atomically();
 
     if(playing.isMe()) {
+
       if(this._binding.get('step') === Globals.step.prepare) {
         transaction.set('game.message', 'Choose a colony then a path');
         board.setSelectableType('cities');
 
       } else {
-        transaction.set('message', 'Roll the dice');
-        transaction.set('dice.enabled', true);
+        transaction.set('game.message', 'Roll the dice');
+        transaction.set('game.dice.enabled', true);
       }
     } else {
         transaction.set('game.message', `Playing : ${playing.name}`);
