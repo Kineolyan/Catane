@@ -11,13 +11,45 @@ if(typeof global.window === 'undefined') {
       global.location = { protocol: 'http:', host: 'localhost:3000', port: 3000};
 }
 
-//import react after init jsdom 
+if (global.window.localStorage === undefined) {
+  global.window.localStorage = {
+    removeItem: function(key) {
+      delete this[key];
+    }
+  };
+}
+
+//better requestAnimationFrame polyfill than morearty (not overkilling the node process)
+if(global.window.requestAnimationFrame === undefined) {
+  var lastTime = 0;
+
+ 
+  global.window.requestAnimationFrame = function(callback) {
+    var currTime = Date.now();
+    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+    var id = setTimeout(() => { callback(currTime + timeToCall); }, timeToCall);
+    lastTime = currTime + timeToCall;
+    return id;
+  };
+ 
+  if (!global.window.cancelAnimationFrame) {
+    global.window.cancelAnimationFrame = (id) => {
+        clearTimeout(id);
+    };
+  }
+    
+}
+    
+
+
+//import react with morearty after init jsdom 
 import Morearty from 'morearty';
+
 
 var tests = {
   jsdom: jsdom,
   ctx: null,
-  getRenderedElements(inst, type) { //get react sub elements as an array for non-DOM elements
+  getRenderedElements(inst, type) { //get react sub elements as an array for non-DOM elements - ie react art elements
 
     if (!inst) { 
       return [];
@@ -29,7 +61,6 @@ var tests = {
     }
 
     var ret = (internal._currentElement.type.displayName && internal._currentElement.type.displayName === type.displayName) ? [internal._currentElement] : [];
-
     if(internal._renderedComponent) {
         ret = ret.concat(tests.getRenderedElements(internal._renderedComponent, type));
     } else if(internal._renderedChildren) {
@@ -65,7 +96,8 @@ var tests = {
               },
 
               players: Players,
-              step: Globals.step.init
+              step: Globals.step.init,
+              server: {id: 1, sid: 2}
     };
 
     if(init) {

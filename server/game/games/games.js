@@ -57,6 +57,24 @@ export default class Games {
 				throw new Error(`Unknown game ${gameId}`);
 			}
 		});
+
+		player.on('game:reload', () => {
+			var game = player.game;
+			if (game !== undefined && game.isStarted()) {
+				var description = game.reload();
+
+				// Add the description of the player
+				description.me = {
+					resources: player.resources
+				};
+
+				return description;
+			} else if (game === undefined) {
+				throw new Error(`Player ${player.id} has no associated game`);
+			} else {
+				throw new Error(`Player ${player.id} game is not started`);
+			}
+		});
 	}
 
 	/**

@@ -1,6 +1,6 @@
 'use strict';
 
-/* 
+/*
   React component containing the whole game interface
 */
 
@@ -20,7 +20,6 @@ var Row = reactBoostrap.Row;
 var Col = reactBoostrap.Col;
 
 export default class StartInterface extends MoreartyComponent {
-
   
   /**
    * Render the interface of the selection of game
@@ -36,13 +35,12 @@ export default class StartInterface extends MoreartyComponent {
             <Col md={4} mdOffset={4}>
               <Jumbotron>
                 <Player binding={binding} />
-
                 {this.renderChooseLobby()}
                 {this.renderInLobby()}
               </Jumbotron>
 
             </Col>
-        
+
           </Row>
         </Grid>
 

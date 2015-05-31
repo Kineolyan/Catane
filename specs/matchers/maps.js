@@ -28,6 +28,24 @@ var mapMatchers = {
 				return result;
 			}
 		}
+	},
+	toContainKeys: function(util, equalityTesters) {
+		return {
+			compare: function(actual, expectedKeys) {
+				var keys = Object.keys(actual);
+				var result = {
+					pass: keys.every(function(key) {
+						return util.contains(expectedKeys, key, equalityTesters);
+					})
+				};
+
+				result.message = 'Expecting ' + n_util.inspect(actual)
+					+ (result.pass === true ? ' not' : '')
+					+ ' to contain keys ' + n_util.inspect(expectedKeys);
+
+				return result;
+			}
+		}
 	}
 };
 

@@ -11,7 +11,7 @@
     "check": "blacklisted-gulp",
     "clean": "gulp clean",
     "do_the_thing": "gulp do_the_thing",
-    "postinstall": "node scripts/postinstall && bower install",
+    "postinstall": "node scripts/postinstall",
     "preinstall": "npm prune",
     "test": "gulp test",
     "watch": "gulp watch"
@@ -52,6 +52,8 @@
     "gulp-livereload": "^3.0.2",
     "gulp-remember": "^0.2.2",
     "gulp-sass": "^1.2.4",
+    "immutable": "^3.7.3",
+    "morearty": "^0.7.16",
     "react-art": "^0.13.0",
     "react-bootstrap": "^0.21.0",
     "request": "^2.51.0",

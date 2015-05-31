@@ -30,7 +30,8 @@ GLOBALS.socket = {
   playTurnNew: 'play:turn:new',
   playPickColony: 'play:pick:colony',
   playPickPath: 'play:pick:path',
-  playTurnEnd: 'play:turn:end'
+  playTurnEnd: 'play:turn:end',
+  reconnect: 'reconnect'
 
 };
 

@@ -1,6 +1,6 @@
 /* exported catane */
 /* Manual define exports since JS Hint does not handle well generators */
-import { shuffle } from '../../../util/arrays';
+import { shuffle } from 'server/util/arrays';
 
 const DICE_DISTRIBUTION = [ 11, 3, 6, 5, 4, 9, 10, 8, 4, 11, 12, 9, 10, 8, 3, 6, 2, 5 ];
 

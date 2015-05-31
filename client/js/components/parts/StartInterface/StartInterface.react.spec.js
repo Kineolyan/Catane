@@ -12,10 +12,10 @@ var utils = React.addons.TestUtils;
 describe('The start interface', function() {
 
   beforeEach(function() {
-    
     this._ctx = tests.getCtx();
     var StartInterfaceB = this._ctx.bootstrap(StartInterface);
     this.start= utils.renderIntoDocument(<StartInterfaceB />);
+
 
   });
 

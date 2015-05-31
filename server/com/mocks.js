@@ -1,5 +1,5 @@
 import Socket from './sockets';
-import { idGenerator } from '../game/util';
+import { idGenerator } from 'server/game/util.js';
 
 var SOCKETS = [];
 var socketId = idGenerator();

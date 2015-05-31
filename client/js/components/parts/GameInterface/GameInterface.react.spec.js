@@ -102,6 +102,8 @@ describe('A game interface', function() {
       expect(tests.getRenderedElements(this.game, Surface).length).toBe(1);
      
     });
+
+
   });
   
 

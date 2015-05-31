@@ -26,6 +26,8 @@ export default class GameInterface extends MoreartyComponent {
     var binding = this.getDefaultBinding();
 
     if(binding.get('game.board').toJS().board) {
+
+    
         return (
                   <Surface x={0} y={0} width={width} height={height}>
                       <DiceReact x={10} 

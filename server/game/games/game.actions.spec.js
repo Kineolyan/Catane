@@ -1,6 +1,6 @@
 import * as starter from './game-spec.starter.js';
-import Location from '../../elements/geo/location.js';
-import Path from '../../elements/geo/path.js';
+import Location from 'server/elements/geo/location.js';
+import Path from 'server/elements/geo/path.js';
 
 describe('Game actions', function() {
 

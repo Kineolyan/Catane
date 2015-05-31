@@ -53,5 +53,21 @@ describe('A room', function() {
       expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'start').length).toBe(0);
   });
 
+  it('should render the button with more than 2 players', function(done) {
+      var binding = this._ctx.getBinding();
+      var players = binding.get('players').toJS();
+      players.deleteAll();
+      players.createPlayer(1, 'bob', 'green');
+      players.createPlayer(2, 'tom', 'yellow');
+      players.createPlayer(3, 'mailis', 'blue');
+
+      binding.set('players', Immutable.fromJS(players));
+
+      setTimeout(() => {
+          expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'start').length).toBe(1);
+          done();
+      }, 200);
+  });
+
 
 });

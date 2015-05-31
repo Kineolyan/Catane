@@ -1,11 +1,12 @@
 'use strict';
 
-/* 
+/*
   React component containing the whole game interface
 */
 
 import StartInterface from './StartInterface/StartInterface.react';
 import GameInterface from './GameInterface/GameInterface.react';
+import Reconnect from './Reconnect.react.js';
 import React from 'react';
 import Globals from '../libs/globals';
 
@@ -32,7 +33,12 @@ export default class Game extends MoreartyComponent {
   renderStart() {
     var binding = this.getDefaultBinding();
     if(binding.get('step') === Globals.step.init) {
-        return (<StartInterface binding={binding} />);
+        return (
+          <div>
+            <Reconnect init={binding.get('server').toJS()} />
+            <StartInterface binding={binding} />;
+          </div>
+        );
     } else {
         return (<GameInterface binding={binding} />);
     }

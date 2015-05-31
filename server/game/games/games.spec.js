@@ -1,7 +1,7 @@
 import { MockSocket } from '../../com/mocks';
 
 import Games from './games';
-import Player from '../players/player';
+import Player from 'server/game/players/player';
 
 describe('Games', function() {
 	beforeEach(function() {
@@ -23,7 +23,7 @@ describe('Games', function() {
 
 		// Channels listened
 		[
-			'game:create', 'game:list', 'game:join', 'game:start', 'game:quit'
+			'game:create', 'game:list', 'game:join', 'game:start', 'game:quit', 'game:reload'
 		].forEach(function(channel) {
 			it(`makes client listen to "${channel}"`, function() {
 				expect(this.client).toBeListeningTo(channel);
@@ -248,7 +248,7 @@ describe('Games', function() {
 					});
 
 					it('contains all board elements', function() {
-						expect(this.board).toHaveKeys([ 'tiles', 'cities', 'paths' ]);
+						expect(this.board).toHaveKeys([ 'tiles', 'cities', 'paths', 'thieves' ]);
 					});
 
 					it('describes tiles', function() {
@@ -286,6 +286,11 @@ describe('Games', function() {
 						expect(path.from.x).toBeAnInteger();
 						expect(path.to.y).toBeAnInteger();
 						expect(path.to.x).toBeAnInteger();
+					});
+
+					it('gives thieves position', function() {
+						// At start, thieves are in the desert, located by default at the center of the map
+						expect(this.board.thieves).toEqual({ x: 0, y: 0 });
 					});
 				});
 

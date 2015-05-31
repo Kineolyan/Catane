@@ -74,7 +74,6 @@ export default class Room extends MoreartyComponent {
     Socket.emit(Globals.socket.gameQuit);
   }
 
-
 }
 
 Room.displayName = 'Room';

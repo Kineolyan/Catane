@@ -1,12 +1,12 @@
 import { MockSocket } from '../../com/mocks';
 
 import Server from '../../server';
-import Location from '../../elements/geo/location.js';
+import Location from 'server/elements/geo/location.js';
 import { idGenerator } from '../util.js';
-import Player from '../players/player.js';
+import Player from 'server/game/players/player.js';
 // Managers
 import Games from './games.js';
-import Plays from '../plays/plays.js';
+import Plays from 'server/game/plays/plays.js';
 
 export const PICK_ARGS = [
 		// Outer city ring
@@ -35,7 +35,7 @@ var server = new Server();
 export function createPlayer(name) {
 	var client = new MockSocket();
 	server.connect(client.toSocket());
-	var id = client.lastMessage('init').id;
+	var id = client.lastMessage('init').player.id;
 
 	var info = { client: client, id: id };
 	if (name !== undefined) {

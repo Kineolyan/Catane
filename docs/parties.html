@@ -49,13 +49,22 @@
   </div>
 
   <div class="diagram">
-    Title: Dénmarrer une partie
+    Title: Démarrer une partie
     participant Game
     participant Serveur
     participant All
     Game->Serveur: ws/game:start\ngame_id
     Note left of All: Notifies players of the game\nSee play documentation
     Serveur->All: ws/game:start\n{ board: { tiles: [...], cities: [...], paths: [...] } },\nplayers: [ id1, id2, ... ] }
+  </div>
+
+  <div class="diagram">
+    Title: Recharger une partie
+    participant Joueur
+    participant Serveur
+    Joueur->Serveur: ws/game:reload
+    Serveur->Joueur: ws/game:reload\n{ board: { tiles: [...], cities: [...], paths: [...], thieves: { x: 0, y: 1 } } },\nplayers: [ { id: id1, name: n1 }, ... ], currentPlayer: idn\nme: { resources: {...} } }
+    Note left of Serveur: Erreur si le joueur n'est pas dans une partie en cours
   </div>
 
   <script src="libs/jquery.min.js"></script>

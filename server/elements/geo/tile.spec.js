@@ -2,7 +2,7 @@ import Tile from './tile';
 
 import Location from './location';
 import City from './city';
-import Player from '../../game/players/player.js';
+import Player from 'server/game/players/player.js';
 import { MockSocket } from '../../com/mocks.js';
 
 describe('Tile', function() {

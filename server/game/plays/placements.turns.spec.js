@@ -1,4 +1,4 @@
-import * as starter from '../games/game-spec.starter.js';
+import * as starter from 'server/game/games/game-spec.starter.js';
 import * as maps from '../../util/maps.js';
 
 describe('Placement turn management', function() {
@@ -9,14 +9,8 @@ describe('Placement turn management', function() {
 		this.startGame = function() {
 			this.game.start();
 
-			var firstPlayer = this.players[0].client.lastMessage('play:turn:new').player;
-			for (let p of this.players) {
-				if (p.id === firstPlayer) {
-					this.p1 = p;
-				} else {
-					this.p2 = p;
-				}
-			}
+			this.p1 = this.game.players[0];
+			this.p2 = this.game.players[1];
 		};
 	});
 

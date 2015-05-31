@@ -20,8 +20,8 @@ Socket.on(Globals.socket.init, (data) => {
     console.log('game start !');
 
     Players.deleteAll();
-    Players.myId = parseInt(data.id, 10);
-    Players.createPlayer(Players.myId, data.name);
+    Players.myId = parseInt(data.player.id, 10);
+    Players.createPlayer(Players.myId, data.player.name);
 
     var ctx = Morearty.createContext({
       initialState: {
@@ -37,11 +37,12 @@ Socket.on(Globals.socket.init, (data) => {
             rolling: false, 
             values: [1,1]
           },
-          message: 'Hello'
+          message: data.message
         },
 
         players: Players,
-        step: Globals.step.init
+        step: Globals.step.init,
+        server: data.server
       }
     });
 

@@ -1,12 +1,19 @@
 'use strict';
 
 exports.appServer = function() {
+	// Sets the paths for absolute requires
+	var path = require('path');
+	process.env.NODE_PATH = path.join(__dirname, 'build');
+	// Resets the module paths
+	require('module').Module._initPaths();
+
 	// Requiring this polyfill to have a fully ES6 environment (Map, Symbol, ...)
 	require("babel/register");
 
 	// Create environment
 	var logging = require('./build/server/util/log/logger');
 	global.logger = logging.createLogger();
+	global.TIME_TO_RECONNECT = 15 /*min*/ * 60 /*sec*/ * 1000;
 
 	// Create application
 	var Server = require("./build/server/server");

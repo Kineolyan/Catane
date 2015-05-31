@@ -1,5 +1,5 @@
 import * as maps from '../../util/maps.js';
-import Path from '../../elements/geo/path.js';
+import Path from 'server/elements/geo/path.js';
 
 export class AReferee {
 	constructor(board, players) {

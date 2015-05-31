@@ -1,6 +1,6 @@
 import { RoundGenerator } from './maps';
-import Location from '../../geo/location';
-import City from '../../geo/city';
+import Location from 'server/elements/geo/location';
+import City from 'server/elements/geo/city';
 
 describe('The predefined map generators', function() {
 	describe('RoundGenerator', function() {
