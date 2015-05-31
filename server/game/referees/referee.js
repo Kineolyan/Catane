@@ -6,8 +6,6 @@ export class AReferee {
 		this._board = board;
 		this._players = players;
 		this._currentPlayerIdx = 0;
-
-		this.startTurn();
 	}
 
 	get currentPlayer() {
@@ -136,8 +134,10 @@ const PLACEMENT_STEPS = {
 
 export class PlacementReferee extends AReferee {
 	constructor(board, players) {
-		this._placementIteration = 0;
 		super(board, players);
+		this._placementIteration = 0;
+
+		this.startTurn();
 	}
 
 	startTurn() {
@@ -205,6 +205,8 @@ export const ResourceCosts = {
 export class GameReferee extends AReferee {
 	constructor(board, players) {
 		super(board, players);
+
+		this.startTurn();
 	}
 
 	canRollDice() {

@@ -1,58 +1,15 @@
 import jsdom from 'jsdom';
+import Morearty from 'morearty';
 
 import Globals from 'client/js/components/libs/globals';
 import Players from 'client/js/components/common/players';
-
-
-jasmine.getEnv().defaultTimeoutInterval = 1000;
-if(typeof global.window === 'undefined') {
-      global.window = jsdom.jsdom('<html><body></body></html>').defaultView;// jshint ignore:line
-      global.document = global.window.document;// jshint ignore:line
-      global.navigator = global.window.navigator;// jshint ignore:line
-      global.location = { protocol: 'http:', host: 'localhost:3000', port: 3000};
-}
-
-if (global.window.localStorage === undefined) {
-  global.window.localStorage = {
-    removeItem: function(key) {
-      delete this[key];
-    }
-  };
-}
-
-//better requestAnimationFrame polyfill than morearty (not overkilling the node process)
-if(global.window.requestAnimationFrame === undefined) {
-  var lastTime = 0;
-
- 
-  global.window.requestAnimationFrame = function(callback) {
-    var currTime = Date.now();
-    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-    var id = setTimeout(() => { callback(currTime + timeToCall); }, timeToCall);
-    lastTime = currTime + timeToCall;
-    return id;
-  };
- 
-  if (!global.window.cancelAnimationFrame) {
-    global.window.cancelAnimationFrame = (id) => {
-        clearTimeout(id);
-    };
-  }
-    
-}
-    
-
-
-//import react with morearty after init jsdom 
-import Morearty from 'morearty';
-
 
 var tests = {
   jsdom: jsdom,
   ctx: null,
   getRenderedElements(inst, type) { //get react sub elements as an array for non-DOM elements - ie react art elements
 
-    if (!inst) { 
+    if (!inst) {
       return [];
     }
 
@@ -90,7 +47,7 @@ var tests = {
                 board: [],
                 dice: {
                   enabled: false,
-                  rolling: false, 
+                  rolling: false,
                   values: [1,1]
                 },
                 message: 'Hello'
@@ -112,6 +69,5 @@ var tests = {
     return this.ctx;
   }
 };
-
 
 export default tests;

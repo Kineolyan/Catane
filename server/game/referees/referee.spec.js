@@ -9,9 +9,11 @@ import { RoundGenerator } from 'server/elements/boards/generators/maps.js';
 
 class TestReferee extends AReferee {
 	constructor(board, players) {
-		this._turn = 0;
 		super(board, players);
+		this._turn = 0;
 		this._readyToEnd = false;
+
+		this.startTurn();
 	}
 
 	get turn() {

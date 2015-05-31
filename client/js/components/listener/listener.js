@@ -1,5 +1,5 @@
 import StartManager from 'client/js/components/listener/startManager';
-import GameManager from 'client/js/components/listener/GameManager';
+import GameManager from 'client/js/components/listener/gameManager';
 
 export default class Listener {
 
