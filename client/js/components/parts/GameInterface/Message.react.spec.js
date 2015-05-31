@@ -1,8 +1,9 @@
-import tests from '../../libs/test';
+import tests from 'client/js/components/libs/test';
 
 import React from 'react/addons';
-import Message from './Message.react';
 import {Text} from 'react-art';
+
+import Message from 'client/js/components/parts/GameInterface/Message.react';
 
 var utils = React.addons.TestUtils;
 

@@ -7,7 +7,7 @@
 import React from 'react';
 import {Group, Text} from 'react-art';
 
-import MoreartyComponent from '../MoreartyComponent.react';
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 export default class Message extends MoreartyComponent {
   

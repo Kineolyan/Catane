@@ -1,9 +1,9 @@
-import tests from '../../libs/test';
+import tests from 'client/js/components/libs/test';
 
 import React from 'react/addons';
-import Room from './Room.react';
-
 import Immutable from 'immutable';
+
+import Room from 'client/js/components/parts/StartInterface/Room.react';
 
 var utils = React.addons.TestUtils;
 

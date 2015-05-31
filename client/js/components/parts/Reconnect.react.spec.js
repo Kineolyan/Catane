@@ -1,8 +1,9 @@
-import '../libs/test';
+import 'client/js/components/libs/test';
 
 import React from 'react/addons';
-import Reconnect from './reconnect.react.js';
 import reactBootstrap from 'react-bootstrap';
+
+import Reconnect from 'client/js/components/parts/Reconnect.react.js';
 
 var Button = reactBootstrap.Button;
 var utils = React.addons.TestUtils;

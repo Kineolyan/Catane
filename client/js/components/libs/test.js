@@ -1,6 +1,7 @@
 import jsdom from 'jsdom';
-import Globals from './globals';
-import Players from '../common/players';
+
+import Globals from 'client/js/components/libs/globals';
+import Players from 'client/js/components/common/players';
 
 
 jasmine.getEnv().defaultTimeoutInterval = 1000;

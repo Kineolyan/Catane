@@ -1,6 +1,7 @@
 'use strict';
 
 import sock from 'socket.io-client';
+
 var socket = sock();
 
 var inlinePayloads = new Map();

@@ -1,13 +1,13 @@
-import tests from '../../../libs/test';
-import MapHelper from '../../../common/map';
+import tests from 'client/js/components/libs/test';
+import MapHelper from 'client/js/components/common/map';
 
 import React from 'react/addons';
 import Immutable from 'immutable';
 
-import MapReact from './Map.react';
-import Tile from './Tile.react';
-import Path from './Path.react';
-import City from './City.react';
+import MapReact from 'client/js/components/parts/GameInterface/Map/Map.react';
+import Tile from 'client/js/components/parts/GameInterface/Map/Tile.react';
+import Path from 'client/js/components/parts/GameInterface/Map/Path.react';
+import City from 'client/js/components/parts/GameInterface/Map/City.react';
 
 var utils = React.addons.TestUtils;
 

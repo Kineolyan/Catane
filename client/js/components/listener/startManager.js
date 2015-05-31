@@ -1,8 +1,9 @@
-import Globals from '../libs/globals';
 import Immutable from 'immutable';
-import Manager from './manager';
-import Socket from '../libs/socket';
-import MapHelper from '../common/map';
+
+import Globals from 'client/js/components/libs/globals';
+import Manager from 'client/js/components/listener/manager';
+import Socket from 'client/js/components/libs/socket';
+import MapHelper from 'client/js/components/common/map';
 
 export default class StartManager extends Manager {
 

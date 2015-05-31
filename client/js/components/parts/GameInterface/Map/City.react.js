@@ -4,12 +4,13 @@
 /*
   One city of the game
 */
+import Socket from 'client/js/components/libs/socket';
+import Globals from 'client/js/components/libs/globals';
 
 import React from 'react';
-import Element from './Element.react';
 import Circle from 'react-art/shapes/circle';
-import Socket from '../../../libs/socket';
-import Globals from '../../../libs/globals';
+
+import Element from 'client/js/components/parts/GameInterface/Map/Element.react';
 
 export default class City extends React.Component {
 

@@ -1,9 +1,10 @@
-import tests from '../libs/test';
-import Globals from '../libs/globals';
+import tests from 'client/js/components/libs/test';
+import Globals from 'client/js/components/libs/globals';
 
 import React from 'react/addons';
-import Game from './Game.react';
-import StartInterface from './StartInterface/StartInterface.react';
+
+import Game from 'client/js/components/parts/Game.react';
+import StartInterface from 'client/js/components/parts/StartInterface/StartInterface.react';
 
 var utils = React.addons.TestUtils;
 

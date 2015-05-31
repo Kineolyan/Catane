@@ -1,11 +1,12 @@
-import tests from '../../../libs/test';
+import tests from 'client/js/components/libs/test';
 
 import React from 'react/addons';
-import PlayersInfo from './PlayersInfo.react';
-import Deck from './Deck.react';
-import OtherPlayer from './OtherPlayer.react';
 import {Text} from 'react-art';
 import Immutable from 'immutable';
+
+import PlayersInfo from 'client/js/components/parts/GameInterface/PlayersInfo/PlayersInfo.react';
+import Deck from 'client/js/components/parts/GameInterface/PlayersInfo/Deck.react';
+import OtherPlayer from 'client/js/components/parts/GameInterface/PlayersInfo/OtherPlayer.react';
 
 var utils = React.addons.TestUtils;
 

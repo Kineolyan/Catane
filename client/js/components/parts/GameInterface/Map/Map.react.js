@@ -7,11 +7,10 @@
 import React from 'react';
 import {Group} from 'react-art';
 
-import Tile from './Tile.react';
-import City from './City.react';
-import Path from './Path.react';
-
-import MoreartyComponent from '../../MoreartyComponent.react';
+import Tile from 'client/js/components/parts/GameInterface/Map/Tile.react';
+import City from 'client/js/components/parts/GameInterface/Map/City.react';
+import Path from 'client/js/components/parts/GameInterface/Map/Path.react';
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 export default class MapR extends MoreartyComponent {
 

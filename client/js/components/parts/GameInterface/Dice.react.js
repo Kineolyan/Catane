@@ -4,15 +4,15 @@
   The dices 
   TODO: Make a x dice
 */
+import Globals from 'client/js/components/libs/globals';
+import Socket from 'client/js/components/libs/socket';
 
 import React from 'react';
 import {Group, Text} from 'react-art';
 import Rectangle from 'react-art/shapes/rectangle';
-
-import Globals from '../../libs/globals';
-import Socket from '../../libs/socket';
-import MoreartyComponent from '../MoreartyComponent.react';
 import Immutable from 'immutable';
+
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 export default class Dice extends MoreartyComponent {
 

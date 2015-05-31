@@ -4,13 +4,15 @@
   React component containing the whole game interface
 */
 
-import StartInterface from './StartInterface/StartInterface.react';
-import GameInterface from './GameInterface/GameInterface.react';
-import Reconnect from './Reconnect.react.js';
-import React from 'react';
-import Globals from '../libs/globals';
 
-import MoreartyComponent from './MoreartyComponent.react';
+import Globals from 'client/js/components/libs/globals';
+
+import React from 'react';
+
+import StartInterface from 'client/js/components/parts/StartInterface/StartInterface.react';
+import GameInterface from 'client/js/components/parts/GameInterface/GameInterface.react';
+import Reconnect from 'client/js/components/parts/Reconnect.react.js';
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 export default class Game extends MoreartyComponent {
 

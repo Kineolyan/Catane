@@ -1,8 +1,9 @@
-import tests from '../../libs/test';
+import tests from 'client/js/components/libs/test';
 
 import React from 'react/addons';
-import Lobby from './Lobby.react';
 import Immutable from 'immutable';
+
+import Lobby from 'client/js/components/parts/StartInterface/Lobby.react';
 
 var utils = React.addons.TestUtils;
 

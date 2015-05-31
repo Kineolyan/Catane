@@ -5,11 +5,11 @@
 */
 
 import React from 'react';
-import Socket from '../../libs/socket';
-import Globals from '../../libs/globals';
+import Socket from 'client/js/components/libs/socket';
+import Globals from 'client/js/components/libs/globals';
 import reactBootstrap from 'react-bootstrap';
 
-import MoreartyComponent from '../MoreartyComponent.react';
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;

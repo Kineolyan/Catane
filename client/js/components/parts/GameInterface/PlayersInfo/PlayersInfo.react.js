@@ -8,10 +8,9 @@ import React from 'react';
 import {Group, Text} from 'react-art';
 import Circle from 'react-art/shapes/circle';
 
-import Deck from './Deck.react';
-import OtherPlayer from './OtherPlayer.react';
-
-import MoreartyComponent from '../../MoreartyComponent.react';
+import Deck from 'client/js/components/parts/GameInterface/PlayersInfo/Deck.react';
+import OtherPlayer from 'client/js/components/parts/GameInterface/PlayersInfo/OtherPlayer.react';
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 export default class PlayersInfo extends MoreartyComponent {
 

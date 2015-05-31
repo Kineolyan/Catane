@@ -1,9 +1,8 @@
+import Socket from 'client/js/components/libs/socket.js';
+import Globals from 'client/js/components/libs/globals';
 
 import React from 'react';
-import Socket from '../libs/socket.js';
 import reactBootstrap from 'react-bootstrap';
-
-import Globals from '../libs/globals';
 
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;

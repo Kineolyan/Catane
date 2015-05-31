@@ -1,11 +1,11 @@
-import tests from '../../libs/test';
+import tests from 'client/js/components/libs/test';
 
 import React from 'react/addons';
 
-import StartInterface from './StartInterface.react';
-import Room from './Room.react';
-import Lobby from './Lobby.react';
-import Player from './Player.react';
+import StartInterface from 'client/js/components/parts/StartInterface/StartInterface.react';
+import Room from 'client/js/components/parts/StartInterface/Room.react';
+import Lobby from 'client/js/components/parts/StartInterface/Lobby.react';
+import Player from 'client/js/components/parts/StartInterface/Player.react';
 
 var utils = React.addons.TestUtils;
 

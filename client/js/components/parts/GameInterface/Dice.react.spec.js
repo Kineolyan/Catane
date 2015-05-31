@@ -1,9 +1,10 @@
-import tests from '../../libs/test';
+import tests from 'client/js/components/libs/test';
 
 import React from 'react/addons';
-import Dice from './Dice.react';
 import {Text} from 'react-art';
 import Rectangle from 'react-art/shapes/rectangle';
+
+import Dice from 'client/js/components/parts/GameInterface/Dice.react';
 
 var utils = React.addons.TestUtils;
 

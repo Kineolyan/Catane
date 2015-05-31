@@ -6,7 +6,6 @@
 
 import React from 'react';
 import {Group, Text} from 'react-art';
-
 import Rectangle from 'react-art/shapes/rectangle';
 
 export default class OtherPlayer extends React.Component {

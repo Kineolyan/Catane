@@ -7,14 +7,15 @@
 import 'babel/register';
 //declare socket first
 
-import Socket from './libs/socket';
-import Globals from './libs/globals';
+import Socket from 'client/js/components/libs/socket';
+import Globals from 'client/js/components/libs/globals';
+import Listener from 'client/js/components/listener/listener';
+import Players from 'client/js/components/common/players';
 
 import React from 'react';
-import GameReact from './parts/Game.react';
 import Morearty from 'morearty';
-import Listener from './listener/listener';
-import Players from './common/players';
+
+import GameReact from 'client/js/components/parts/Game.react';
 
 Socket.on(Globals.socket.init, (data) => {
     console.log('game start !');

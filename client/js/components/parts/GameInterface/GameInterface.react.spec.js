@@ -1,12 +1,11 @@
-import tests from '../../libs/test';
+import tests from 'client/js/components/libs/test';
+import MapHelper from 'client/js/components/common/map';
 
 import React from 'react/addons';
-import GameInterface from './GameInterface.react';
-
-import MapHelper from '../../common/map';
 
 import Immutable from 'immutable';
 import {Surface} from 'react-art';
+import GameInterface from 'client/js/components/parts/GameInterface/GameInterface.react';
 
 var utils = React.addons.TestUtils;
 

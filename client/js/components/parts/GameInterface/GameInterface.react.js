@@ -6,12 +6,12 @@
 
 import React from 'react';
 import {Surface} from 'react-art';
-import MapReact from './Map/Map.react';
-import DiceReact from './Dice.react';
-import PlayersInfo from './PlayersInfo/PlayersInfo.react';
-import Message from './Message.react';
 
-import MoreartyComponent from '../MoreartyComponent.react';
+import MapReact from 'client/js/components/parts/GameInterface/Map/Map.react';
+import DiceReact from 'client/js/components/parts/GameInterface/Dice.react';
+import PlayersInfo from 'client/js/components/parts/GameInterface/PlayersInfo/PlayersInfo.react';
+import Message from 'client/js/components/parts/GameInterface/Message.react';
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 export default class GameInterface extends MoreartyComponent {
 

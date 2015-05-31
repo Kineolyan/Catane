@@ -4,15 +4,13 @@
   React component containing the whole game interface
 */
 
-import Player from './Player.react';
-import Lobby from './Lobby.react';
 import React from 'react';
-
-import Room from './Room.react';
 import reactBoostrap from 'react-bootstrap';
 
-import MoreartyComponent from '../MoreartyComponent.react';
-
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
+import Room from 'client/js/components/parts/StartInterface/Room.react';
+import Player from 'client/js/components/parts/StartInterface/Player.react';
+import Lobby from 'client/js/components/parts/StartInterface/Lobby.react';
 
 var Jumbotron = reactBoostrap.Jumbotron;
 var Grid = reactBoostrap.Grid;

@@ -1,4 +1,4 @@
-import Socket from '../libs/socket';
+import Socket from 'client/js/components/libs/socket';
 
 export default class Manager {
 

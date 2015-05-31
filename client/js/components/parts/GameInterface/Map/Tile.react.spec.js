@@ -1,11 +1,11 @@
-import tests from '../../../libs/test';
+import tests from 'client/js/components/libs/test';
+import MapHelper from 'client/js/components/common/map';
+import Globals from 'client/js/components/libs/globals';
 
 import React from 'react/addons';
-
-import MapHelper from '../../../common/map';
-import Tile from './Tile.react';
 import {Text} from 'react-art';
-import Globals from '../../../libs/globals';
+
+import Tile from 'client/js/components/parts/GameInterface/Map/Tile.react';
 
 var utils = React.addons.TestUtils;
 

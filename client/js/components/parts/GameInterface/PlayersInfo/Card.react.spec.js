@@ -1,9 +1,10 @@
-import tests from '../../../libs/test';
-import Globals from '../../../libs/globals';
+import tests from 'client/js/components/libs/test';
+import Globals from 'client/js/components/libs/globals';
 
 import React from 'react/addons';
-import Card from './Card.react';
 import {Text} from 'react-art';
+
+import Card from 'client/js/components/parts/GameInterface/PlayersInfo/Card.react';
 
 var utils = React.addons.TestUtils;
 

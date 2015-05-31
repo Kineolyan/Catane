@@ -1,11 +1,12 @@
-import tests from '../../../libs/test';
-import Globals from '../../../libs/globals';
+import tests from 'client/js/components/libs/test';
+import Globals from 'client/js/components/libs/globals';
 
 import React from 'react/addons';
-var utils = React.addons.TestUtils;
 
-import Deck from './Deck.react';
-import Card from './Card.react';
+import Deck from 'client/js/components/parts/GameInterface/PlayersInfo/Deck.react';
+import Card from 'client/js/components/parts/GameInterface/PlayersInfo/Card.react';
+
+var utils = React.addons.TestUtils;
 
 describe('A deck', function() {
 

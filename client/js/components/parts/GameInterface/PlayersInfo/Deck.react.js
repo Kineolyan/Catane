@@ -6,7 +6,8 @@
 
 import React from 'react';
 import {Group} from 'react-art';
-import Card from './Card.react';
+
+import Card from 'client/js/components/parts/GameInterface/PlayersInfo/Card.react';
 
 export default class Deck extends React.Component {
   

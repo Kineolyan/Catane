@@ -1,9 +1,10 @@
-import '../../../libs/test';
+import 'client/js/components/libs/test';
 
 import React from 'react/addons';
-var utils = React.addons.TestUtils;
 
-import OtherPlayer from './OtherPlayer.react';
+import OtherPlayer from 'client/js/components/parts/GameInterface/PlayersInfo/OtherPlayer.react';
+
+var utils = React.addons.TestUtils;
 
 describe('A card representing an other player', function() {
 
