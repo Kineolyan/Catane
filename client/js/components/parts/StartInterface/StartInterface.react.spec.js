@@ -3,7 +3,6 @@ import tests from '../../libs/test';
 import React from 'react/addons';
 
 import StartInterface from './StartInterface.react';
-import Globals from '../../libs/globals';
 import Room from './Room.react';
 import Lobby from './Lobby.react';
 import Player from './Player.react';

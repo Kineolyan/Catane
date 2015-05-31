@@ -1,6 +1,8 @@
 import tests from '../../../libs/test';
+import MapHelper from '../../../common/map';
 
 import React from 'react/addons';
+import Immutable from 'immutable';
 
 import MapReact from './Map.react';
 import Tile from './Tile.react';
@@ -12,8 +14,10 @@ var utils = React.addons.TestUtils;
 
 describe('A basic map', function() {
 
-  beforeEach(function() {
-    this.board = { tiles:[ { x: 0, y: 0, resource: 'tuile', diceValue: 1  },
+  beforeAll(function() {
+    var self = this;
+
+    this.initBoard = { tiles:[ { x: 0, y: 0, resource: 'tuile', diceValue: 1  },
                          { x: 1, y: 1, resource: 'tuile', diceValue: 1  },
                          { x: 2, y: -1, resource: 'tuile', diceValue: 1  },
                          { x: 1, y: -2, resource: 'tuile', diceValue: 1  },
@@ -77,20 +81,35 @@ describe('A basic map', function() {
                          { from: { x: -2, y: 2 }, to: { x: -2, y: 3 } },
                          { from: { x: -2, y: 3 }, to: { x: -1, y: 3 } } ] };
 
-    this.map = utils.renderIntoDocument(<MapReact board={this.board} margin={10} />);
+    this.board = MapHelper.init(this.initBoard);
+    
+    this._ctx = tests.getCtx({board: Immutable.fromJS(this.board)});
+
+    var proxy = React.createClass({
+
+      render() {
+        return (<MapReact binding={self._ctx.getBinding().sub('board')} />);
+      }
+
+    });
+
+    var MapB = this._ctx.bootstrap(proxy);
+
+    this.map = utils.renderIntoDocument(<MapB />);
+
 
   });
 
   it('should render the tiles', function() {
-    expect(tests.getRenderedElements(this.map, Tile).length).toEqual(this.board.tiles.length);
+    expect(tests.getRenderedElements(this.map, Tile).length).toEqual(this.initBoard.tiles.length);
   });
 
   it('should render the cities', function() {
-    expect(tests.getRenderedElements(this.map, City).length).toEqual(this.board.cities.length);
+    expect(tests.getRenderedElements(this.map, City).length).toEqual(this.initBoard.cities.length);
   });
 
   it('should render the paths', function() {
-    expect(tests.getRenderedElements(this.map, Path).length).toEqual(this.board.paths.length);
+    expect(tests.getRenderedElements(this.map, Path).length).toEqual(this.initBoard.paths.length);
   });
 
 });

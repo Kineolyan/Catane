@@ -1,31 +1,108 @@
-import '../../libs/test';
+import tests from '../../libs/test';
 
 import React from 'react/addons';
 import GameInterface from './GameInterface.react';
-import MapReact from './Map/Map.react';
+
+import MapHelper from '../../common/map';
+
+import Immutable from 'immutable';
+import {Surface} from 'react-art';
 
 var utils = React.addons.TestUtils;
 
 describe('A game interface', function() {
 
-  beforeEach(function() {
-    var board = {};
+  beforeAll(function() {
+    this._ctx = tests.getCtx();
 
-    this.game = utils.renderIntoDocument(<GameInterface board={board} />);
+    var GameInterfaceB = this._ctx.bootstrap(GameInterface);
+
+    this.game= utils.renderIntoDocument(<GameInterfaceB />);
 
   });
 
-  it('should have the full width', function() {
-    expect(this.game.state.width).toEqual(window.innerWidth);
+  it('should not render with no board', function() {
+    expect(tests.getRenderedElements(this.message, Surface).length).toEqual(0);
   });
 
-  it('should have the full height', function() {
-    expect(this.game.state.height).toEqual(window.innerHeight);
-  });
+  describe('with a board', function() {
 
-  it('should have the map', function() {
-    expect(this.game.refs.map).toBeDefined();
-    expect(utils.isCompositeComponentWithType(this.game.refs.map, MapReact)).toBe(true);
+    beforeAll(function(done) {
+      this.board = { tiles:[ { x: 0, y: 0, resource: 'tuile', diceValue: 1  },
+                         { x: 1, y: 1, resource: 'tuile', diceValue: 1  },
+                         { x: 2, y: -1, resource: 'tuile', diceValue: 1  },
+                         { x: 1, y: -2, resource: 'tuile', diceValue: 1  },
+                         { x: -1, y: -1, resource: 'tuile', diceValue: 1  },
+                         { x: -2, y: 1, resource: 'tuile', diceValue: 1  },
+                         { x: -1, y: 2, resource: 'tuile', diceValue: 1  } ],
+                      cities:
+                       [ { x: 0, y: 1 },
+                         { x: 1, y: 0 },
+                         { x: 1, y: -1 },
+                         { x: 0, y: -1 },
+                         { x: -1, y: 0 },
+                         { x: -1, y: 1 },
+                         { x: 1, y: 2 },
+                         { x: 2, y: 1 },
+                         { x: 2, y: 0 },
+                         { x: 0, y: 2 },
+                         { x: 3, y: -1 },
+                         { x: 3, y: -2 },
+                         { x: 2, y: -2 },
+                         { x: 2, y: -3 },
+                         { x: 1, y: -3 },
+                         { x: 0, y: -2 },
+                         { x: -1, y: -2 },
+                         { x: -2, y: -1 },
+                         { x: -2, y: 0 },
+                         { x: -2, y: 2 },
+                         { x: -3, y: 1 },
+                         { x: -3, y: 2 },
+                         { x: -1, y: 3 },
+                         { x: -2, y: 3 } ],
+                      paths:
+                       [ { from: { x: 1, y: 0 }, to: { x: 0, y: 1 } },
+                         { from: { x: 1, y: -1 }, to: { x: 1, y: 0 } },
+                         { from: { x: 0, y: -1 }, to: { x: 1, y: -1 } },
+                         { from: { x: 0, y: -1 }, to: { x: -1, y: 0 } },
+                         { from: { x: -1, y: 0 }, to: { x: -1, y: 1 } },
+                         { from: { x: -1, y: 1 }, to: { x: 0, y: 1 } },
+                         { from: { x: 2, y: 1 }, to: { x: 1, y: 2 } },
+                         { from: { x: 2, y: 0 }, to: { x: 2, y: 1 } },
+                         { from: { x: 1, y: 0 }, to: { x: 2, y: 0 } },
+                         { from: { x: 0, y: 1 }, to: { x: 0, y: 2 } },
+                         { from: { x: 0, y: 2 }, to: { x: 1, y: 2 } },
+                         { from: { x: 3, y: -1 }, to: { x: 2, y: 0 } },
+                         { from: { x: 3, y: -2 }, to: { x: 3, y: -1 } },
+                         { from: { x: 2, y: -2 }, to: { x: 3, y: -2 } },
+                         { from: { x: 2, y: -2 }, to: { x: 1, y: -1 } },
+                         { from: { x: 2, y: -3 }, to: { x: 2, y: -2 } },
+                         { from: { x: 1, y: -3 }, to: { x: 2, y: -3 } },
+                         { from: { x: 1, y: -3 }, to: { x: 0, y: -2 } },
+                         { from: { x: 0, y: -2 }, to: { x: 0, y: -1 } },
+                         { from: { x: -1, y: -2 }, to: { x: 0, y: -2 } },
+                         { from: { x: -1, y: -2 }, to: { x: -2, y: -1 } },
+                         { from: { x: -2, y: -1 }, to: { x: -2, y: 0 } },
+                         { from: { x: -2, y: 0 }, to: { x: -1, y: 0 } },
+                         { from: { x: -1, y: 1 }, to: { x: -2, y: 2 } },
+                         { from: { x: -2, y: 0 }, to: { x: -3, y: 1 } },
+                         { from: { x: -3, y: 1 }, to: { x: -3, y: 2 } },
+                         { from: { x: -3, y: 2 }, to: { x: -2, y: 2 } },
+                         { from: { x: 0, y: 2 }, to: { x: -1, y: 3 } },
+                         { from: { x: -2, y: 2 }, to: { x: -2, y: 3 } },
+                         { from: { x: -2, y: 3 }, to: { x: -1, y: 3 } } ] };
+
+      this._ctx.getBinding().set('game.board', Immutable.fromJS(MapHelper.init(this.board)));
+      setTimeout(() => {
+          done();
+      }, 200);
+    });
+
+    it('should have the board', function() {
+      expect(tests.getRenderedElements(this.game, Surface).length).toBe(1);
+     
+    });
   });
+  
 
 });

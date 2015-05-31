@@ -11,11 +11,13 @@ var utils = React.addons.TestUtils;
 
 describe('A tile', function() {
 
-  beforeEach(function() {
-    var val = { x: 0, y: 0, resource: 'tuile', diceValue: 1 };
-    var data = new MapHelper({ tiles:[val]});
+  beforeAll(function() {
 
-    this.tile = utils.renderIntoDocument(<Tile tile={data.tiles.get(JSON.stringify(val))} />);
+    var key = { x: 0, y: 0, resource: 'tuile', diceValue: 1 };
+    this.val = MapHelper.init({tiles: [key]}).getBoard();
+
+  
+    this.tile = utils.renderIntoDocument(<Tile key={0} tile={this.val.tiles.get(JSON.stringify(key))} />);
   });
 
   it('should represent the value of the dice', function() {
@@ -30,9 +32,10 @@ describe('A tile', function() {
 
   describe('Desert tile', function() {
     beforeEach(function() {
-      var val = { x: 0, y: 0, resource: 'desert', diceValue: null };
-      var data = new MapHelper({ tiles:[val]});
-      this.desertTile = utils.renderIntoDocument(<Tile tile={ data.tiles.get(JSON.stringify(val)) } />);
+      var key = { x: 0, y: 0, resource: 'desert', diceValue: null };
+      this.val = MapHelper.init({tiles: [key]}).getBoard();
+  
+      this.desertTile = utils.renderIntoDocument(<Tile key={0} tile={this.val.tiles.get(JSON.stringify(key))} />);
     });
 
     it('does not diplay dice value', function() {

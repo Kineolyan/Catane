@@ -2,7 +2,6 @@ import tests from '../../libs/test';
 
 import React from 'react/addons';
 import Room from './Room.react';
-import Player from './Player.react';
 
 import Immutable from 'immutable';
 

@@ -33,7 +33,6 @@ export default class Dice extends MoreartyComponent {
     var round = this.props.rolls;
     var binding = this.getDefaultBinding();
     var initValues = binding.get('values').toJS();
-
     var chg = (time, result) => {
       setTimeout(() => {
 

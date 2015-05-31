@@ -11,14 +11,15 @@ if(typeof global.window === 'undefined') {
       global.location = { protocol: 'http:', host: 'localhost:3000', port: 3000};
 }
 
+//import react after init jsdom 
 import Morearty from 'morearty';
 
 var tests = {
   jsdom: jsdom,
   ctx: null,
-  getRenderedElements(inst, type) { //get react sub elements as an array
+  getRenderedElements(inst, type) { //get react sub elements as an array for non-DOM elements
 
-    if (!inst) {
+    if (!inst) { 
       return [];
     }
 
@@ -26,6 +27,7 @@ var tests = {
     if(!internal) {
       internal = inst;
     }
+
     var ret = (internal._currentElement.type.displayName && internal._currentElement.type.displayName === type.displayName) ? [internal._currentElement] : [];
 
     if(internal._renderedComponent) {
@@ -40,14 +42,13 @@ var tests = {
 
     return ret;
   },
-  getCtx() {
+  getCtx(init = '') {
 
     Players.deleteAll();
     Players.myId = parseInt(1, 10);
     Players.createPlayer(Players.myId, 'Bob');
 
-    this.ctx = Morearty.createContext({
-            initialState: {
+    var initState = {
               start: {
                 games: [],
                 gameChosen: {},
@@ -65,8 +66,15 @@ var tests = {
 
               players: Players,
               step: Globals.step.init
-        }
-      });
+    };
+
+    if(init) {
+      initState = init;
+    }
+
+    this.ctx = Morearty.createContext({
+            initialState: initState
+    });
 
     return this.ctx;
   }

@@ -12,8 +12,7 @@ describe('A lobby', function() {
   beforeEach(function() {
 
     this._ctx = tests.getCtx();
-    var binding = this._ctx.getBinding();
-
+    
     var LobbyB = this._ctx.bootstrap(Lobby);
 
     this.lobby = utils.renderIntoDocument(<LobbyB />);

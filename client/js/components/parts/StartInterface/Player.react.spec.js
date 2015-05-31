@@ -5,8 +5,6 @@ import Player from './Player.react';
 
 import Immutable from 'immutable';
 
-var utils = React.addons.TestUtils;
-
 describe('A player', function() {
 
   beforeEach(function() {

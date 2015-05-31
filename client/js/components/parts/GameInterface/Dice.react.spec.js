@@ -7,21 +7,31 @@ import Rectangle from 'react-art/shapes/rectangle';
 
 var utils = React.addons.TestUtils;
 
-
+//TODO: investigate setTimeout hanging in node when called multiples times
 describe('A dice', function() {
 
-  beforeEach(function() {
-    this.dice = utils.renderIntoDocument(<Dice startTime={10} />);
-  });
+  beforeAll(function() {
+    var self = this;
+    this._ctx = tests.getCtx({dice: {
+            enabled: false,
+            rolling: false, 
+            values: [1,1]
+    }});
 
-  it('should be able to roll and stop', function(done) {
-    this.dice.result({first: 2, second: 3}, () => {
-      expect(this.dice.state.rolling).toBeFalsy();
-      done();
+    var proxy = React.createClass({
+
+      render() {
+        return (<Dice startTime={10} binding={self._ctx.getBinding().sub('dice')} />);
+      }
+
     });
 
-    expect(this.dice.state.rolling).toBeTruthy();
+    var DiceB = this._ctx.bootstrap(proxy);
+
+    this.dice = utils.renderIntoDocument(<DiceB />);
+
   });
+
 
   it('should have two parts', function() {
     expect(tests.getRenderedElements(this.dice, Rectangle).length).toEqual(2);
@@ -35,14 +45,5 @@ describe('A dice', function() {
     expect(text2).toEqual("1");
   });
 
-  it('should render the correct result after throwing', function(done) {
-    this.dice.result({first: 2, second: 3}, () => {
-      var text1 = tests.getRenderedElements(this.dice, Text)[0]._store.props.children;
-      var text2 = tests.getRenderedElements(this.dice, Text)[1]._store.props.children;
-      expect(text1).toEqual("2");
-      expect(text2).toEqual("3");
-      done();
-    });
-  });
 
 });

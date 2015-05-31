@@ -1,17 +1,35 @@
 import tests from '../../../libs/test';
 
 import React from 'react/addons';
-import PlayerInfo from './PlayersInfo.react';
+import PlayersInfo from './PlayersInfo.react';
 import Deck from './Deck.react';
 import OtherPlayer from './OtherPlayer.react';
+import {Text} from 'react-art';
+import Immutable from 'immutable';
 
 var utils = React.addons.TestUtils;
 
 describe('A player in the game', function() {
 
-  beforeEach(function() {
-    var players = {other: [{name: 'Bob', id: 3}, {name: 'Lili', id: 5}], me: {name: 'Tom', id: 2}};
-    this.player = utils.renderIntoDocument(<PlayerInfo players={players} />);
+  beforeAll(function() {
+    this._ctx = tests.getCtx();
+
+
+    var binding = this._ctx.getBinding();
+    var players = binding.get('players').toJS();
+
+    players.deleteAll();
+    players.myId = 1;
+    players.createPlayer(1, 'tom', 'green');
+    players.createPlayer(2, 'bob', 'yellow');
+    players.createPlayer(3, 'lolo', 'blue');
+
+    binding.set('players', Immutable.fromJS(players));
+
+    var PlayersInfoB = this._ctx.bootstrap(PlayersInfo);
+
+    this.player= utils.renderIntoDocument(<PlayersInfoB />);
+
   });
 
   it('should have a deck of cards', function() {
@@ -23,8 +41,7 @@ describe('A player in the game', function() {
   });
 
   it('have the good name for the current player', function() {
-    expect(this.player.refs.name).toBeDefined();
-    expect(this.player.refs.name).toContainText('Tom');
+    expect(tests.getRenderedElements(this.player, Text)[0]._store.props.children).toBe('tom');
   });
 
 });
