@@ -1,4 +1,3 @@
-import * as maps from '../../util/maps.js';
 import Path from 'server/elements/geo/path.js';
 
 export class AReferee {
@@ -191,8 +190,9 @@ export class PlacementReferee extends AReferee {
 
 const GAME_STEPS = {
 	ROLL_DICE: 0,
-	MOVE_THIEVES: 1,
-	PLAY: 2
+	DROP_RESOURCES: 1,
+	MOVE_THIEVES: 2,
+	PLAY: 3
 };
 
 export const ResourceCosts = {
@@ -214,7 +214,18 @@ export class GameReferee extends AReferee {
 	}
 
 	rollDice(diceValue) {
-		this._step = (diceValue !== 7) ? GAME_STEPS.PLAY : GAME_STEPS.MOVE_THIEVES;
+		this._step = (diceValue !== 7) ? GAME_STEPS.PLAY : GAME_STEPS.DROP_RESOURCES;
+	}
+
+	/**
+	 * Notifies that the players have dropped their resources after 7.
+	 */
+	onResourcesDropped() {
+		if (this._step === GAME_STEPS.DROP_RESOURCES) {
+			this._step = GAME_STEPS.MOVE_THIEVES;
+		} else {
+			throw new Error(`Not the step to drop cards. Current: ${this._step}`);
+		}
 	}
 
 	moveThieves(tileLocation) {
@@ -238,7 +249,7 @@ export class GameReferee extends AReferee {
 	 */
 	settleColony(location) {
 		if (this._step === GAME_STEPS.PLAY) {
-			if (!this.hasEnoughResources(this.currentPlayer, ResourceCosts.COLONY)) {
+			if (!this.currentPlayer.hasResources(ResourceCosts.COLONY)) {
 				throw new Error(`Not enough resources to build a colony`);
 			}
 			if (!this.canBuildColony(location)) {
@@ -255,7 +266,7 @@ export class GameReferee extends AReferee {
 	 */
 	buildRoad(path) {
 		if (this._step === GAME_STEPS.PLAY) {
-			if (!this.hasEnoughResources(this.currentPlayer, ResourceCosts.ROAD)) {
+			if (!this.currentPlayer.hasResources(ResourceCosts.ROAD)) {
 				throw new Error(`Not enough resources to build a road`);
 			}
 			if (!this.canBuildRoad(path)) {
@@ -272,7 +283,7 @@ export class GameReferee extends AReferee {
 	 */
 	buildCity(location) {
 		if (this._step === GAME_STEPS.PLAY) {
-			if (!this.hasEnoughResources(this.currentPlayer, ResourceCosts.CITY)) {
+			if (!this.currentPlayer.hasResources(ResourceCosts.CITY)) {
 				throw new Error(`Not enough resources to build a city`);
 			}
 			if (!this.canBuildCity(location)) {
@@ -289,21 +300,5 @@ export class GameReferee extends AReferee {
 
 	hasRemainingRequiredActions() {
 		return this._step <+ GAME_STEPS.PLAY;
-	}
-
-	/**
-	 * Decides if the given player has enough resources to
-	 * comply the given cost.
-	 * @param  {Player}  player the player to check
-	 * @param  {Object}  costs   the cost of the operation
-	 * @return {Boolean} true if everything is ok
-	 */
-	hasEnoughResources(player, costs) {
-		var resources = player.resources;
-		for (let [r, cost] of maps.entries(costs)) {
-			let quantity = resources[r] || 0;
-			if (quantity < cost) { return false; }
-		}
-		return true;
 	}
 }

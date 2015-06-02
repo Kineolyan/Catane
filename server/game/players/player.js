@@ -92,6 +92,21 @@ export default class Player {
 	}
 
 	/**
+	 * Decides if the given player has enough resources to
+	 * comply the given cost.
+	 * @param  {Player}  player the player to check
+	 * @param  {Object}  costs   the cost of the operation
+	 * @return {Boolean} true if everything is ok
+	 */
+	hasResources(costs) {
+		for (let [r, cost] of maps.entries(costs)) {
+			let quantity = this._resources[r] || 0;
+			if (quantity < cost) { return false; }
+		}
+		return true;
+	}
+
+	/**
 	 * Adds new resources to the player belongings.
 	 * @param  {Array|Object} resources the new resources as
 	 *   an array of resource names or a map giving the number

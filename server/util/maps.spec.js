@@ -30,4 +30,10 @@ describe('maps module', function() {
 		});
 	});
 
+	it('supports empty maps', function() {
+		var count = 0;
+		for (let [ , value] of maps.entries({})) { count += value; }
+		expect(count).toEqual(0);
+	});
+
 });

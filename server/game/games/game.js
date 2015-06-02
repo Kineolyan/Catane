@@ -2,6 +2,7 @@ import Board from 'server/elements/boards/board';
 import { RoundGenerator } from 'server/elements/boards/generators/maps';
 import Dice from 'server/elements/dice/dice';
 import { PlacementReferee, GameReferee, ResourceCosts } from 'server/game/referees/referee';
+import { DropResourcesDelegate } from 'server/game/referees/delegates.js';
 import { shuffle } from 'server/util/arrays';
 
 const logger = global.logger;
@@ -19,7 +20,7 @@ export default class Game {
 
 	/**
 	 * Gets the id of the player
-	 * @return {Integer} player's id
+	 * @return {Number} player's id
 	 */
 	get id() {
 		return this._id;
@@ -112,15 +113,46 @@ export default class Game {
 			var values = [ this._dice.roll(), this._dice.roll() ];
 			this._referee.rollDice(values[0] + values[1]);
 
-			// Distribute the resources to players
 			var total = values[0] + values[1];
-			var affectedTiles = this._board.getTilesForDice(total, true);
-			for (let tile of affectedTiles) { tile.distributeResources(); }
+			if (total === 7) {
+				let delegate = new DropResourcesDelegate(this._referee);
+
+				if (!delegate.allResourcesDropped()) {
+					this._referee = delegate;
+					this.emit('game:action', { action: 'drop resources', remaining: delegate.remainingList });
+				} else {
+					this._referee.onResourcesDropped();
+					this.emit('game:action', { action: 'move thieves' });
+				}
+			} else {
+				// Distribute the resources to players
+				var affectedTiles = this._board.getTilesForDice(total, true);
+				for (let tile of affectedTiles) { tile.distributeResources(); }
+
+				this.emit('game:action', { action: 'play' });
+			}
 
 			return values;
 		} else {
 			throw new Error('Dice already rolled');
 		}
+	}
+
+	/**
+	 * Drops the resources of the player.
+	 * @param player {Player} the player dropping items
+	 * @param resources {Object} the map of resources to drop
+	 * @return {Number} the count of remaining resources to drop
+	 */
+	dropResources(player, resources) {
+		var remaining = this._referee.dropResources(player, resources);
+		if (this._referee.allResourcesDropped()) {
+			// Restore the initial referee from the delegate
+			this._referee = this._referee.referee;
+			this.emit('game:action', { action: 'play' });
+		}
+
+		return remaining;
 	}
 
 	/**
@@ -207,8 +239,8 @@ export default class Game {
 
 	/**
 	 * Emits the message on the channel to all players of the game.
-	 * @param {Player=} player the current player, defined to exclude the player for the broadcast.
-	 * @param {String} channel name of the event
+	 * @param {Player|String} player the current player, defined to exclude the player for the broadcast.
+	 * @param {String|Object=} channel name of the event
 	 * @param {Object=} message message to send
 	 */
 	emit(player, channel, message) {

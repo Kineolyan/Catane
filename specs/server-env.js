@@ -3,5 +3,6 @@ require('babel/register');
 
 // Create environment
 var logging = require("../build/server/util/log/logger");
+// TODO move log creation to the module
 global.logger = logging.createLogger(logging.Level.SILENT);
 global.TIME_TO_RECONNECT = 250; // 500 ms
