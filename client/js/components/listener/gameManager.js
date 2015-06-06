@@ -13,15 +13,12 @@ export default class GameManager extends Manager {
     this.listenToSocket(Globals.socket.mapDice, this.rollDice.bind(this));
     this.listenToSocket(Globals.socket.playPickColony, this.playPickElement.bind(this));
     this.listenToSocket(Globals.socket.playPickPath, this.playPickElement.bind(this));
-
   }
 
-
   /**
-   * A player picked somehting on the map
+   * A player picked something on the map
    */
   playPickElement(res) {
-
     if(this._binding.get('step') === Globals.step.prepare) {
         var players = this._binding.get('players').toJS();
         var boardContainer = this._binding.get('game.board').toJS();
@@ -99,7 +96,7 @@ export default class GameManager extends Manager {
 
         board.setSelectableType(null);
     }
-    
+
     transaction.set('game.board', Immutable.fromJS(boardContainer));
     transaction.commit();
   }

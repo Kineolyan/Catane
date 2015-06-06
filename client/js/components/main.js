@@ -28,14 +28,14 @@ Socket.on(Globals.socket.init, (data) => {
       initialState: {
         start: {
           games: [],
-          gameChosen: {},
+          gameChosen: {}
         },
 
         game: {
           board: [],
           dice: {
             enabled: false,
-            rolling: false, 
+            rolling: false,
             values: [1,1]
           },
           message: data.message
