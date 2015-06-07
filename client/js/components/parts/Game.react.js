@@ -15,8 +15,9 @@ import Reconnect from 'client/js/components/parts/Reconnect.react.js';
 import DevTool from 'client/js/components/parts/DevTool.react.js';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
-export default class Game extends MoreartyComponent {
+const DEBUG = false;
 
+export default class Game extends MoreartyComponent {
 	/**
 	 * Render the whole interface of the game
 	 * @return {XML} the rendered element
@@ -27,7 +28,7 @@ export default class Game extends MoreartyComponent {
 
 		return (
 				<div>
-					<DevTool binding={binding}/>
+					{ DEBUG ? <DevTool binding={binding}/> : null }
 					{ initialStep ? <Reconnect init={binding.get('server').toJS()}/> : null }
 					{this.renderStart()}
 				</div>
