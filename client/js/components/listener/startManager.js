@@ -83,7 +83,6 @@ export default class StartManager extends Manager {
                  .set('start.gameChosen', Immutable.fromJS({}))
                  .set('players', Immutable.fromJS(players))
                  .commit();
-
   }
 
   /**
