@@ -28,14 +28,14 @@ Socket.on(Globals.socket.init, (data) => {
       initialState: {
         start: {
           games: [],
-          gameChosen: {},
+          gameChosen: {}
         },
 
         game: {
           board: [],
           dice: {
             enabled: false,
-            rolling: false, 
+            rolling: false,
             values: [1,1]
           },
           message: data.message
@@ -47,10 +47,10 @@ Socket.on(Globals.socket.init, (data) => {
       }
     });
 
-    var Game = ctx.bootstrap(GameReact);
+		var Bootstrap = ctx.bootstrap(GameReact);
 
     var listener = new Listener(ctx);
     listener.startListen();
 
-    React.render(<Game />, document.getElementById('content'));
+    React.render(<Bootstrap/>, document.getElementById('content'));
 });
