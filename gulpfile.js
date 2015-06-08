@@ -237,7 +237,7 @@ gulp.task('clean', [ 'clean:output', 'clean:cache' ]);
 
 //develop task
 gulp.task('develop', function() {
-	var nd;
+	var bs;
 	
 	gulp.watch(PATHS.client('**/*.js'), function() {
 			runSequence('build:browserify', function() {
