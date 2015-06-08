@@ -49,13 +49,12 @@ Socket.on(Globals.socket.init, (data) => {
       }
     });
 
-    //boostrap in morearty
-    var Game = ctx.bootstrap(GameReact);
+
+		var Bootstrap = ctx.bootstrap(GameReact);
 
     //activate the listener
     var listener = new Listener(ctx);
     listener.startListen();
 
-    //render the game
-    React.render(<Game />, document.getElementById('content'));
+    React.render(<Bootstrap/>, document.getElementById('content'));
 });

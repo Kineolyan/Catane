@@ -5,17 +5,16 @@ import React from 'react/addons';
 
 import Game from 'client/js/components/parts/Game.react';
 import StartInterface from 'client/js/components/parts/StartInterface/StartInterface.react';
+import DevTool from 'client/js/components/parts/DevTool.react';
 
 var utils = React.addons.TestUtils;
 
 describe('A game', function() {
 
   beforeEach(function() {
-
     this._ctx = tests.getCtx();
     var GameB = this._ctx.bootstrap(Game);
     this.game= utils.renderIntoDocument(<GameB />);
-
   });
 
   it('should start with the start interface', function() {
@@ -28,6 +27,10 @@ describe('A game', function() {
         expect(utils.scryRenderedComponentsWithType(this.game, StartInterface).length).toBe(0);
         done();
       }, 200);
+  });
+
+  it('should not have the dev toolbar', function() {
+    expect(utils.scryRenderedComponentsWithType(this.game, DevTool).length).toBe(0);
   });
 
 });

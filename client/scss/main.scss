@@ -15,4 +15,23 @@ body, html, #content {
 	position: fixed;
 	top: 5px;
 	right: 5px;
+	z-index: 10;
 }
+
+#dev {
+	position: fixed;
+	top: 5px;
+	left: 5px;
+	padding: 5px;
+	z-index: 20;
+
+	&.open {
+		background-color: #bae5ff;
+	}
+
+	.load-content {
+		display: block;
+		margin-top: 5px;
+	}
+}
+

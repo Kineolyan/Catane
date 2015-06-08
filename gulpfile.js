@@ -64,7 +64,6 @@ PATHS.bower = pathItem('bower');
 function buildJs() {
 	return gulp.src([ PATHS.server('**/*.js') ], { base: PATHS.server() })
 			.pipe(cached('server-js'))
-			.pipe(remember('server-js'))
 			.pipe(plumber({ errorHandler: notify.onError("Build server : <%= error.message %>") }))
 			.pipe(babel({ sourceRoot: PATHS.server() }))
 			.pipe(plumber.stop())
@@ -73,6 +72,7 @@ function buildJs() {
 
 function buildJsx() {
 	return gulp.src(PATHS.client.js('components/**/*.js'))
+			.pipe(cached('client-js'))
 			.pipe(plumber({ errorHandler: notify.onError("Build:jsx : <%= error.message %>") }))
 			.pipe(babel())
 			.pipe(plumber.stop())

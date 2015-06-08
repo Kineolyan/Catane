@@ -15,6 +15,7 @@ export default class StartManager extends Manager {
   /**
    * Start listening 
    */
+
   startListen() {
     this.listenToSocket(Globals.socket.gamePlayers, this.updatePlayerList.bind(this));
     this.listenToSocket(Globals.socket.playerNickname, this.updatePlayerNickname.bind(this));
