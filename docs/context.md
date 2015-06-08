@@ -1,25 +1,23 @@
 #Morearty context docs
 #### Basics composition
 
-  start: {
-              games: [], //all the games availables [{id: 3, id: 6}]
-              gameChosen: {}, //the game chosen  {id: 2}
-            },
-    
-  game: {
-              board: {}, //the board for the game, see common/map.js
-              dice: {//dice
-                enabled: false, //can throw
-                rolling: false,  //is rolling
-                values: [1,1] //values on the dice
+    start: {
+                games: [], //all the games availables [{id: 3, id: 6}]
+                gameChosen: {}, //the game chosen  {id: 2}
               },
-              message: data.message //message displayed for the current status
-            },
-    
-            players: Players, //all player in the game, see common/player.js
-            step: Globals.step.init, //current step of the game. See lib/global.js
-            server: data.server //info send by the server for the reconnect
-          }
+    game: {
+                board: {}, //the board for the game, see common/map.js
+                dice: {//dice
+                  enabled: false, //can throw
+                  rolling: false,  //is rolling
+                  values: [1,1] //values on the dice
+                },
+                message: data.message //message displayed for the current status
+              },
+              players: Players, //all player in the game, see common/player.js
+              step: Globals.step.init, //current step of the game. See lib/global.js
+              server: data.server //info send by the server for the reconnect
+            }
 
 #### Morearty Component
 
