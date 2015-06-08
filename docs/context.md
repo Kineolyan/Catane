@@ -1,5 +1,5 @@
 #Morearty context docs
-#### Basics composition
+#### Basic composition
 
     start: {
                 games: [], //all the games availables [{id: 3, id: 6}]
