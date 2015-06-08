@@ -23,6 +23,7 @@ export default class GameManager extends Manager {
   playPickElement(res) {
 
     if(this._binding.get('step') === Globals.step.prepare) {
+        //get the map
         var players = this._binding.get('players').toJS();
         var boardContainer = this._binding.get('game.board').toJS();
         var board = boardContainer.getBoard();
@@ -31,6 +32,7 @@ export default class GameManager extends Manager {
         var key;
         var payload;
 
+        //choose what to do
         if(res.colony) {
           key = 'cities';
           payload = res.colony;
@@ -42,6 +44,7 @@ export default class GameManager extends Manager {
           Socket.emit(Globals.socket.playTurnEnd);
         }
 
+        //give an element to a player
         board.giveElement(key, payload, player);
         this._binding.set('game.board', Immutable.fromJS(boardContainer));
     }
@@ -76,30 +79,32 @@ export default class GameManager extends Manager {
    * New player started to play
    */
   playTurnNew({player: player}) {
+    //get the board and player
     var players = this._binding.get('players').toJS();
     var boardContainer = this._binding.get('game.board').toJS();
     var board = boardContainer.getBoard();
 
     var playing = players.getPlayer(player);
-
     var transaction = this._binding.atomically();
 
     if(playing.isMe()) {
 
+      //choose a colony at start
       if(this._binding.get('step') === Globals.step.prepare) {
         transaction.set('game.message', 'Choose a colony then a path');
         board.setSelectableType('cities');
 
-      } else {
+      } else { //Roll the dice
         transaction.set('game.message', 'Roll the dice');
         transaction.set('game.dice.enabled', true);
       }
-    } else {
+    } else { //passiv turn
         transaction.set('game.message', `Playing : ${playing.name}`);
 
         board.setSelectableType(null);
     }
     
+    //update the board
     transaction.set('game.board', Immutable.fromJS(boardContainer));
     transaction.commit();
   }

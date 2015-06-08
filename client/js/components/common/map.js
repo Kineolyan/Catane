@@ -10,6 +10,8 @@ class MapHelpher  {
     if(!board.tiles) {
       return {};
     }
+
+    //set the size of the base unit
     unitSize = getSize(board.tiles, window.innerHeight, window.innerWidth, margin);
 
     this._elements = new Map();
@@ -17,18 +19,21 @@ class MapHelpher  {
     var cities = new Map();
     var paths = new Map();
 
+    //create tiles
     if(board.tiles) {
       for(let i = 0; i < board.tiles.length; i += 1) {
           tiles.set(JSON.stringify(board.tiles[i]), new Tile(board.tiles[i]));    
       }
     }
 
+    //create cities
     if(board.cities) {
       for(let i = 0; i < board.cities.length; i += 1) {
           cities.set(JSON.stringify(board.cities[i]), new City(board.cities[i]));    
       }
     }
 
+    //create paths
     if(board.paths) {
       for(let i = 0; i < board.paths.length; i += 1) {
           paths.set(JSON.stringify(board.paths[i]), new Path(board.paths[i]));    
@@ -53,6 +58,12 @@ class MapHelpher  {
     return this._elements.get('paths');
   }
 
+  /**
+   * Give a map element to a player
+   * @param  {String} type   The element's type (tiles, cities, paths)
+   * @param  {String} key    The key of the element (generaly a json of x and y coordinates)
+   * @param  {Player} player The player
+   */
   giveElement(type, key, player) {
     if(this._elements.has(type)) {
       var elem = this._elements.get(type).get(JSON.stringify(key));
@@ -66,6 +77,10 @@ class MapHelpher  {
     return this;
   }
 
+  /**
+   * Set a map element selectable
+   * @param {String} type The type of element to make selectable
+   */
   setSelectableType(type) {
 
     for(let [elemsType, elems] of this._elements.entries()) {
