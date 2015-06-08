@@ -21,6 +21,8 @@ var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
 var runSequence = require('run-sequence');
+var nodemon = require('nodemon');
+var browserSync = require('browser-sync');
 
 function pathItem(name) {
 	return function (children) {
@@ -198,7 +200,7 @@ gulp.task('watch:js', function () {
 
 	gulp.watch([
 		PATHS.client('**/*.js'), // Tests only client when client changes
-	], [ 'watch:js:test-client' ]);
+	], ['watch:js:test-client']);
 });
 
 gulp.task('watch:sass', function () {
@@ -233,6 +235,42 @@ gulp.task('clean:output', cleanOutput);
 
 gulp.task('clean', [ 'clean:output', 'clean:cache' ]);
 
+//develop task
+gulp.task('develop', function() {
+	var nd;
+	
+	gulp.watch(PATHS.client('**/*.js'), function() {
+			runSequence('build:browserify', function() {
+					nodemon.emit('restart'); //restart the nodemon server
+			});
+	});
+
+	nodemon({
+		script: 'bin/catane',
+	  stdout: false,
+	  ignore: ["**/*"]
+	});
+	
+	nodemon.on('stdout', function(buffer) {
+		var data = buffer.toString();
+		console.log(data);
+		if(data.match(/Running on port/)) {
+				if(bs) {
+		  	bs.reload();
+		  } else {
+		  	bs = browserSync.init({
+	        proxy: "localhost:3000",
+	        port: 4000,
+	        open: false,
+	        ghostMode: false
+	   		});
+		  }
+		}
+	});
+
+
+	
+});
 /**
  * Master task to rebuild all the project
  * Named in hommage to 'Legend of Korra'

@@ -35,6 +35,7 @@ GLOBALS.socket = {
 
 };
 
+//resource
 GLOBALS.map = {};
 GLOBALS.map.resources = {
   tuile: '#851313',
