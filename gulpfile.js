@@ -21,8 +21,7 @@ var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
 var runSequence = require('run-sequence');
-var nodemon = require('nodemon');
-var browserSync = require('browser-sync');
+
 
 function pathItem(name) {
 	return function (children) {
@@ -237,6 +236,9 @@ gulp.task('clean', [ 'clean:output', 'clean:cache' ]);
 
 //develop task
 gulp.task('develop', function() {
+	var nodemon = require('nodemon');
+	var browserSync = require('browser-sync');
+
 	var bs;
 	
 	gulp.watch(PATHS.client('**/*.js'), function() {
