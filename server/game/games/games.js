@@ -1,6 +1,5 @@
 import Game from './game';
 import { idGenerator } from '../util';
-import { messages } from '../../com/messages';
 
 const logger = global.logger;
 
@@ -31,7 +30,10 @@ export default class Games {
 		player.on('game:join', gameId => {
 			var game = this._games.get(gameId);
 			if (game) {
-				return this.join(game, player);
+				this.join(game, player);
+
+				this.broadcastPlayers(game);
+				return { id: gameId };
 			} else {
 				throw new Error('unknown game ' + gameId);
 			}
@@ -120,6 +122,12 @@ export default class Games {
 		}
 	}
 
+	/**
+	 * Joins a player to a game.
+	 * This
+	 * @param {Game} game the game to join
+	 * @param {Player} player the player joining the game
+	 */
 	join(game, player) {
 		if (game === player.game) {
 			throw new Error('Duplicated player in game ' + game.id);
@@ -137,12 +145,7 @@ export default class Games {
 			}
 		}
 
-		if (game.add(player)) {
-			// Notifies of success
-			messages.ok(player, 'game:join');
-
-			this.broadcastPlayers(game);
-		} else {
+		if (!game.add(player)) {
 			throw new Error(`Failed to add player ${player.id} to game ${game.id}`);
 		}
 	}

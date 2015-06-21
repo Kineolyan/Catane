@@ -71,10 +71,10 @@ export default class Lobby extends MoreartyComponent {
     var games = binding.get('start.games').toJS();
     var game = games[event.currentTarget.dataset.index];
 
-    Socket.emit(Globals.socket.gameJoin, game.id, game);
+    Socket.emit(Globals.socket.gameJoin, game.id);
   }
 
-  
+
 }
 
 Lobby.displayName = 'Lobby';

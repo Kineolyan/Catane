@@ -35,6 +35,10 @@ export default class Player {
 		return this._socket;
 	}
 
+	/**
+	 * Sets the player socket.
+	 * @param {Socket} socket the instance of socket.
+	 */
 	set socket(socket) {
 		this._socket = socket;
 	}
@@ -50,12 +54,9 @@ export default class Player {
 	/**
 	 * Registers the name of the user
 	 * @param  {String} name the new name of the player
-	 * @return {String} the name set
 	 */
 	set name(name) {
 		this._name = name;
-
-		return name;
 	}
 
 	/**
@@ -69,12 +70,9 @@ export default class Player {
 	/**
 	 * Sets the game the player has joined
 	 * @param  {Game} game the joined game
-	 * @return {Game} the game set
 	 */
 	set game(game) {
 		this._game = game;
-
-		return game;
 	}
 
 	get resources() {
