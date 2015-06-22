@@ -15,7 +15,7 @@ export default class Tile extends React.Component {
 
   render() {
 
-    var tile = this.props.tile,
+    var tile = this.props.value,
         vertex = tile.vertex,
         path = 'M' + vertex[0].x + ' ' + vertex[0].y,
         circleRadius = (tile.unitSize / 3),
@@ -39,7 +39,7 @@ export default class Tile extends React.Component {
     }
 
     return (
-      <Element x={tile.ortho.x} y={tile.ortho.y} {...this.props} selectable={tile.selectable}>
+      <Element x={tile.ortho.x} y={tile.ortho.y} {...this.props} >
         <Shape d={path}
                fill={color}
                stroke='#FFFFFF'
@@ -55,7 +55,7 @@ export default class Tile extends React.Component {
    */
   tileColor() {
     var color = 'white',
-        tmpCol = Globals.map.resources[this.props.tile.resource];
+        tmpCol = Globals.map.resources[this.props.value.resource];
 
     if(typeof tmpCol !== 'undefined') {
       color = tmpCol;

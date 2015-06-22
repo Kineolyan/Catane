@@ -15,7 +15,7 @@ import Element from 'client/js/components/parts/GameInterface/Map/Element.react'
 export default class City extends React.Component {
 
   render() {
-    var city = this.props.city,
+    var city = this.props.value,
         color = 'black';
 
     if(city.player) {
@@ -23,15 +23,15 @@ export default class City extends React.Component {
     }
 
     return (
-      <Element x={city.ortho.x} y={city.ortho.y} {...this.props} onClick={this.handleClick.bind(this)} selectable={city.selectable}>
+      <Element x={city.ortho.x} y={city.ortho.y} {...this.props} onClick={this.handleClick.bind(this)}>
         <Circle radius={this.props.radius} fill={color}/>
       </Element>
     );
   }
 
   handleClick() {
-    if(this.props.city.selectable) {
-      Socket.emit(Globals.socket.playPickColony, {colony: this.props.city.key});
+    if(this.props.value.selectable) {
+      Socket.emit(Globals.socket.playPickColony, {colony: this.props.value.key});
     }
   }
 }

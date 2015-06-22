@@ -14,7 +14,7 @@ import Element from 'client/js/components/parts/GameInterface/Map/Element.react'
 export default class PathR extends React.Component {
 
   render() {
-    var path = this.props.path,
+    var path = this.props.value,
         p = new Path(),
         coef,
         color = 'black', 
@@ -45,7 +45,7 @@ export default class PathR extends React.Component {
     p.close();
 
     return (
-      <Element {...this.props} onClick={this.handleClick.bind(this)} selectable={path.selectable}>
+      <Element {...this.props} onClick={this.handleClick.bind(this)}>
         <Shape d={p} 
                fill={color}
               />
@@ -55,8 +55,8 @@ export default class PathR extends React.Component {
 
   handleClick() {
 
-    if(this.props.path.selectable) {
-      Socket.emit(Globals.socket.playPickPath, {path: this.props.path.key});
+    if(this.props.value.selectable) {
+      Socket.emit(Globals.socket.playPickPath, {path: this.props.value.key});
     }
   }
 }

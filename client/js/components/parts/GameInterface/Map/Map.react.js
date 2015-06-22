@@ -20,34 +20,35 @@ export default class MapR extends MoreartyComponent {
    */
   render() {
     var board = this.getDefaultBinding().get().toJS().getBoard(),
-        tiles = [],
-        paths = [],
-        cities = [];
+        elements = [];
 
-    if(board.tiles) {
-        board.tiles.forEach((elem) => {
-          tiles.push(<Tile key={elem.index} tile={elem} />);
-        });
-    }
-  
-    if(board.paths) {
-        board.paths.forEach((elem) => {
-          paths.push(<Path key={elem.index} path={elem} />);
-        });
-    }
+    for(let type of ['tiles', 'paths', 'cities']) { //keep the order of display, tiles under paths under cities
+      var Elem;
+      switch(type) {
+        case 'tiles':
+          Elem = Tile;
+          break;
 
-    if(board.cities) {
-        board.cities.forEach((elem) => {
-          cities.push(<City key={elem.index} city={elem} />);
-        });
+        case 'paths':
+          Elem = Path;
+          break;
+
+        case 'cities':
+          Elem = City;
+          break;
+      }
+
+      if(!Elem) {
+        continue;
+      }
+
+      board.elements.get(type).forEach((elem) => elements.push(<Elem key={elem.index} value={elem} />));
     }
     
 
     return (
       <Group x={this.props.width / 2} y={this.props.height / 2}>
-        {tiles}
-        {paths}
-        {cities}
+        {elements}
       </Group>
     );
   }

@@ -1,5 +1,7 @@
 'use strict';
 
+import Players from 'client/js/components/common/players';
+
 var unitSize = 60;
 /**
  * Map helpher, transforming hexa coordinate to orthogonal. 
@@ -15,47 +17,46 @@ class MapHelpher  {
     unitSize = getSize(board.tiles, window.innerHeight, window.innerWidth, margin);
 
     this._elements = new Map();
-    var tiles = new Map();
-    var cities = new Map();
-    var paths = new Map();
 
-    //create tiles
-    if(board.tiles) {
-      for(let i = 0; i < board.tiles.length; i += 1) {
-          tiles.set(JSON.stringify(board.tiles[i]), new Tile(board.tiles[i]));    
+    for(let type in board) {
+      if(board.hasOwnProperty(type)) {
+        let Cons;
+        switch(type) {
+          case 'cities':
+            Cons = City;
+            break;
+
+          case 'tiles':
+            Cons = Tile;
+            break;
+
+          case 'paths':
+            Cons = Path;
+            break;
+        }
+
+        if(!Cons) {
+          continue;
+        }
+        
+        var elements = new Map();
+
+        for(let i = 0; i < board[type].length; i += 1) {
+          //if a specific key is declared in the original object, for further retrieval
+          var key = board[type][i].key ? board[type][i].key : board[type][i];
+          elements.set(JSON.stringify(key), new Cons(board[type][i]));    
+        }
+
+        this._elements.set(type, elements);
       }
-    }
+      
 
-    //create cities
-    if(board.cities) {
-      for(let i = 0; i < board.cities.length; i += 1) {
-          cities.set(JSON.stringify(board.cities[i]), new City(board.cities[i]));    
-      }
     }
-
-    //create paths
-    if(board.paths) {
-      for(let i = 0; i < board.paths.length; i += 1) {
-          paths.set(JSON.stringify(board.paths[i]), new Path(board.paths[i]));    
-      }
-    }
-
-    this._elements.set('tiles', tiles);
-    this._elements.set('cities', cities);
-    this._elements.set('paths', paths);
 
   }
 
-  get tiles() {
-    return this._elements.get('tiles');
-  }
-
-  get cities() {
-    return this._elements.get('cities');
-  }
-
-  get paths() {
-    return this._elements.get('paths');
+  get elements() {
+    return this._elements;
   }
 
   /**
@@ -172,9 +173,12 @@ class MapElement {
     this.ortho = convert(this.x, this.y);
     index += 1;
 
-
     this._player = null;
-    this._selectable = null;
+    if(element._player) {
+      this._player = Players.createFromJS(element._player);
+    }
+
+    this._selectable = element.selectable;
   }
 
   set player(val) {
@@ -193,9 +197,6 @@ class MapElement {
     return this._selectable;
   }
 
-
-
-
 }
 //A tile with orthogonal coordinate and vertex
 class Tile extends MapElement {
@@ -209,6 +210,9 @@ class Tile extends MapElement {
     this.vertex.push(convert(0, 1));
     this.vertex.push(convert(- 1, 1));
     this.vertex.push(convert(- 1, 0));
+
+    //define the key based on coordinates
+    this.key = {x: tile.x, y: tile.y};
   }
 
 
@@ -218,6 +222,9 @@ class Tile extends MapElement {
 class City extends MapElement {
   constructor(city) {
     super(city);
+    
+    //define the key based on coordinates
+    this.key = {x: city.x, y: city.y};
   }
 }
 
@@ -231,6 +238,9 @@ class Path extends MapElement {
 
     this.from = path.from;
     this.from.ortho = convert(this.from.x, this.from.y);
+ 
+    //define the key based on coordinates
+    this.key = {from: path.from, to: path.to};
   }
 
   get x() {
@@ -252,5 +262,19 @@ export default {
 
   getBoard() {
     return this.board;
+  },
+
+  toJS() {
+    var obj = {};
+
+    this.board.elements.forEach((typeElement, index) => {
+      obj[index] = [];
+      typeElement.forEach((mapElement) => {
+        obj[index].push(mapElement);
+      });
+    });
+
+    return obj;
   }
+
 };

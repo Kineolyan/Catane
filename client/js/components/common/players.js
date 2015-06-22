@@ -58,6 +58,11 @@ manager = {
     var me = this.getMe();
     players.clear();
     players.set(me.id, me);
+  },
+
+  createFromJS(obj) {
+    let player = new Player();
+    return Object.assign(player, obj);
   }
 
 };

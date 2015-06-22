@@ -17,7 +17,7 @@ describe('A tile', function() {
     this.val = MapHelper.init({tiles: [key]}).getBoard();
 
   
-    this.tile = utils.renderIntoDocument(<Tile key={0} tile={this.val.tiles.get(JSON.stringify(key))} />);
+    this.tile = utils.renderIntoDocument(<Tile key={0} value={this.val.elements.get('tiles').get(JSON.stringify(key))} />);
   });
 
   it('should represent the value of the dice', function() {
@@ -35,7 +35,7 @@ describe('A tile', function() {
       var key = { x: 0, y: 0, resource: 'desert', diceValue: null };
       this.val = MapHelper.init({tiles: [key]}).getBoard();
   
-      this.desertTile = utils.renderIntoDocument(<Tile key={0} tile={this.val.tiles.get(JSON.stringify(key))} />);
+      this.desertTile = utils.renderIntoDocument(<Tile key={0} value={this.val.elements.get('tiles').get(JSON.stringify(key))} />);
     });
 
     it('does not diplay dice value', function() {

@@ -21,7 +21,7 @@ export default class MapElement extends React.Component {
   }
 
   mouseEnter() {
-    if(this.props.selectable) {
+    if(this.props.value.selectable) {
       window.document.body.style.cursor = 'pointer';
     }
 
