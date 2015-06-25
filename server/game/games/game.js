@@ -221,6 +221,22 @@ export default class Game {
 	}
 
 	/**
+	 * Converts 4 player resources of type from into 1 resource of type to
+	 * @param {Player} player the player executing the action
+	 * @param from the type of resources to use
+	 * @param to the type of resources to create
+	 */
+	convertResources(player, from, to) {
+		this._referee.checkTurn(player);
+		this._referee.convertResources(from, 4);
+
+		var usedResources = {};
+		usedResources[from] = 4;
+		player.useResources(usedResources);
+		player.receiveResources([ to ]);
+	}
+
+	/**
 	 * Makes the player end its turn.
 	 * @param player the player ending its turn
 	 * @returns the next player whose turn has started

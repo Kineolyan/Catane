@@ -272,4 +272,44 @@ describe('Game actions', function() {
 		});
 	});
 
+	describe('#convertResources', function() {
+		beforeEach(function() {
+			this.env = starter.createLocalGame(2);
+			this.env.start();
+			this.env.randomPick();
+			this.p = this.env.players[0];
+			this.env.rollDice(this.p);
+
+			this.convert = this.env.game.convertResources.bind(this.env.game, this.p.player);
+		});
+
+		describe('with enough resources', function() {
+			beforeEach(function() {
+				this.env.setPlayerResources(0, { bois: 4 });
+			});
+
+			it('removes 4 resources to convert', function() {
+				expect(() => this.convert('bois', 'caillou')).toChangeBy(() => {
+					return this.p.player.resources.bois;
+				}, -4);
+			});
+
+			it('add 1 converted resource', function() {
+				expect(() => this.convert('bois', 'caillou')).toChangeBy(() => {
+					return this.p.player.resources.caillou;
+				}, 1);
+			});
+		});
+
+		describe('without enough resources', function() {
+			beforeEach(function() {
+				this.env.setPlayerResources(0, {});
+			});
+
+			it('throws an error', function() {
+				expect(() => this.convert('bois', 'caillou')).toThrow();
+			});
+		});
+	});
+
 });

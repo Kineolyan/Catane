@@ -110,6 +110,12 @@ export class Plays {
 			return { resources: player.resources, remaining: remaining };
 		});
 
+		player.on('play:resources:convert', ({ from: from, to: to }) => {
+			player.game.convertResources(player, from, to);
+
+			return { resources: player.resources };
+		});
+
 		player.on('play:turn:end', () => {
 			var nextPlayer = player.game.endTurn(player);
 			player.game.emit('play:turn:new', { player: nextPlayer.id });

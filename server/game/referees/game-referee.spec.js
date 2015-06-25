@@ -281,4 +281,33 @@ describe('GameReferee', function() {
 			expect(() => this.referee.buildCity(new Location(1, 0))).toThrowError(/Cannot build city/i);
 		});
 	});
+
+	describe('#convertResources', function() {
+		beforeEach(function() {
+			this.currentPlayer = this.referee.currentPlayer;
+
+			// Roll dice before action
+			this.referee.rollDice(8);
+
+			// Give just enough to the player
+			this.currentPlayer.useResources(this.currentPlayer.resources);
+			this.currentPlayer.receiveResources({ ble: 3 });
+		});
+
+		it('accepts if there are enough resources', function() {
+			this.referee.convertResources('ble', 3);
+		});
+
+		it('rejects if there are not enough resources', function() {
+			expect(() => this.referee.convertResources('ble', 4)).toThrowError(/Not enough resources/i);
+			expect(() => this.referee.convertResources('bois', 2)).toThrowError(/Not enough resources/i);
+		});
+
+		it('rejects if it is not the correct step', function() {
+			// End the turn of the current player to be at the beginning of the next turn
+			this.referee.endTurn();
+
+			expect(() => this.referee.convertResources('ble')).toThrowError(/Not the correct step/i);
+		});
+	});
 });

@@ -294,6 +294,24 @@ export class GameReferee extends AReferee {
 		}
 	}
 
+	/**
+	 * Checks if the current player can convert some resources
+	 * @param type type of the resources to convert
+	 * @param quantity the number of resources to convert
+	 */
+	convertResources(type, quantity) {
+		if (this._step === GAME_STEPS.PLAY) {
+			var wantedResources = {};
+			wantedResources[type] = quantity;
+
+			if (!this.currentPlayer.hasResources(wantedResources)) {
+				throw new Error(`Not enough resources to convert`);
+			}
+		} else {
+			throw new Error(`Not the correct step to convert resources. Current ${this._step}`);
+		}
+	}
+
 	startTurn() {
 		this._step = GAME_STEPS.ROLL_DICE;
 	}
