@@ -25,6 +25,14 @@ class Player {
     this._name = val;
   }
 
+  set id(val) {
+    this._id = val;
+  }
+
+  set color(val) {
+    this._color = val;
+  }
+
   isMe() {
     return this._id === manager.myId;
   }
@@ -63,11 +71,18 @@ manager = {
 
   createFromJS(obj) {
     let player = new Player();
+    players.set(obj.id, player);
     return Object.assign(player, obj);
   },
 
   toJS() {
-    return Array.from(players);
+    var p = [];
+
+    players.forEach(e => {
+      p.push(e);
+    });
+
+    return p;
   },
 
   loadAllFromJS(players) {
