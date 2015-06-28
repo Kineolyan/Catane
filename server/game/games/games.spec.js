@@ -100,7 +100,7 @@ describe('Games', function() {
 
 				it('receives success on "game:join"', function() {
 					var message = this.client.lastMessage('game:join');
-					expect(message._success).toEqual(true);
+					expect(message).toEqual({ _success: true, id: this.lastGameId });
 				});
 
 				it('receives the list of players', function() {
