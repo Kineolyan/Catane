@@ -62,20 +62,32 @@ class MapHelpher  {
   /**
    * Give a map element to a player
    * @param  {String} type   The element's type (tiles, cities, paths)
-   * @param  {String} key    The key of the element (generaly a json of x and y coordinates)
+   * @param  {Object} key    The key of the element (generaly a json of x and y coordinates)
    * @param  {Player} player The player
    */
   giveElement(type, key, player) {
-    if(this._elements.has(type)) {
-      var elem = this._elements.get(type).get(JSON.stringify(key));
-      if(elem) {
-        elem.player = player;
-      } 
+    var elem = this.getElementOfType(type, key);
+    if(elem) {
+      elem.player = player;
     } else {
-      throw new Error(`No elements of type: ${type}`);
+      throw new Error(`No elem '${type}' with key ${JSON.stringify(key)}`);
     }
 
     return this;
+  }
+
+  /**
+   * Get the element of a given type
+   * @param  {String} type   The element's type (tiles, cities, paths)
+   * @param  {Object} key    The key of the element (generaly a json of x and y coordinates)
+   * @return {MapElement}    An element of the map
+   */
+  getElementOfType(type, key) {
+    if(this._elements.has(type)) {
+      return this._elements.get(type).get(JSON.stringify(key));
+    } else {
+      throw new Error(`No elements of type: ${type}`);
+    }
   }
 
   /**
@@ -178,7 +190,9 @@ class MapElement {
       this._player = Players.createFromJS(element._player);
     }
 
-    this._selectable = element.selectable;
+
+
+    this._selectable = element._selectable;
   }
 
   set player(val) {
@@ -231,12 +245,12 @@ class City extends MapElement {
 //A path with orthogonal coordinate
 class Path extends MapElement {
   constructor(path) {
+
     super(path);
 
-    this.to = path.to;
+    this.to = Object.assign({}, path.to);
+    this.from = Object.assign({}, path.from);
     this.to.ortho = convert(this.to.x, this.to.y);
-
-    this.from = path.from;
     this.from.ortho = convert(this.from.x, this.from.y);
  
     //define the key based on coordinates
@@ -275,6 +289,9 @@ export default {
     });
 
     return obj;
+  },
+  reset() {
+    index = 0;
   }
 
 };
