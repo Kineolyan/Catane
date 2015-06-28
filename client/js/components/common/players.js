@@ -28,6 +28,7 @@ class Player {
   isMe() {
     return this._id === manager.myId;
   }
+
 }
 
 manager = {
@@ -63,8 +64,16 @@ manager = {
   createFromJS(obj) {
     let player = new Player();
     return Object.assign(player, obj);
-  }
+  },
 
+  toJS() {
+    return Array.from(players);
+  },
+
+  loadAllFromJS(players) {
+    this.deleteAll();
+    players.forEach(elem => this.createFromJS(elem));
+  }
 };
 
 export default manager;
