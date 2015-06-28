@@ -28,7 +28,6 @@ export default class GameManager extends Manager {
         var player = players.getPlayer(res.player);
         var key;
         var payload;
-
         //choose what to do
         if(res.colony) {
           key = 'cities';
@@ -44,6 +43,8 @@ export default class GameManager extends Manager {
         //give an element to a player
         board.giveElement(key, payload, player);
         this._binding.set('game.board', Immutable.fromJS(boardContainer));
+    } else {
+      throw new Error('Not the good step');
     }
 
   }
@@ -80,7 +81,6 @@ export default class GameManager extends Manager {
     var players = this._binding.get('players').toJS();
     var boardContainer = this._binding.get('game.board').toJS();
     var board = boardContainer.getBoard();
-
     var playing = players.getPlayer(player);
     var transaction = this._binding.atomically();
 

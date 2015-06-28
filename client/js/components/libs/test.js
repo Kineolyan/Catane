@@ -34,7 +34,7 @@ var tests = {
   getCtx(init = '') {
 
     Players.deleteAll();
-    Players.myId = parseInt(1, 10);
+    Players.myId = 1;
     Players.createPlayer(Players.myId, 'Bob');
 
     var initState = {

@@ -40,4 +40,7 @@ export default class Manager {
     this._events.clear();
   }
 
+  get context() {
+    return this._context;
+  }
 }

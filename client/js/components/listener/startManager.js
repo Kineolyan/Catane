@@ -28,7 +28,7 @@ export default class StartManager extends Manager {
 	 * Update the player in the game
 	 * @param  {Array.{id, name}} list The list of player
 	 */
-	updatePlayerList(list) {
+	updatePlayerList({players: newPlayers}) {
 		var colors = Globals.interface.player.colors;
 		var players = this._binding.get('players').toJS();
 
@@ -36,7 +36,7 @@ export default class StartManager extends Manager {
 		players.deleteAll();
 
 		//re-create a new list
-		list.players.forEach((player, index) => players.createPlayer(player.id, player.name, colors[ index ]));
+		newPlayers.forEach((player, index) => players.createPlayer(player.id, player.name, colors[ index ]));
 
 		//save
 		this._binding.set('players', Immutable.fromJS(players));

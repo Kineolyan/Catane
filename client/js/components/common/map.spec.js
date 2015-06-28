@@ -127,7 +127,7 @@ describe('The map helper', function() {
       });
 
       it('to a tile', function() {
-        console.log(this.initBoard.tiles[1]);
+
         this.board.giveElement('tiles', this.initBoard.tiles[1], this.player);
 
         var b = this.board.getElementOfType('tiles', this.initBoard.tiles[1]);
@@ -136,7 +136,7 @@ describe('The map helper', function() {
       });
 
       it('to a path', function() {
-        console.log(this.initBoard.paths[1]);
+
         this.board.giveElement('paths', this.initBoard.paths[1], this.player);
 
         var b = this.board.getElementOfType('paths', this.initBoard.paths[1]);
