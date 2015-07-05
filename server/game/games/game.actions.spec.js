@@ -312,4 +312,57 @@ describe('Game actions', function() {
 		});
 	});
 
+	describe('#exchangeResources', function() {
+		beforeEach(function () {
+			this.env = starter.createLocalGame(2);
+			this.env.start();
+			this.env.randomPick();
+			this.p = this.env.players[0];
+			this.other = this.env.players[1];
+			this.env.rollDice(this.p);
+
+			// Provide some resources to the players
+			for (let p of this.env.players) {
+				this.env.setPlayerResources(p, { bois: 4, ble: 2 });
+			}
+			this.exchange = this.env.game.exchangeResources.bind(this.env.game, this.p.player, this.other.player);
+		});
+
+		describe('with enough resources', function() {
+			beforeEach(function() {
+				this.exchange({ bois: 2 }, { ble: 2 });
+			});
+
+			it('gives resources to the player', function() {
+				expect(this.p.player).toHaveResources({ bois: 2, ble: 4 });
+			});
+
+			it('gives resources to the other player', function() {
+				expect(this.other.player).toHaveResources({ bois: 6 });
+			});
+		});
+
+		describe('without enough resources', function() {
+			[
+				['to give', { bois: 6 }, { ble: 2 }],
+				['to receive', { ble: 2 }, { bois: 6 }],
+				['given', {}, { ble: 2 }],
+				['received', { ble: 2 }, {}]
+			].forEach(function([ caption, given, gotten ]) {
+				describe(caption, function() {
+
+					it('throws an Error', function() {
+						expect(() => this.exchange(given, gotten)).toThrow();
+					});
+
+					it('lets players resources unchanged', function() {
+						for (let p of this.env.players) {
+							expect(p.player).toHaveResources({ bois: 4, ble: 2 });
+						}
+					});
+				});
+			});
+		});
+	});
+
 });

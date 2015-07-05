@@ -312,6 +312,31 @@ export class GameReferee extends AReferee {
 		}
 	}
 
+	/**
+	 * Exchanges resources between two players.
+	 * @param otherPlayer the player receiving resources
+	 * @param givenResources the resources given in the exchange
+	 * @param gottenResources the resources obtained in the exchange
+	 */
+	exchangeResources(otherPlayer, givenResources, gottenResources) {
+		if (this._step === GAME_STEPS.PLAY) {
+			if (Object.keys(givenResources).length === 0) {
+				throw new Error(`Cannot exchange without giving resources`);
+			}
+			if (Object.keys(gottenResources).length === 0) {
+				throw new Error(`Cannot exchange without receiving resources`);
+			}
+			if (!this.currentPlayer.hasResources(givenResources)) {
+				throw new Error(`Not enough resources to give`);
+			}
+			if (!otherPlayer.hasResources(gottenResources)) {
+				throw new Error(`Not enough resources to receive`);
+			}
+		} else {
+			throw new Error(`Not the correct step to exchange resources. Current ${this._step}`);
+		}
+	}
+
 	startTurn() {
 		this._step = GAME_STEPS.ROLL_DICE;
 	}

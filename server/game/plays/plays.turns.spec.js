@@ -102,4 +102,124 @@ describe('Play turn management', function () {
 
 	// TODO Test settling on a colony
 
+	describe('exchange', function() {
+		beforeEach(function () {
+			[this.p,  this.other] = this.game.players;
+			this.game.rollDice(this.p);
+		});
+
+		describe('when offering resources', function() {
+			beforeEach(function() {
+				this.p.client.receive('play:resources:offer', {
+					to: this.other.id,
+					give: { ble: 1 },
+					receive: { bois: 1 }
+				});
+			});
+
+			it('sends the exchange id to the player', function() {
+				var message = this.p.client.lastMessage('play:resources:offer');
+				expect(message.exchange.id).toBeAnInteger();
+			});
+
+			it('sends the exchange proposal to the other player', function() {
+				var message = this.other.client.lastMessage('play:resources:offer');
+				expect(message).toHaveKey('exchange');
+
+				var exchange = message.exchange;
+				expect(exchange.id).toEqual(this.p.client.lastMessage('play:resources:offer').exchange.id);
+				expect(exchange.from).toEqual(this.p.id);
+				expect(exchange.give).toEqual({ bois: 1 });
+				expect(exchange.receive).toEqual({ ble: 1 });
+			});
+		});
+
+		describe('when rejecting an offer', function() {
+			beforeEach(function() {
+				this.p.client.receive('play:resources:offer', {
+					to: this.other.id,
+					give: { ble: 1 },
+					receive: { bois: 1 }
+				});
+
+				this.eId = this.p.client.lastMessage('play:resources:offer').exchange.id;
+				this.other.client.receive('play:resources:exchange', { id: this.eId, status: 'reject' });
+			});
+
+			it('notifies the player of the rejection', function() {
+				var message = this.p.client.lastMessage('play:resources:exchange');
+				expect(message.exchange).toEqual({ id: this.eId, status: 'cancelled' });
+			});
+
+			it('confirms to the other player the rejection', function() {
+				var message = this.p.client.lastMessage('play:resources:exchange');
+				expect(message.exchange).toEqual({ id: this.eId, status: 'cancelled' });
+			});
+
+			it('does not reference the exchange anymore', function() {
+				this.other.client.receive('play:resources:exchange', { id: this.eId });
+
+				var message = this.other.client.lastMessage('play:resources:exchange');
+				expect(message.message).toMatch(/Unexisting exchange/i);
+			});
+		});
+
+		describe('when accepting an offer', function() {
+			beforeEach(function() {
+				// Normally, both players should have resources
+				this.pResources = this.p.client.lastMessage('play:roll-dice').resources;
+				this.otherResources = this.other.client.lastMessage('play:roll-dice').resources;
+
+				this.p.client.receive('play:resources:offer', {
+					to: this.other.id,
+					give: this.pResources,
+					receive: this.otherResources
+				});
+
+				this.eId = this.p.client.lastMessage('play:resources:offer').exchange.id;
+				this.other.client.receive('play:resources:exchange', { id: this.eId, status: 'accept' });
+			});
+
+			it('notifies the player of the exchange completion', function() {
+				var message = this.p.client.lastMessage('play:resources:exchange');
+				expect(message.exchange).toEqual({ id: this.eId, status: 'done' });
+				expect(message).toHaveResources(this.otherResources);
+			});
+
+			it('notifies the other player of the exchange completion', function() {
+				var message = this.other.client.lastMessage('play:resources:exchange');
+				expect(message.exchange).toEqual({ id: this.eId, status: 'done' });
+				expect(message).toHaveResources(this.pResources);
+			});
+
+			it('does not reference the exchange anymore', function() {
+				this.other.client.receive('play:resources:exchange', { id: this.eId });
+
+				var message = this.other.client.lastMessage('play:resources:exchange');
+				expect(message.message).toMatch(/Unexisting exchange/i);
+			});
+		});
+
+		it('fails on unexisting exchange', function() {
+			this.p.client.receive('play:resources:exchange', { id: 123456789 });
+
+			var message = this.p.client.lastMessage('play:resources:exchange');
+			expect(message.message).toMatch(/Unexisting exchange 123456789/i);
+		});
+
+		it('fails when exchange creator validates it', function() {
+			this.p.client.receive('play:resources:offer', {
+				to: this.other.id,
+				give: { ble: 1 },
+				receive: { bois: 1 }
+			});
+
+			this.eId = this.p.client.lastMessage('play:resources:offer').exchange.id;
+			this.p.client.receive('play:resources:exchange', { id: this.eId, status: 'accept' });
+
+			var message = this.p.client.lastMessage('play:resources:exchange');
+			expect(message.message).toMatch(/Wrong receiver/i);
+		});
+	});
+
 });

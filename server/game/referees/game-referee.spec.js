@@ -310,4 +310,63 @@ describe('GameReferee', function() {
 			expect(() => this.referee.convertResources('ble')).toThrowError(/Not the correct step/i);
 		});
 	});
+
+	describe('#exchangeResources', function() {
+		beforeEach(function() {
+			this.currentPlayer = this.referee.currentPlayer;
+			for (let p of this.players) {
+				if (p.id !== this.currentPlayer.id) {
+					this.otherPlayer = p;
+					break;
+				}
+			}
+
+			// Roll dice before action
+			this.referee.rollDice(8);
+
+			this.currentPlayer.useResources(this.currentPlayer.resources);
+			this.currentPlayer.receiveResources({ bois: 6 });
+			this.otherPlayer.useResources(this.otherPlayer.resources);
+			this.otherPlayer.receiveResources({ ble: 2, mouton: 3 });
+
+			this.exchange = this.referee.exchangeResources.bind(this.referee, this.otherPlayer);
+		});
+
+		it('accepts if there are enough resources on both sides', function() {
+			this.exchange({ bois: 4}, { ble: 2, mouton: 2 });
+		});
+
+		it('rejects if the giver does not have enough resources', function() {
+			expect(() => {
+				this.exchange({ ble: 3 }, { mouton: 2 });
+			}).toThrowError(/Not enough resources to give/i);
+		});
+
+		it('rejects if the receiver does not have enough resources', function() {
+			expect(() => {
+				this.exchange({ bois: 3 }, { mouton: 4 });
+			}).toThrowError(/Not enough resources to receive/i);
+		});
+
+		it('rejects if there are no resources given', function() {
+			expect(() => {
+				this.exchange({}, { mouton: 2 });
+			}).toThrowError(/Cannot exchange without giving resources/i);
+		});
+
+		it('rejects if there are no resources received', function() {
+			expect(() => {
+				this.exchange({ bois: 3 }, {});
+			}).toThrowError(/Cannot exchange without receiving resources/i);
+		});
+
+		it('rejects if it is not the correct step', function() {
+			// End the turn of the current player to be at the beginning of the next turn
+			this.referee.endTurn();
+
+			expect(() => {
+				this.exchange({ bois: 4 }, { ble: 2, mouton: 2 });
+			}).toThrowError(/Not the correct step/i);
+		});
+	});
 });

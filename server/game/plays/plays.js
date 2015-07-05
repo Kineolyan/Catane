@@ -1,5 +1,6 @@
 import Location from 'server/elements/geo/location';
 import Path from 'server/elements/geo/path';
+import { idGenerator } from 'server/game/util';
 
 function getTileLocation(request) {
 	return new Location(request.tile.x, request.tile.y);
@@ -20,7 +21,10 @@ function getPath(request) {
 }
 
 export class Plays {
-	constructor() {}
+	constructor() {
+		this._exchanges = new Map();
+		this._exchangeIds = idGenerator();
+	}
 
 	register(player) {
 		player.on('play:pick:colony', (request) => {
@@ -110,10 +114,70 @@ export class Plays {
 			return { resources: player.resources, remaining: remaining };
 		});
 
-		player.on('play:resources:convert', ({ from: from, to: to }) => {
+		player.on('play:resources:convert', ({ from: from, to: to })=> {
 			player.game.convertResources(player, from, to);
 
 			return { resources: player.resources };
+		});
+
+		player.on('play:resources:offer', ({ to: other, give: givenResources, receive: gottenResources }) => {
+			var id = this._exchangeIds();
+			this._exchanges.set(id, { from: player.id, to: other, give: givenResources, receive: gottenResources });
+
+			// Send the request to the other player
+			var otherPlayer = player.game.getPlayer(other);
+			if (otherPlayer !== null) {
+				otherPlayer.emit('play:resources:offer', { exchange: {
+					id: id,
+					from: player.id,
+					give: gottenResources,
+					receive: givenResources
+				} });
+			} else {
+				throw new Error(`Player ${other} does not exist`);
+			}
+
+			return { exchange: { id: id } };
+		});
+
+		player.on('play:resources:exchange', ({ id: exchangeId, status: status }) => {
+			var exchange = this._exchanges.get(exchangeId);
+			if (exchange === undefined) {
+				throw new Error(`Unexisting exchange ${exchangeId}`);
+			}
+			if (exchange.to !== player.id) {
+				throw new Error(`Wrong receiver (${player.id}). This exchange is from ${exchange.from} to ${exchange.to}`);
+			}
+
+			var otherPlayer = player.game.getPlayer(exchange.from);
+			if (status === 'accept') {
+				player.game.exchangeResources(otherPlayer, player, exchange.give, exchange.receive);
+
+				// Remove the exchange from the list
+				this._exchanges.delete(exchangeId);
+
+				// Sends the updates to the players
+				var exchangeStatus = { id: exchangeId, status: 'done' };
+				otherPlayer.emit('play:resources:exchange', {
+					resources: otherPlayer.resources,
+					exchange: exchangeStatus
+				});
+				return {
+					resources: player.resources,
+					exchange: exchangeStatus
+				};
+			} else if (status === 'reject') {
+				// Remove the exchange from the list
+				this._exchanges.delete(exchangeId);
+
+				// Notifies both players
+				var message = { exchange: {
+					id: exchangeId,
+					status: 'cancelled'
+				}};
+				otherPlayer.emit('play:resources:exchange', message);
+				return message;
+			}
 		});
 
 		player.on('play:turn:end', () => {
