@@ -69,6 +69,18 @@ export default class Game {
 	}
 
 	/**
+	 * Gets the player of a given id.
+	 * @param {Integer} pId the player id
+	 * @return {Player|null} the player or null if it does not exist
+	 */
+	getPlayer(pId) {
+		for (let player of this._players) {
+			if (player.id === pId) { return player; }
+		}
+		return null;
+	}
+
+	/**
 	 * Picks a city for a player.
 	 * @param player the player wanting the location
 	 * @param location the location of the desired city
@@ -218,6 +230,40 @@ export default class Game {
 		player.useResources(ResourceCosts.CITY);
 
 		return city;
+	}
+
+	/**
+	 * Converts 4 player resources of type from into 1 resource of type to
+	 * @param {Player} player the player executing the action
+	 * @param from the type of resources to use
+	 * @param to the type of resources to create
+	 */
+	convertResources(player, from, to) {
+		this._referee.checkTurn(player);
+		this._referee.convertResources(from, 4);
+
+		var usedResources = {};
+		usedResources[from] = 4;
+		player.useResources(usedResources);
+		player.receiveResources([ to ]);
+	}
+
+	/**
+	 * Exchanges resources between two players.
+	 * @param player the player giving resources
+	 * @param otherPlayer the player receiving resources
+	 * @param givenResources the resources given in the exchange
+	 * @param gottenResources the resources obtained in the exchange
+	 */
+	exchangeResources(player, otherPlayer, givenResources, gottenResources) {
+		this._referee.checkTurn(player);
+		this._referee.exchangeResources(otherPlayer, givenResources, gottenResources);
+
+		player.useResources(givenResources);
+		otherPlayer.receiveResources(givenResources);
+
+		otherPlayer.useResources(gottenResources);
+		player.receiveResources(gottenResources);
 	}
 
 	/**

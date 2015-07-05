@@ -127,7 +127,7 @@ GameEnv.prototype = {
 		this.thieves = newThievesLocation;
 	},
 	setPlayerResources: function(index, resources) {
-		var player = this.players[index].player;
+		var player = isNaN(index) ? index.player : this.players[index].player;
 		player.useResources(player.resources);
 		player.receiveResources(resources);
 	}

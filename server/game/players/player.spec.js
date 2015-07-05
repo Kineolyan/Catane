@@ -65,10 +65,17 @@ describe('Player', function() {
 			expect(this.player.hasResources({ caillou: 1, bois: 3})).toBe(false);
 		});
 
-		it('support border cases', function() {
+		it('supports border cases', function() {
 			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
 			expect(this.player.hasResources({ bois: 2, mouton: 3 })).toBe(true);
 		});
+
+		/* jshint loopfunc: true */
+		for (let wrongCost of [ 'value', [], {}]) {
+			it(`rejects wrong cost such as '${wrongCost}'`, function () {
+				expect(() => this.player.hasResources({ bois: wrongCost })).toThrowError(TypeError, /is not a number/i);
+			});
+		}
 	});
 
 	describe('#receiveResources', function() {

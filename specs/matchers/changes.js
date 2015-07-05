@@ -39,17 +39,20 @@
 		testChange: function(previousValue, newValue) {
 			return !this.equal(previousValue, newValue);
 		},
-		generateMessage: function(pass, previousValue, newValue) {
+		defaultMessage: function(fromValue, toValue, pass, previousValue, newValue) {
 			return 'Expecting value'
 					+ (pass === true ? ' not' : '' )
-					+ ' to change from ' + previousValue
-					+ ' to ' + newValue
+					+ ' to change from ' + fromValue
+					+ ' to ' + toValue
 					+ '. Actual ('+ previousValue +' -> ' + newValue + ')';
 		},
 		by: function(increment) {
 			this.testChange = function(previousValue, newValue) {
 				return this.equal(previousValue + increment, newValue);
 			};
+			this.generateMessage = function(pass, previousValue, newValue) {
+				return this.defaultMessage(previousValue, previousValue + increment, pass, previousValue, newValue);
+			}
 		},
 		from: function(fromValue) {
 			var matcher = this;
@@ -62,13 +65,7 @@
 					matcher.testChange = function(previousValue, newValue) {
 						return this.equal(previousValue, fromValue) && this.equal(newValue, toValue);
 					};
-					matcher.generateMessage = function(pass, previousValue, newValue) {
-						return 'Expecting value'
-								+ (pass === true ? ' not' : '' )
-								+ ' to change from ' + fromValue
-								+ ' to ' + toValue
-								+ '. Actual ('+ previousValue +' -> ' + newValue + ')';
-					}
+					matcher.generateMessage = matcher.defaultMessage.bind(matcher, fromValue, toValue);
 				}
 			}
 		}

@@ -98,6 +98,8 @@ export default class Player {
 	 */
 	hasResources(costs) {
 		for (let [r, cost] of maps.entries(costs)) {
+			if (typeof cost !== 'number' || isNaN(cost)) { throw new TypeError(`Cost '${cost}' is not a number`); }
+
 			let quantity = this._resources[r] || 0;
 			if (quantity < cost) { return false; }
 		}
