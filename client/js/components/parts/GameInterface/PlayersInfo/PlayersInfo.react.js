@@ -50,7 +50,7 @@ export default class PlayersInfo extends MoreartyComponent {
         
         <Text ref="name" y={-5} x={15} fill="black" font={{'font-size':  '12px'}}>{name}</Text>
         
-        <Deck cards={me.cards} width={window.innerWidth / 2} height={40} />
+        <Deck cards={me.cards} width={window.innerWidth / 3} height={100} y={window.innerHeight - 220}/>
 
         <Group y={60}>
           {renderedPlayers}

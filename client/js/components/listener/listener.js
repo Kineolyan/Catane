@@ -14,6 +14,14 @@ class Listener {
     this._startManager.startListen();
     this._gameManager.startListen();
   }
+
+  get gameManager() {
+    return this._gameManager;
+  }
+
+  get startManager() {
+    return this._startManager;
+  }
 }
 
 

@@ -38,7 +38,8 @@ Socket.on(Globals.socket.init, (data) => {
           dice: {//dice
             enabled: false, //can throw
             rolling: false,  //is rolling
-            values: [1,1] //values on the dice
+            values: [1,1], //values on the dice
+            resources: {} //resources given by the dice
           },
           message: data.message //message displayed for the current status
         },
@@ -53,8 +54,7 @@ Socket.on(Globals.socket.init, (data) => {
 		var Bootstrap = ctx.bootstrap(GameReact);
 
     //activate the listener
-    var listener = new Listener(ctx);
-    listener.startListen();
+    Listener.startListen(ctx);
 
     React.render(<Bootstrap/>, document.getElementById('content'));
 });

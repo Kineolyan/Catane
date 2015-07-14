@@ -52,11 +52,25 @@ export default class GameManager extends Manager {
   /**
    * Roll the dice
    */
-  rollDice({dice: dice}) {
+  rollDice({dice: dice, resources: resources}) {
     this._binding.atomically()
                  .set('game.dice.values', Immutable.fromJS(dice))
                  .set('game.dice.rolling', true)
+                 .set('game.dice.resources', Immutable.fromJS(resources))
                  .commit();
+  }
+
+  /**
+   * Give some resouces to the current player
+   */
+  giveCards(resources) {
+    let players = this._binding.get('players').toJS();
+    let me = players.getMe();
+
+    me.giveCards(resources);
+
+    this._binding.set('players', Immutable.fromJS(players));
+
   }
 
   /**

@@ -17,18 +17,18 @@ export default class Deck extends React.Component {
   render() {
     
     var deckLength = this.props.cards.length,
-        index = 0,
         width = this.props.width,
         height = this.props.height;
 
-    var cards = this.props.cards.map(e => {
+    var cards = this.props.cards.map((e, index) => {
+      var size = width / (deckLength) - this.props.margin * (deckLength - 1);
       return <Card 
-                type={e.type} 
-                x={this.props.width * index + index ? this.props.margin : 0} 
+                type={e} 
+                x={(size + this.props.margin) * index} 
                 y={0}
-                width={width / (deckLength) - this.props.margin}
+                width={size}
                 height={height} 
-                key={index += 1}/>;
+                key={index} />;
     });
 
     return (

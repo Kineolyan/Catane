@@ -7,6 +7,9 @@ class Player {
     this._id = parseInt(id, 10);
     this._color = color;
     this._name = name;
+
+    this._cards = [];
+
   }
 
   get color() {
@@ -19,6 +22,10 @@ class Player {
 
   get name() {
     return this._name;
+  }
+
+  get cards() {
+    return this._cards;
   }
 
   set name(val) {
@@ -35,6 +42,16 @@ class Player {
 
   isMe() {
     return this._id === manager.myId;
+  }
+
+  giveCards(cards) {
+    for(let key in cards) {
+      if(cards.hasOwnProperty(key)) {
+        for(let i = 0; i < cards[key]; i += 1) {
+          this._cards.push(key);
+        }
+      }
+    }
   }
 
 }

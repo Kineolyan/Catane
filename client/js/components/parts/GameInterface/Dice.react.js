@@ -6,6 +6,7 @@
 */
 import Globals from 'client/js/components/libs/globals';
 import Socket from 'client/js/components/libs/socket';
+import Listener from 'client/js/components/listener/listener';
 
 import React from 'react';
 import {Group, Text} from 'react-art';
@@ -26,8 +27,6 @@ export default class Dice extends MoreartyComponent {
   }
   /**
    * Make the dice rolling
-   * @example
-   * result({first: 1, second: 3})
    */
   result() {
     var round = this.props.rolls;
@@ -47,6 +46,7 @@ export default class Dice extends MoreartyComponent {
           chg(parseInt(time, 10), initValues);
         } else {
           binding.set('rolling', false);
+          Listener.gameManager.giveCards(binding.get('resources').toJS());
         }
 
       }, time);
@@ -58,7 +58,6 @@ export default class Dice extends MoreartyComponent {
 
   /**
    * Launch the dice
-   * @return {[type]}
    */
   launch() {
     var binding = this.getDefaultBinding();
