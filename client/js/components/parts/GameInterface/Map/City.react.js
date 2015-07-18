@@ -31,7 +31,7 @@ export default class City extends React.Component {
 
   handleClick() {
     if(this.props.value.selectable) {
-      Socket.emit(Globals.socket.playPickColony, {colony: this.props.value.key});
+      Socket.emit(Globals.socket.playPickColony, { colony: this.props.value.key });
     }
   }
 }

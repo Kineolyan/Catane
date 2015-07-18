@@ -1,35 +1,35 @@
 import React from 'react';
-import {Group} from 'react-art';
+import { Group } from 'react-art';
 
 /**
  * Basic element of the map, handling basic mouse interaction
  */
 export default class MapElement extends React.Component {
 
-  constructor() {
-    super();
+	constructor() {
+		super();
 
-    this.state = {mouseIn: false};
-  }
+		this.state = { mouseIn: false };
+	}
 
-  render() {
+	render() {
 
-    return (<Group {...this.props} onMouseOver={this.mouseEnter.bind(this)} 
-                                   onMouseOut={this.mouseLeave.bind(this)} >
-              {this.props.children}
-            </Group>);
-  }
+		return (<Group {...this.props} onMouseOver={this.mouseEnter.bind(this)}
+		                               onMouseOut={this.mouseLeave.bind(this)}>
+			{this.props.children}
+		</Group>);
+	}
 
-  mouseEnter() {
-    if(this.props.value.selectable) {
-      window.document.body.style.cursor = 'pointer';
-    }
+	mouseEnter() {
+		if (this.props.value.selectable) {
+			window.document.body.style.cursor = 'pointer';
+		}
 
-    this.setState({mouseIn: true});
-  }
+		this.setState({ mouseIn: true });
+	}
 
-  mouseLeave() {
-    window.document.body.style.cursor = 'auto';
-    this.setState({mouseIn: false});
-  }
+	mouseLeave() {
+		window.document.body.style.cursor = 'auto';
+		this.setState({ mouseIn: false });
+	}
 }

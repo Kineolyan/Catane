@@ -333,7 +333,7 @@ describe('GameReferee', function() {
 		});
 
 		it('accepts if there are enough resources on both sides', function() {
-			this.exchange({ bois: 4}, { ble: 2, mouton: 2 });
+			this.exchange({ bois: 4 }, { ble: 2, mouton: 2 });
 		});
 
 		it('rejects if the giver does not have enough resources', function() {

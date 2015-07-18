@@ -34,7 +34,7 @@ export class AReferee {
 	 * One can build a colony if the location refers to a valid
 	 * spot, is not already owned and is not too close from
 	 * other colonies or cities.
-	 * @param location the location to consider
+	 * @param {Location} location the location to consider
 	 * @returns {boolean} true if one can build the colony
 	 */
 	canBuildColony(location) {
@@ -61,7 +61,7 @@ export class AReferee {
 
 	/**
 	 * Decides if the current player can build the given road.
-	 * @param  {Path} path the path to build
+	 * @param  {Path} askedPath path the path to build
 	 * @return {boolean} true if he can build
 	 */
 	canBuildRoad(askedPath) {
@@ -100,7 +100,7 @@ export class AReferee {
 	 * One can build a city if the location refers to a valid
 	 * colony, is owned by the current player and not already a city.
 	 * @param {Location} location the location to consider
-	 * @param {Player?} the player to test
+	 * @param {Player?} player the player to test
 	 * @returns {boolean} true if one can build the colony
 	 */
 	canBuildCity(location, player) {
@@ -146,7 +146,8 @@ export class PlacementReferee extends AReferee {
 
 	/**
 	 * Checks if the player can pick the city as its initial colony,
-	 * @param location the location of the desired city.
+	 * @param {Location} location the location of the desired city.
+	 * @throws Error if the action is not legal
 	 */
 	pickColony(location) {
 		if (this._step === PLACEMENT_STEPS.PICK_SPOT) {
@@ -163,7 +164,8 @@ export class PlacementReferee extends AReferee {
 	/**
 	 * Picks a path at a given position.
 	 * @param  {Location|Path} from the start location or the path
-	 * @param  {Location} to the end location or undefined
+	 * @param  {Location?} to the end location or undefined
+	 * @throws Error if the action is not legal
 	 */
 	pickPath(from, to) {
 		var path = to === undefined ? from : new Path(from, to);
@@ -219,6 +221,7 @@ export class GameReferee extends AReferee {
 
 	/**
 	 * Notifies that the players have dropped their resources after 7.
+	 * @throws Error if the action is not legal
 	 */
 	onResourcesDropped() {
 		if (this._step === GAME_STEPS.DROP_RESOURCES) {
@@ -246,6 +249,7 @@ export class GameReferee extends AReferee {
 	/**
 	 * Checks that the current player can settle on a colony.
 	 * @param  {Location} location the colony position
+	 * @throws Error if the action is not legal
 	 */
 	settleColony(location) {
 		if (this._step === GAME_STEPS.PLAY) {
@@ -263,6 +267,7 @@ export class GameReferee extends AReferee {
 	/**
 	 * Checks that the current player can build a road.
 	 * @param  {Path} path the path of the road
+	 * @throws Error if the action is not legal
 	 */
 	buildRoad(path) {
 		if (this._step === GAME_STEPS.PLAY) {
@@ -280,6 +285,7 @@ export class GameReferee extends AReferee {
 	/**
 	 * Checks that the current player can build a city.
 	 * @param  {Location} location the city position
+	 * @throws Error if the action is not legal
 	 */
 	buildCity(location) {
 		if (this._step === GAME_STEPS.PLAY) {
@@ -296,8 +302,9 @@ export class GameReferee extends AReferee {
 
 	/**
 	 * Checks if the current player can convert some resources
-	 * @param type type of the resources to convert
-	 * @param quantity the number of resources to convert
+	 * @param {String} type type of the resources to convert
+	 * @param {Number} quantity the number of resources to convert
+	 * @throws Error if the action is not legal
 	 */
 	convertResources(type, quantity) {
 		if (this._step === GAME_STEPS.PLAY) {
@@ -314,9 +321,10 @@ export class GameReferee extends AReferee {
 
 	/**
 	 * Exchanges resources between two players.
-	 * @param otherPlayer the player receiving resources
-	 * @param givenResources the resources given in the exchange
-	 * @param gottenResources the resources obtained in the exchange
+	 * @param {Player} otherPlayer the player receiving resources
+	 * @param {Object} givenResources the resources given in the exchange
+	 * @param {Object} gottenResources the resources obtained in the exchange
+	 * @throws Error if the action is not legal
 	 */
 	exchangeResources(otherPlayer, givenResources, gottenResources) {
 		if (this._step === GAME_STEPS.PLAY) {
@@ -342,6 +350,6 @@ export class GameReferee extends AReferee {
 	}
 
 	hasRemainingRequiredActions() {
-		return this._step <+ GAME_STEPS.PLAY;
+		return this._step < GAME_STEPS.PLAY;
 	}
 }

@@ -174,7 +174,7 @@ export class Plays {
 				var message = { exchange: {
 					id: exchangeId,
 					status: 'cancelled'
-				}};
+				} };
 				otherPlayer.emit('play:resources:exchange', message);
 				return message;
 			}

@@ -24,7 +24,8 @@ var sockets = {
   /**
    * Emit some data
    * @param  {String} event         The channel to emit data
-   * @param  {[type]} data          The data
+   * @param  {*} data          The data
+   * @return {*} ??
    */
   emit(event, data) {
     return socket.emit(event, data);

@@ -3,53 +3,53 @@ import 'client/js/components/libs/test';
 import Players from 'client/js/components/common/players';
 
 describe('The player helper', function() {
-  
-  beforeEach(function() {
-    Players.deleteAll();
-    this.player = Players.createPlayer(1, 'bob', 'green');
-  });
 
-  describe('should create a player', function() {
+	beforeEach(function() {
+		Players.deleteAll();
+		this.player = Players.createPlayer(1, 'bob', 'green');
+	});
 
-    it('should be able to create a player', function() {
-      expect(this.player).not.toBeFalsy();
-    });
+	describe('should create a player', function() {
 
-    it('#color', function() {
-      expect(this.player.color).toEqual('green');
-    });
+		it('should be able to create a player', function() {
+			expect(this.player).not.toBeFalsy();
+		});
 
-    it('#name', function() {
-      expect(this.player.name).toEqual('bob');
-    });
+		it('#color', function() {
+			expect(this.player.color).toEqual('green');
+		});
 
-    it('#id', function() {
-      expect(this.player.id).toEqual(1);
-    });
+		it('#name', function() {
+			expect(this.player.name).toEqual('bob');
+		});
 
-    it('and can get \'me\' ', function() {
+		it('#id', function() {
+			expect(this.player.id).toEqual(1);
+		});
 
-      this.other = Players.createPlayer(2, 'jean', 'yellow');
-      Players.myId = 1;
-      expect(Players.getMe()).toBe(this.player);
-    });
-  });
+		it('and can get \'me\' ', function() {
 
-  it('delete the others players', function() {
-    this.other = Players.createPlayer(2, 'jean', 'yellow');
-    Players.myId = 1;
-    Players.deleteOthers();
-    expect(Players.getMap().size).toEqual(1);
-  });
+			this.other = Players.createPlayer(2, 'jean', 'yellow');
+			Players.myId = 1;
+			expect(Players.getMe()).toBe(this.player);
+		});
+	});
 
-  it('can create from JS', function() {
-    var players = Players.createFromJS({id : 2, name: 'jean', color: 'red'});
-    Players.myId = 2;
-    expect(Players.getMe()).toBe(players);
-  });
+	it('delete the others players', function() {
+		this.other = Players.createPlayer(2, 'jean', 'yellow');
+		Players.myId = 1;
+		Players.deleteOthers();
+		expect(Players.getMap().size).toEqual(1);
+	});
 
-  it('can be exported to JS', function() {
-    expect(JSON.stringify(Players.toJS())).toEqual(JSON.stringify([this.player]));
-  });
-  
+	it('can create from JS', function() {
+		var players = Players.createFromJS({ id: 2, name: 'jean', color: 'red' });
+		Players.myId = 2;
+		expect(Players.getMe()).toBe(players);
+	});
+
+	it('can be exported to JS', function() {
+		expect(JSON.stringify(Players.toJS())).toEqual(JSON.stringify([this.player]));
+	});
+
 });

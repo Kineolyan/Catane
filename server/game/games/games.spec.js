@@ -8,7 +8,7 @@ describe('Games', function() {
 		this.games = new Games();
 	});
 
-	describe("on creation", function() {
+	describe('on creation', function() {
 		it('has no games', function() {
 			expect(this.games.list()).toBeEmpty(0);
 		});
@@ -34,7 +34,7 @@ describe('Games', function() {
 	describe('#list', function() {
 		beforeEach(function() {
 			this.gamesList = [];
-			for (let i = 0; i < 3; i+= 1) { this.gamesList.push(this.games.create()); }
+			for (let i = 0; i < 3; i += 1) { this.gamesList.push(this.games.create()); }
 		});
 
 		it('returns 3 games', function() {
@@ -50,7 +50,7 @@ describe('Games', function() {
 			this.games.register(this.player);
 
 			let lastGame;
-			for (let i = 0; i < 3; i+= 1) {
+			for (let i = 0; i < 3; i += 1) {
 				lastGame = this.games.create();
 			}
 			this.lastGameId = lastGame.id;

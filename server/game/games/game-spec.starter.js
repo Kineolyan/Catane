@@ -67,11 +67,11 @@ GameEnv.prototype = {
 	},
 	/**
 	 * Picks a city and a road for the given player.
-	 * @param player the player acting
-	 * @param cityX the x-coordinate of the city
-	 * @param cityY the y-coordinate of the city
-	 * @param toX the x-coordinate of the road end
-	 * @param toY the y-coordinate of the road end
+	 * @param {Object} player the player acting
+	 * @param {Number} cityX the x-coordinate of the city
+	 * @param {Number} cityY the y-coordinate of the city
+	 * @param {Number} toX the x-coordinate of the road end
+	 * @param {Number} toY the y-coordinate of the road end
 	 */
 	pick: function pick(player, cityX, cityY, toX, toY) {
 		player.client.receive('play:pick:colony', { colony: { x: cityX, y: cityY } });
@@ -89,6 +89,7 @@ GameEnv.prototype = {
 	},
 	/**
 	 * Rolls the dice for the current player
+	 * @param {Object} player the player that rolls
 	 */
 	rollDice: function(player) {
 		player.client.receive('play:roll-dice');

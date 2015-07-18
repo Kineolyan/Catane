@@ -26,8 +26,9 @@ export default class Location {
 
 	/**
 	 * Creates a shifted location by a given indent.
-	 * @param x x shift
-	 * @param y y shift
+	 * @param {Number} x x shift
+	 * @param {Number} y y shift
+	 * @return {Location} the shifted location
 	 */
 	shift(x, y) {
 		return new Location(this.x + x, this.y + y);

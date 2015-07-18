@@ -8,7 +8,7 @@ describe('DropResourcesDelegate', function() {
 		this.p2 = starter.createLocalPlayer().player;
 
 		this.referee = {
-			players: [ this.p1, this.p2 ]
+			players: [this.p1, this.p2]
 		};
 	});
 
@@ -38,15 +38,15 @@ describe('DropResourcesDelegate', function() {
 		});
 
 		it('removes the resources from the player', function() {
-			this.delegate.dropResources(this.p1, { ble: 3, bois: 3});
-			expect(this.p1.resources).toEqual({ ble: 2, bois: 1, tuile: 3});
+			this.delegate.dropResources(this.p1, { ble: 3, bois: 3 });
+			expect(this.p1.resources).toEqual({ ble: 2, bois: 1, tuile: 3 });
 		});
 
 		it('gives the number of remaining', function() {
-			var remaining = this.delegate.dropResources(this.p1, { ble: 2, bois: 2});
+			var remaining = this.delegate.dropResources(this.p1, { ble: 2, bois: 2 });
 			expect(remaining).toEqual(2);
 
-			remaining = this.delegate.dropResources(this.p1, { ble: 1, bois: 1});
+			remaining = this.delegate.dropResources(this.p1, { ble: 1, bois: 1 });
 			expect(remaining).toEqual(0);
 		});
 	});
@@ -60,7 +60,7 @@ describe('DropResourcesDelegate', function() {
 
 		it('gives the count of remaining resources per player', function() {
 			var expected = {};
-			expected[this.p1.id]= 6;
+			expected[this.p1.id] = 6;
 			expected[this.p2.id] = 4;
 			expect(this.delegate.remainingList).toEqual(expected);
 		});
@@ -95,7 +95,7 @@ describe('DropResourcesDelegate', function() {
 			});
 
 			it('lets drop all resources in a single call', function() {
-				this.delegate.dropResources(this.p1, { ble: 3, bois: 3});
+				this.delegate.dropResources(this.p1, { ble: 3, bois: 3 });
 				this.delegate.dropResources(this.p2, { ble: 4 });
 
 				expect(this.delegate.allResourcesDropped()).toBe(true);

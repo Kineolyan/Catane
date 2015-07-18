@@ -16,7 +16,7 @@ if (global.window.localStorage === undefined) {
 	};
 }
 
-//better requestAnimationFrame polyfill than morearty (not overkilling the node process)
+// better requestAnimationFrame polyfill than morearty (not overkilling the node process)
 if (global.window.requestAnimationFrame === undefined) {
 	var lastTime = 0;
 

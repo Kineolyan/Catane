@@ -12,22 +12,22 @@ export default class Socket {
 	}
 
 	on(channel, cbk) {
-		var me = this;
+		var self = this;
 		this._socket.on(channel, function() {
 			try {
 				var response = cbk.apply(undefined, arguments);
 				if (response !== undefined) {
 					if (response instanceof Object) {
 						response._success = true;
-						me.emit(channel, response);
+						self.emit(channel, response);
 					} else {
-						me.emit(channel, { _success: response === true });
+						self.emit(channel, { _success: response === true });
 					}
 				}
 			} catch (e) {
 				logger.error(`#${channel} > {${e.name}} ${e.message}\n${e.stack}`);
 
-				me.emit(channel, {
+				self.emit(channel, {
 					_success: false,
 					message: `[${e.name}] ${e.message}`,
 					stacktrace: e.stack

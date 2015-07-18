@@ -1,13 +1,13 @@
 'use strict';
 
-/* 
-  React component containing the whole game interface
-*/
+/*
+ React component containing the whole game interface
+ */
 
 import Globals from 'client/js/components/libs/globals';
 import Socket from 'client/js/components/libs/socket';
 
-import React from 'react';
+import React from 'react'; // eslint-disable-line no-unused-vars
 import reactBoostrap from 'react-bootstrap';
 
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
@@ -17,44 +17,44 @@ var Glyphicon = reactBoostrap.Glyphicon;
 
 export default class Player extends MoreartyComponent {
 
-  /**
-   * Render the player interface
-   * @return {React.Element} the rendered element
-   */
-  render() {
-    var btn, 
-        room,
-        binding = this.getDefaultBinding(),
-        me = binding.get('players').toJS().getMe();
+	/**
+	 * Render the player interface
+	 * @return {React.Element} the rendered element
+	 */
+	render() {
+		var btn,
+				room,
+				binding = this.getDefaultBinding(),
+				me = binding.get('players').toJS().getMe();
 
-    btn = (<Button bsSize="small" className={'pull-right'} ref="modify" onClick={this.triggerChangeName.bind(this)}>
-                Change <Glyphicon glyph="pencil" />
-            </Button>);
+		btn = (<Button bsSize="small" className={'pull-right'} ref="modify" onClick={this.triggerChangeName.bind(this)}>
+			Change <Glyphicon glyph="pencil"/>
+		</Button>);
 
-    if(binding.get('start.gameChosen.id')) {
-      room = <span>/ Room #{binding.get('start.gameChosen.id')}</span>;
-    }
+		if (binding.get('start.gameChosen.id')) {
+			room = <span>/ Room #{binding.get('start.gameChosen.id')}</span>;
+		}
 
-    return (
-      <div className={'player clearfix'}>
-        <div className={'name pull-left'}>
-          {me.name} {room}
-          
-        </div>
-        {btn}
+		return (
+				<div className={'player clearfix'}>
+					<div className={'name pull-left'}>
+						{me.name} {room}
 
-      </div>
-    );
-  }
+					</div>
+					{btn}
 
-  /**
-   * Ask to change the name
-   */
-  triggerChangeName() {
-    var name = window.prompt('What\'s your name ?');
+				</div>
+		);
+	}
 
-    Socket.emit(Globals.socket.playerNickname, name);
-  }
+	/**
+	 * Ask to change the name
+	 */
+	triggerChangeName() {
+		var name = window.prompt('What\'s your name ?');
+
+		Socket.emit(Globals.socket.playerNickname, name);
+	}
 
 }
 

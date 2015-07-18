@@ -32,7 +32,7 @@ export default class Games {
 			if (game) {
 				this.join(game, player);
 
-				this.broadcastPlayers(game);
+				Games.broadcastPlayers(game);
 				return { id: gameId };
 			} else {
 				throw new Error('unknown game ' + gameId);
@@ -111,7 +111,7 @@ export default class Games {
 
 	/**
 	 * Destroys a game.
-	 * @param {Game} the game to destroy
+	 * @param {Game} game the game to destroy
 	 */
 	destroy(game) {
 		if (game.players.size === 0) {
@@ -138,7 +138,7 @@ export default class Games {
 			leavedGame.remove(player);
 
 			if (leavedGame.players.size > 0) {
-				this.broadcastPlayers(leavedGame);
+				Games.broadcastPlayers(leavedGame);
 			} else {
 				this.destroy(leavedGame);
 				player.all('game:list', { games: this.list() });
@@ -153,7 +153,7 @@ export default class Games {
 	quit(game, player) {
 		if (game.remove(player)) {
 			if (game.players.size > 0) {
-				this.broadcastPlayers(game);
+				Games.broadcastPlayers(game);
 			} else {
 				this.destroy(game);
 				player.all('game:list', { games: this.list() });
@@ -166,9 +166,9 @@ export default class Games {
 
 	/**
 	 * Broadcasts players list to all players of a game.
-	 * @param  {Players} game players of the game to consider
+	 * @param  {Game} game players of the game to consider
 	 */
-	broadcastPlayers(game) {
+	static broadcastPlayers(game) {
 		var players = Array.from(game.players, (player) => ({ name: player.name, id: player.id }));
 		game.emit('game:players', {
 			_success: true,

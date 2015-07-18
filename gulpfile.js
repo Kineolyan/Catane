@@ -7,14 +7,12 @@ process.env.NODE_PATH = path.join(__dirname, 'build');
 require('module').Module._initPaths();
 
 var fs = require('fs');
-var path = require('path');
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var del = require('del');
 var cached = require('gulp-cached');
-var remember = require('gulp-remember');
 var jas = require('gulp-jasmine');
-var jshint = require('gulp-jshint');
+var eslint = require('gulp-eslint');
 var babel = require('gulp-babel');
 var browserify = require('browserify');
 var notify = require('gulp-notify');
@@ -161,16 +159,15 @@ gulp.task('test:js:client', [ 'build:js:client', 'test:js:server' ], testJsClien
 gulp.task('test:js', [ 'test:js:server', 'test:js:client' ]);
 
 gulp.task('test:lint', function () {
-	// Temporary deactivate lint since jsHint does not support server code.
-	//return gulp.src([
-	//	PATHS.bin('*.js'),
-	//	PATHS.client('**/*.js'),
-	//	PATHS.server('**/*.js')
-	//]).pipe(plumber({ errorHandler: notify.onError("test:lint : <%= error.message %>") }))
-	//		.pipe(jshint(/*{ linter: require('jshint-jsx').JSXHINT }*/))
-	//		.pipe(jshint.reporter('default'))
-	//		.pipe(jshint.reporter('fail'))
-	//		.pipe(plumber.stop());
+	return gulp.src([
+		PATHS.bin('*.js'),
+		PATHS.client('**/*.js'),
+		PATHS.server('**/*.js')
+	])//.pipe(plumber({ errorHandler: notify.onError("test:lint : <%= error.message %>") }))
+			.pipe(eslint())
+			.pipe(eslint.formatEach('stylish'))
+			.pipe(eslint.failOnError());
+			//.pipe(plumber.stop());
 });
 
 gulp.task('test', [ 'test:js', 'test:lint' ]);
@@ -279,7 +276,7 @@ gulp.task('develop', function() {
  * This will perform all actions to build and test the application.
  */
 gulp.task('do_the_thing', function () {
-	runSequence('clean', 'build', 'test', 'docs:install', function () {
+	runSequence('clean', 'build', 'test', function () {
 		console.log('All things are done Sir :)');
 		process.exit();
 	});
