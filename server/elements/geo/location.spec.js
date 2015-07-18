@@ -33,7 +33,7 @@ describe('Location', function() {
 
 	describe('#toJson', function() {
 		it('returns a object representing the location', function() {
-			var point = new Location(1,2);
+			var point = new Location(1, 2);
 			expect(point.toJson()).toEqual({ x: 1, y: 2 });
 		});
 	});

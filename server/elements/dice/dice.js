@@ -6,7 +6,8 @@ export default class Dice {
 		this.nbOfFaces = nbOfFaces;
 	}
 	/**
-	 * Rolls the dice
+	 * Rolls the dice.
+	 * @return {Number} the value picked up
 	 */
 	roll() {
 		return Math.ceil(Math.random() * this.nbOfFaces);

@@ -14,7 +14,7 @@ describe('StartManager', function() {
 
 	describe('update player list', function() {
 		beforeEach(function() {
-			this.mgr.updatePlayerList({players: [{id: 1, name: 'bob'}, {id: 2, name: 'tom'}]});
+			this.mgr.updatePlayerList({ players: [{ id: 1, name: 'bob' }, { id: 2, name: 'tom' }] });
 		});
 
 		it('has all the players', function() {
@@ -22,7 +22,7 @@ describe('StartManager', function() {
 		});
 
 		it('reset if updated again', function() {
-			this.mgr.updatePlayerList({players: [{id: 1, name: 'bob'}]});
+			this.mgr.updatePlayerList({ players: [{ id: 1, name: 'bob' }] });
 			expect(this.binding.get('players').toJS().getMap().size).toEqual(1);
 		});
 	});
@@ -30,13 +30,13 @@ describe('StartManager', function() {
 	it('update one player\'s nickname', function() {
 		expect(this.binding.get('players').toJS().getMe().name).toEqual('Bob');
 
-		this.mgr.updatePlayerNickname({player: {id: 1, name: 'tom'}});
+		this.mgr.updatePlayerNickname({ player: { id: 1, name: 'tom' } });
 
 		expect(this.binding.get('players').toJS().getMe().name).toEqual('tom');
 	});
 
 	it('start the game', function() {
-		this.mgr.startGame({board: {}});
+		this.mgr.startGame({ board: {} });
 
 		expect(this.binding.get('step')).toEqual(Globals.step.prepare);
 		expect(this.binding.get('game.board').toJS()).toBeDefined();
@@ -45,32 +45,32 @@ describe('StartManager', function() {
 	describe('leave the current game', function() {
 
 		it('remove all the others players', function() {
-			this.binding.set('start.gameChosen', Immutable.fromJS({id: 1}));
-			this.mgr.updatePlayerList({players: [{id: 1, name: 'bob'}, {id: 2, name: 'tom'}]});
+			this.binding.set('start.gameChosen', Immutable.fromJS({ id: 1 }));
+			this.mgr.updatePlayerList({ players: [{ id: 1, name: 'bob' }, { id: 2, name: 'tom' }] });
 			this.mgr.quitGame();
 
 			expect(this.binding.get('players').toJS().getMap().size).toEqual(1);
 		});
-		
+
 		it('disable the current gameChosen', function() {
 			expect(this.binding.get('start.gameChosen').toJS()).toEqual({});
 		});
 	});
 
 	it('create some game', function() {
-		this.mgr.gameCreate({game: {id: 2}});
-		expect(this.binding.get('start.gameChosen').toJS()).toEqual({id: 2});
+		this.mgr.gameCreate({ game: { id: 2 } });
+		expect(this.binding.get('start.gameChosen').toJS()).toEqual({ id: 2 });
 	});
 
 	it('update the list of available games', function() {
-		this.mgr.updateGameList({games: [{id: 2}, {id: 3}]});
-		expect(this.binding.get('start.games').toJS()).toEqual([{id: 2}, {id: 3}]);
+		this.mgr.updateGameList({ games: [{ id: 2 }, { id: 3 }] });
+		expect(this.binding.get('start.games').toJS()).toEqual([{ id: 2 }, { id: 3 }]);
 	});
 
 	it('can join a game', function() {
-		this.mgr.updateGameList({games: [{id: 2}, {id: 3}]});
-		this.mgr.gameJoin({id: 2});
-		expect(this.binding.get('start.gameChosen').toJS()).toEqual({id: 2});
+		this.mgr.updateGameList({ games: [{ id: 2 }, { id: 3 }] });
+		this.mgr.gameJoin({ id: 2 });
+		expect(this.binding.get('start.gameChosen').toJS()).toEqual({ id: 2 });
 
 	});
 });

@@ -7,8 +7,7 @@
 
 import Globals from 'client/js/components/libs/globals';
 
-import React from 'react';
-
+import React from 'react'; // eslint-disable-line no-unused-vars
 import StartInterface from 'client/js/components/parts/StartInterface/StartInterface.react';
 import GameInterface from 'client/js/components/parts/GameInterface/GameInterface.react';
 import Reconnect from 'client/js/components/parts/Reconnect.react.js';

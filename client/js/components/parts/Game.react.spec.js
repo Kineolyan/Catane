@@ -14,7 +14,7 @@ describe('A game', function() {
   beforeEach(function() {
     this._ctx = tests.getCtx();
     var GameB = this._ctx.bootstrap(Game);
-    this.game= utils.renderIntoDocument(<GameB />);
+    this.game = utils.renderIntoDocument(<GameB />);
   });
 
   it('should start with the start interface', function() {

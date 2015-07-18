@@ -7,6 +7,12 @@ import { RandomResources } from './resources';
 import * as geo from 'server/elements/geo/geo';
 
 export class RoundGenerator {
+	/**
+	 * Constructor
+	 * @param {Number} nbRings number of rings for the map.
+	 *  The center counts for 1 ring.
+	 * @throws Error for nbRings < 1
+	 */
 	constructor(nbRings) {
 		if (nbRings < 1) {
 			throw new Error(`Nb of rings must be higher than 1. ${nbRings} provided`);
@@ -41,6 +47,7 @@ export class RoundGenerator {
 
 	/**
 	 * Generates all the content once for all.
+	 * @param {Number} nbRings number of rings for the map
 	 */
 	generate(nbRings) {
 		var previousRing = [ this.createTile(0, 0) ];
@@ -57,6 +64,7 @@ export class RoundGenerator {
 	/**
 	 * Creates tiles surrounding a certain tile.
 	 * @param  {Tile} center center tile
+	 * @return {Array} the created tiles around the given center
 	 */
 	createSurroundingTiles(center) {
 		var newTiles = [];

@@ -37,8 +37,8 @@ export class MockSocket {
 
 	/**
 	 * Records all listened channels and their respectives actions.
-	 * @param  {String} channel to listen to
-	 * @param  {Function} action to perform
+	 * @param  {String} channel channel to listen to
+	 * @param  {Function} cbk action to perform
 	 */
 	on(channel, cbk) {
 		this._channels[channel] = cbk;
@@ -46,8 +46,8 @@ export class MockSocket {
 
 	/**
 	 * Emits a message on the channel
-	 * @param  {String} channel
-	 * @param  {Object} message
+	 * @param  {String} channel name of the channel
+	 * @param  {Object} message content of the message
 	 */
 	emit(channel, message) {
 		this._messages[channel] = this._messages[channel] || [];
@@ -60,8 +60,8 @@ export class MockSocket {
 	/**
 	 * Simulates the reception of a message on a given channel.
 	 * This will call the registered callback if any or throw.
-	 * @param  {String} channel
-	 * @param  {Object} message
+	 * @param  {String} channel name of the channel
+	 * @param  {Object?} message content to receive
 	 * @return {Object} last message received on the channel
 	 */
 	receive(channel, message) {
@@ -77,7 +77,7 @@ export class MockSocket {
 
 	/**
 	 * Gets if the socket is listening for a given channel.
-	 * @param  {String} channel to test
+	 * @param  {String} channel name of the channel to test
 	 * @return {Boolean} true if listening, false otherwise
 	 */
 	isListening(channel) {
@@ -96,7 +96,7 @@ export class MockSocket {
 	/**
 	 * Gets the last message of a channel
 	 * @param  {String} channel the channel to fetch
-	 * @return {Array<Object>} last message received on the channel (null if the message was empty)
+	 * @return {Object} last message received on the channel (null if the message was empty)
 	 *  or undefined if there are no messages.
 	 */
 	lastMessage(channel) {

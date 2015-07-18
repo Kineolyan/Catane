@@ -16,7 +16,7 @@ describe('Tile', function() {
 		});
 
 		it('create "tuile"', function() {
-			expect(this.tile.resource).toEqual("tuile");
+			expect(this.tile.resource).toEqual('tuile');
 		});
 
 		it('has no cities', function() {

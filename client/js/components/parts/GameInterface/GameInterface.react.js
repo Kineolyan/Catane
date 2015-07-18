@@ -4,9 +4,9 @@
   React component containing the game interface
 */
 
-import React from 'react';
-import {Surface} from 'react-art';
+import { Surface } from 'react-art';
 
+import React from 'react'; // eslint-disable-line no-unused-vars
 import MapReact from 'client/js/components/parts/GameInterface/Map/Map.react';
 import DiceReact from 'client/js/components/parts/GameInterface/Dice.react';
 import PlayersInfo from 'client/js/components/parts/GameInterface/PlayersInfo/PlayersInfo.react';

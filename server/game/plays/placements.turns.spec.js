@@ -58,7 +58,7 @@ describe('Placement turn management', function() {
 			it('provides gained resources to the player', function() {
 				var message = this.p1.client.lastMessage('play:pick:colony');
 				var totalResources = 0;
-				for ( let [ , count ] of maps.entries(message.resources)) {
+				for ( let [, count ] of maps.entries(message.resources)) {
 					totalResources += count;
 				}
 				expect(totalResources).toBeIn([ 2, 3 ]);
