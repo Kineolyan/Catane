@@ -15,7 +15,7 @@ describe('Path', function() {
 		});
 
 		it('throws with identic locations', function() {
-			expect( () => new Path(new Location(1, 3), new Location(1, 3)) ).toThrow();
+			expect(() => new Path(new Location(1, 3), new Location(1, 3))).toThrow();
 		});
 	});
 
@@ -41,16 +41,16 @@ describe('Path', function() {
 				new Location(0, -1),
 				new Location(1, -1)
 			].forEach(function(location) {
-				it(`does not depend on the order for ${center.toString()} and ${location.toString()}`, function() {
-					expect(new Path(center, location).hashCode()).toEqual(new Path(location, center).hashCode());
-				});
-			});
+						it(`does not depend on the order for ${center.toString()} and ${location.toString()}`, function() {
+							expect(new Path(center, location).hashCode()).toEqual(new Path(location, center).hashCode());
+						});
+					});
 		});
 	});
 
 	describe('#toJson', function() {
 		it('returns a object representing the path', function() {
-			var path = new Path(new Location(1,2), new Location(3, 4));
+			var path = new Path(new Location(1, 2), new Location(3, 4));
 			expect(path.toJson()).toEqual({ from: { x: 1, y: 2 }, to: { x: 3, y: 4 } });
 		});
 	});

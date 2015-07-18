@@ -1,18 +1,10 @@
 var util = require('util');
 
-export function createLogger(level = Level.DEFAULT) {
-	switch(level) {
-	case Level.SILENT:
-		return new SilentLogger();
-
-	case Level.ALL:
-		return new DebugLogger();
-
-	default:
-	case Level.DEFAULT:
-		return new ProductionLogger();
-	}
-}
+export const Level = {
+	ALL: Symbol('All'),
+	SILENT: Symbol('Silent'),
+	DEFAULT: Symbol('Default')
+};
 
 export class DebugLogger {
 	error() {
@@ -51,8 +43,16 @@ export class SilentLogger extends ProductionLogger {
 	info() {}
 }
 
-export const Level = {
-	ALL: Symbol('All'),
-	SILENT: Symbol('Silent'),
-	DEFAULT: Symbol('Default')
-};
+export function createLogger(level = Level.DEFAULT) {
+	switch(level) {
+		case Level.SILENT:
+			return new SilentLogger();
+
+		case Level.ALL:
+			return new DebugLogger();
+
+		default:
+		case Level.DEFAULT:
+			return new ProductionLogger();
+	}
+}

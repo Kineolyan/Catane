@@ -1,68 +1,67 @@
 'use strict';
 
-/* 
-  React component containing all the players informations
-*/
+/*
+ React component containing all the players informations
+ */
 
-import React from 'react';
-import {Group, Text} from 'react-art';
+import { Group, Text } from 'react-art';
 import Circle from 'react-art/shapes/circle';
 
+import React from 'react'; // eslint-disable-line no-unused-vars
 import Deck from 'client/js/components/parts/GameInterface/PlayersInfo/Deck.react';
 import OtherPlayer from 'client/js/components/parts/GameInterface/PlayersInfo/OtherPlayer.react';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 export default class PlayersInfo extends MoreartyComponent {
 
-  /**
-   * Render the whole map of the game
-   * @return {React.Element} the rendered element
-   */
-  render() {
+	/**
+	 * Render the whole map of the game
+	 * @return {Object} the rendered element
+	 */
+	render() {
+		var binding = this.getDefaultBinding();
+		var players = binding.get('players').toJS();
+		var index = 0,
+				renderedPlayers = [],
+				color = 'white',
+				me = players.getMe(),
+				name = '';
 
-    var binding = this.getDefaultBinding();
-    var players = binding.get('players').toJS();
-    var index = 0, 
-        renderedPlayers = [],
-        color = 'white',
-        me = players.getMe(),
-        name = '';
+		if (me) {
+			color = me.color;
+			name = me.name;
+		}
 
-    if(me) {
-      color = me.color;
-      name = me.name;
-    }
+		players.getMap().forEach((element) => {
+			if (!element.isMe()) {
+				renderedPlayers.push(<OtherPlayer key={index}
+				                                  index={index}
+				                                  color={element.color}
+				                                  name={element.name}
+						{...element} />);
+				index += 1;
+			}
+		});
 
-    players.getMap().forEach((element) => {
-      if(!element.isMe()) {
-        renderedPlayers.push(<OtherPlayer key={index}
-                                          index={index}
-                                          color={element.color}
-                                          name={element.name}
-                                          {...element} />);
-        index += 1;
-      }
-    });
+		return (
+				<Group x={this.props.x} y={this.props.y}>
+					<Circle radius={10} fill={color} stroke="black"/>
 
-    return (
-      <Group x={this.props.x} y={this.props.y}>
-        <Circle radius={10} fill={color} stroke="black" />
-        
-        <Text ref="name" y={-5} x={15} fill="black" font={{'font-size':  '12px'}}>{name}</Text>
-        
-        <Deck cards={me.cards} width={window.innerWidth / 3} height={100} y={window.innerHeight - 220}/>
+					<Text ref="name" y={-5} x={15} fill="black" font={{ 'font-size': '12px' }}>{name}</Text>
 
-        <Group y={60}>
-          {renderedPlayers}
-        </Group>
-      </Group>
-    );
-  }
+					<Deck cards={me.cards} width={window.innerWidth / 3} height={100} y={window.innerHeight - 220}/>
+
+					<Group y={60}>
+						{renderedPlayers}
+					</Group>
+				</Group>
+		);
+	}
 }
 
 PlayersInfo.defaultProps = {
-    x: 0,
-    y: 0
+	x: 0,
+	y: 0
 };
 
 PlayersInfo.displayName = 'PlayersInfo';

@@ -9,7 +9,6 @@ class Player {
     this._name = name;
 
     this._cards = [];
-
   }
 
   get color() {

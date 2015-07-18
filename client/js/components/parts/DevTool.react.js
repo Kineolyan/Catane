@@ -1,5 +1,4 @@
 import Immutable from 'immutable';
-import React from 'react';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 import Bootstrap from 'react-bootstrap';
 
@@ -34,11 +33,11 @@ export default class DevTool extends MoreartyComponent {
 		var localInput = null;
 		if (localInfo !== undefined) {
 			localInput = <Button onClick={this.restore.bind(this)}>
-					<Glyphicon glyph={"play-circle"}/>
-				</Button>;
+				<Glyphicon glyph={"play-circle"}/>
+			</Button>;
 		}
 
-		return (<div id="dev" className={opened ? "open" : ""}>
+		return (<div id="dev" className={opened ? 'open' : ''}>
 			{ opened ?
 					<Glyphicon className={"pull-right"} glyph={"remove"}
 					           onClick={this.close.bind(this)}/> :
@@ -111,7 +110,9 @@ export default class DevTool extends MoreartyComponent {
 	}
 
 	setContext({ board: board }, ctx) {
-		if (ctx === undefined) { ctx = this.getDefaultBinding(); }
+		if (ctx === undefined) {
+			ctx = this.getDefaultBinding();
+		}
 		return ctx
 				.set('game.board', Immutable.fromJS(MapHelper.init(board)))
 				.set('step', Globals.step.started);

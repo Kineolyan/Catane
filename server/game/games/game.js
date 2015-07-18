@@ -69,9 +69,21 @@ export default class Game {
 	}
 
 	/**
+	 * Gets the player of a given id.
+	 * @param {Number} pId the player id
+	 * @return {Player|null} the player or null if it does not exist
+	 */
+	getPlayer(pId) {
+		for (let player of this._players) {
+			if (player.id === pId) { return player; }
+		}
+		return null;
+	}
+
+	/**
 	 * Picks a city for a player.
-	 * @param player the player wanting the location
-	 * @param location the location of the desired city
+	 * @param {Player} player the player wanting the location
+	 * @param {Location} location the location of the desired city
 	 * @return {City} the picked colony
 	 * @throws if the rules prevent this operation
 	 */
@@ -92,8 +104,8 @@ export default class Game {
 
 	/**
 	 * Picks a path for a player.
-	 * @param player the player wanting the path
-	 * @param path the path desired
+	 * @param {Player} player the player wanting the path
+	 * @param {Path} path the path desired
 	 * @return {Path} the picked path
 	 * @throws if the rules prevent this operation
 	 */
@@ -140,8 +152,8 @@ export default class Game {
 
 	/**
 	 * Drops the resources of the player.
-	 * @param player {Player} the player dropping items
-	 * @param resources {Object} the map of resources to drop
+	 * @param {Player} player the player dropping items
+	 * @param {Object} resources the map of resources to drop
 	 * @return {Number} the count of remaining resources to drop
 	 */
 	dropResources(player, resources) {
@@ -157,8 +169,8 @@ export default class Game {
 
 	/**
 	 * Moves the thieves to a new tile.
-	 * @param player the player executing the move
-	 * @param tileLocation the new location for thieves
+	 * @param {Player} player the player executing the move
+	 * @param {Location} tileLocation the new location for thieves
 	 */
 	moveThieves(player, tileLocation) {
 		this._referee.checkTurn(player);
@@ -168,7 +180,7 @@ export default class Game {
 
 	/**
 	 * Creates a new colony at the given location.
-	 * @param player the player executing the action
+	 * @param {Player} player the player executing the action
 	 * @param  {Location} location the new location
 	 * @return {City} the picked colony
 	 */
@@ -204,7 +216,7 @@ export default class Game {
 
 	/**
 	 * Evolves the colony into city at the given location.
-	 * @param player the player executing the action
+	 * @param {Player} player the player executing the action
 	 * @param  {Location} location the colony location
 	 * @return {City} the built city
 	 */
@@ -221,9 +233,43 @@ export default class Game {
 	}
 
 	/**
+	 * Converts 4 player resources of type from into 1 resource of type to
+	 * @param {Player} player the player executing the action
+	 * @param {String} from the type of resources to use
+	 * @param {String} to the type of resources to create
+	 */
+	convertResources(player, from, to) {
+		this._referee.checkTurn(player);
+		this._referee.convertResources(from, 4);
+
+		var usedResources = {};
+		usedResources[from] = 4;
+		player.useResources(usedResources);
+		player.receiveResources([to]);
+	}
+
+	/**
+	 * Exchanges resources between two players.
+	 * @param {Player} player the player giving resources
+	 * @param {Player} otherPlayer the player receiving resources
+	 * @param {Object} givenResources the resources given in the exchange
+	 * @param {Object} gottenResources the resources obtained in the exchange
+	 */
+	exchangeResources(player, otherPlayer, givenResources, gottenResources) {
+		this._referee.checkTurn(player);
+		this._referee.exchangeResources(otherPlayer, givenResources, gottenResources);
+
+		player.useResources(givenResources);
+		otherPlayer.receiveResources(givenResources);
+
+		otherPlayer.useResources(gottenResources);
+		player.receiveResources(gottenResources);
+	}
+
+	/**
 	 * Makes the player end its turn.
-	 * @param player the player ending its turn
-	 * @returns the next player whose turn has started
+	 * @param {Player} player the player ending its turn
+	 * @returns {Player} the next player whose turn has started
 	 */
 	endTurn(player) {
 		this._referee.checkTurn(player);

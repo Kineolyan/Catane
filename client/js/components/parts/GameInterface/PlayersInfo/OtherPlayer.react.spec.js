@@ -19,7 +19,7 @@ describe('A card representing an other player', function() {
 
   it('should have the name', function() {
     expect(this.other.refs.name).toBeDefined();
-    expect(this.other.refs.name).toContainText("Tom");
+    expect(this.other.refs.name).toContainText('Tom');
   });
 
 });

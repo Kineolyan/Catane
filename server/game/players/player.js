@@ -92,12 +92,13 @@ export default class Player {
 	/**
 	 * Decides if the given player has enough resources to
 	 * comply the given cost.
-	 * @param  {Player}  player the player to check
-	 * @param  {Object}  costs   the cost of the operation
+	 * @param  {Object}  costs the cost of the operation
 	 * @return {Boolean} true if everything is ok
 	 */
 	hasResources(costs) {
 		for (let [r, cost] of maps.entries(costs)) {
+			if (typeof cost !== 'number' || isNaN(cost)) { throw new TypeError(`Cost '${cost}' is not a number`); }
+
 			let quantity = this._resources[r] || 0;
 			if (quantity < cost) { return false; }
 		}
@@ -142,8 +143,8 @@ export default class Player {
 
 	/**
 	 * Updates a resource by a given number.
-	 * @param resource the resource name
-	 * @param value the value to add to the current
+	 * @param {String} resource the resource name
+	 * @param {Number} value the value to add to the current
 	 * @private
 	 */
 	_updateResource(resource, value) {

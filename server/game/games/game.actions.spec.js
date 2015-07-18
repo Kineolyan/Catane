@@ -32,7 +32,7 @@ describe('Game actions', function() {
 
 			it('removes the used resources from the player', function() {
 				var newResources = this.p.player.resources;
-				for( let r of [ 'ble', 'bois', 'mouton', 'tuile' ]) {
+				for (let r of ['ble', 'bois', 'mouton', 'tuile']) {
 					expect(newResources[r]).toEqual(this.previousResources[r] - 1);
 				}
 			});
@@ -71,7 +71,7 @@ describe('Game actions', function() {
 
 			it('removes the used resources from the player', function() {
 				var newResources = this.p.player.resources;
-				for( let r of [ 'bois', 'tuile' ]) {
+				for (let r of ['bois', 'tuile']) {
 					expect(newResources[r]).toEqual(this.previousResources[r] - 1);
 				}
 			});
@@ -127,7 +127,7 @@ describe('Game actions', function() {
 				beforeEach(function() {
 					// Roll dices until it gets a 7
 					var total;
-					for (let i = 0; i < 100; i+= 1) {
+					for (let i = 0; i < 100; i += 1) {
 						this.env.setPlayerResources(0, { ble: 6, bois: 4 });
 						this.env.setPlayerResources(1, { ble: 5, bois: 3 });
 
@@ -136,19 +136,21 @@ describe('Game actions', function() {
 						total = dice[0] + dice[1];
 						if (total === 7) {
 							break;
-						}	else {
+						} else {
 							this.env.game.endTurn(player);
 						}
 					}
-					if (total !== 7) { throw new Error('Failed to get 7'); }
+					if (total !== 7) {
+						throw new Error('Failed to get 7');
+					}
 				});
 
 				it('notifies all players to drop resources', function() {
 					for (let p of this.env.players) {
 						var lastAction = p.client.lastMessage('game:action');
 						var remaining = {};
-						remaining[ this.env.players[ 0 ].id ] = 5;
-						remaining[ this.env.players[ 1 ].id ] = 4;
+						remaining[this.env.players[0].id] = 5;
+						remaining[this.env.players[1].id] = 4;
 						expect(lastAction).toEqual({ action: 'drop resources', remaining: remaining });
 					}
 				});
@@ -158,7 +160,7 @@ describe('Game actions', function() {
 				beforeEach(function() {
 					// Roll dices until it gets a 7
 					var total;
-					for (let i = 0; i < 100; i+= 1) {
+					for (let i = 0; i < 100; i += 1) {
 						// Clear player resources
 						for (let { player: player } of this.env.players) {
 							player.useResources(player.resources);
@@ -169,11 +171,13 @@ describe('Game actions', function() {
 						total = dice[0] + dice[1];
 						if (total === 7) {
 							break;
-						}	else {
+						} else {
 							this.env.game.endTurn(player);
 						}
 					}
-					if (total !== 7) { throw new Error('Failed to get 7'); }
+					if (total !== 7) {
+						throw new Error('Failed to get 7');
+					}
 				});
 
 				it('directly asks to move thieves', function() {
@@ -188,22 +192,26 @@ describe('Game actions', function() {
 		describe('on value != 7', function() {
 			beforeEach(function() {
 				// Empty resources not to drop cards
-				for (let p of this.env.players) { p.player.useResources(p.player.resources); }
+				for (let p of this.env.players) {
+					p.player.useResources(p.player.resources);
+				}
 
 				// Roll dices while it gets a 7
 				var total;
-				for (let i = 0; i < 100; i+= 1) {
+				for (let i = 0; i < 100; i += 1) {
 					let p = this.env.players[i % 2];
 					let dice = this.env.game.rollDice(p.player);
 					total = dice[0] + dice[1];
 					if (total !== 7) {
 						break;
-					}	else {
+					} else {
 						this.env.moveThieves(p);
 						this.env.game.endTurn(p.player);
 					}
 				}
-				if (total === 7) { throw new Error('Failed not to get 7'); }
+				if (total === 7) {
+					throw new Error('Failed not to get 7');
+				}
 			});
 
 			it('directly authorize to play', function() {
@@ -227,7 +235,7 @@ describe('Game actions', function() {
 
 			// Roll dices until it gets a 7
 			var total;
-			for (let i = 0; i < 100; i+= 1) {
+			for (let i = 0; i < 100; i += 1) {
 				for (let { player: player } of this.env.players) {
 					player.useResources(player.resources);
 					player.receiveResources({ bois: 5, ble: 5 }); // 5 to drop
@@ -238,11 +246,13 @@ describe('Game actions', function() {
 				total = dice[0] + dice[1];
 				if (total === 7) {
 					break;
-				}	else {
+				} else {
 					this.env.game.endTurn(player);
 				}
 			}
-			if (total !== 7) { throw new Error('Failed to get 7'); }
+			if (total !== 7) {
+				throw new Error('Failed to get 7');
+			}
 		});
 
 		it('gives the number of remaining resources to drop', function() {
@@ -269,6 +279,99 @@ describe('Game actions', function() {
 			for (let { client: client } of this.env.players) {
 				expect(client.lastMessage('game:action')).toEqual({ action: 'play' });
 			}
+		});
+	});
+
+	describe('#convertResources', function() {
+		beforeEach(function() {
+			this.env = starter.createLocalGame(2);
+			this.env.start();
+			this.env.randomPick();
+			this.p = this.env.players[0];
+			this.env.rollDice(this.p);
+
+			this.convert = this.env.game.convertResources.bind(this.env.game, this.p.player);
+		});
+
+		describe('with enough resources', function() {
+			beforeEach(function() {
+				this.env.setPlayerResources(0, { bois: 4 });
+			});
+
+			it('removes 4 resources to convert', function() {
+				expect(() => this.convert('bois', 'caillou')).toChangeBy(() => {
+					return this.p.player.resources.bois;
+				}, -4);
+			});
+
+			it('add 1 converted resource', function() {
+				expect(() => this.convert('bois', 'caillou')).toChangeBy(() => {
+					return this.p.player.resources.caillou;
+				}, 1);
+			});
+		});
+
+		describe('without enough resources', function() {
+			beforeEach(function() {
+				this.env.setPlayerResources(0, {});
+			});
+
+			it('throws an error', function() {
+				expect(() => this.convert('bois', 'caillou')).toThrow();
+			});
+		});
+	});
+
+	describe('#exchangeResources', function() {
+		beforeEach(function() {
+			this.env = starter.createLocalGame(2);
+			this.env.start();
+			this.env.randomPick();
+			this.p = this.env.players[0];
+			this.other = this.env.players[1];
+			this.env.rollDice(this.p);
+
+			// Provide some resources to the players
+			for (let p of this.env.players) {
+				this.env.setPlayerResources(p, { bois: 4, ble: 2 });
+			}
+			this.exchange = this.env.game.exchangeResources.bind(this.env.game, this.p.player, this.other.player);
+		});
+
+		describe('with enough resources', function() {
+			beforeEach(function() {
+				this.exchange({ bois: 2 }, { ble: 2 });
+			});
+
+			it('gives resources to the player', function() {
+				expect(this.p.player).toHaveResources({ bois: 2, ble: 4 });
+			});
+
+			it('gives resources to the other player', function() {
+				expect(this.other.player).toHaveResources({ bois: 6 });
+			});
+		});
+
+		describe('without enough resources', function() {
+			[
+				['to give', { bois: 6 }, { ble: 2 }],
+				['to receive', { ble: 2 }, { bois: 6 }],
+				['given', {}, { ble: 2 }],
+				['received', { ble: 2 }, {}]
+			].forEach(function([ caption, given, gotten ]) {
+						describe(caption, function() {
+
+							it('throws an Error', function() {
+								expect(() => this.exchange(given, gotten)).toThrow();
+							});
+
+							it('lets players resources unchanged', function() {
+								for (let p of this.env.players) {
+									expect(p.player).toHaveResources({ bois: 4, ble: 2 });
+								}
+							});
+						});
+					});
 		});
 	});
 

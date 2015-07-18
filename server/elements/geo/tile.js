@@ -4,10 +4,10 @@ export default class Tile {
 
 	/**
 	 * Constructor
-	 * @param  {Integer} x x-coordinate
-	 * @param  {Integer} y y-coordinate
+	 * @param  {Number} x x-coordinate
+	 * @param  {Number} y y-coordinate
 	 * @param  {String} resource the resource
-	 * @param  {Number} diceValue the dice value
+	 * @param  {Number?} diceValue the dice value
 	 */
 	constructor(x, y, resource, diceValue) {
 		this._location = new Location(x, y);
@@ -42,7 +42,7 @@ export default class Tile {
 
 	/**
 	 * Adds a city to the tile.
-	 * @param city the new city located in the tile.
+	 * @param {City} city the new city located in the tile.
 	 */
 	addCity(city) {
 		this._cities.push(city);

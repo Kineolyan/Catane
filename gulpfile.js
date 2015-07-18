@@ -7,21 +7,18 @@ process.env.NODE_PATH = path.join(__dirname, 'build');
 require('module').Module._initPaths();
 
 var fs = require('fs');
-var path = require('path');
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var del = require('del');
 var cached = require('gulp-cached');
-var remember = require('gulp-remember');
 var jas = require('gulp-jasmine');
-var jshint = require('gulp-jshint');
+var eslint = require('gulp-eslint');
 var babel = require('gulp-babel');
 var browserify = require('browserify');
 var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
 var runSequence = require('run-sequence');
-
 
 function pathItem(name) {
 	return function (children) {
@@ -166,11 +163,11 @@ gulp.task('test:lint', function () {
 		PATHS.bin('*.js'),
 		PATHS.client('**/*.js'),
 		PATHS.server('**/*.js')
-	]).pipe(plumber({ errorHandler: notify.onError("test:lint : <%= error.message %>") }))
-			.pipe(jshint({ linter: require('jshint-jsx').JSXHINT }))
-			.pipe(jshint.reporter('default'))
-			.pipe(jshint.reporter('fail'))
-			.pipe(plumber.stop());
+	])//.pipe(plumber({ errorHandler: notify.onError("test:lint : <%= error.message %>") }))
+			.pipe(eslint())
+			.pipe(eslint.formatEach('stylish'))
+			.pipe(eslint.failOnError());
+			//.pipe(plumber.stop());
 });
 
 gulp.task('test', [ 'test:js', 'test:lint' ]);
@@ -240,7 +237,7 @@ gulp.task('develop', function() {
 	var browserSync = require('browser-sync');
 
 	var bs;
-	
+
 	gulp.watch(PATHS.client('**/*.js'), function() {
 			runSequence('build:browserify', function() {
 					nodemon.emit('restart'); //restart the nodemon server
@@ -252,7 +249,7 @@ gulp.task('develop', function() {
 	  stdout: false,
 	  ignore: ["**/*"]
 	});
-	
+
 	nodemon.on('stdout', function(buffer) {
 		var data = buffer.toString();
 		console.log(data);
@@ -271,7 +268,7 @@ gulp.task('develop', function() {
 	});
 
 
-	
+
 });
 /**
  * Master task to rebuild all the project
@@ -279,7 +276,7 @@ gulp.task('develop', function() {
  * This will perform all actions to build and test the application.
  */
 gulp.task('do_the_thing', function () {
-	runSequence('clean', 'build', 'test', 'docs:install', function () {
+	runSequence('clean', 'build', 'test', function () {
 		console.log('All things are done Sir :)');
 		process.exit();
 	});

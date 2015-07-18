@@ -55,7 +55,7 @@ export class DropResourcesDelegate {
 
 	countResources(resources) {
 		var resCount = 0;
-		for (let [ , count ] of map.entries(resources)) {	resCount += count; }
+		for (let [, count ] of map.entries(resources)) {	resCount += count; }
 		return resCount;
 	}
 

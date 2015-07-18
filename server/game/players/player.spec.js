@@ -11,7 +11,7 @@ describe('Player', function() {
 			this.player = new Player(this.socket.toSocket(), '1');
 		});
 
-		it('registers on player:nickname', function () {
+		it('registers on player:nickname', function() {
 			expect(this.socket.isListening('player:nickname')).toBeTruthy();
 		});
 
@@ -56,19 +56,26 @@ describe('Player', function() {
 		});
 
 		it('returns true if there is enough', function() {
-			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
-			expect(this.player.hasResources({ bois: 1, ble: 3})).toBe(true);
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4 });
+			expect(this.player.hasResources({ bois: 1, ble: 3 })).toBe(true);
 		});
 
 		it('returns false if there is not enough', function() {
-			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
-			expect(this.player.hasResources({ caillou: 1, bois: 3})).toBe(false);
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4 });
+			expect(this.player.hasResources({ caillou: 1, bois: 3 })).toBe(false);
 		});
 
-		it('support border cases', function() {
-			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4});
+		it('supports border cases', function() {
+			this.player.receiveResources({ bois: 2, mouton: 3, ble: 4 });
 			expect(this.player.hasResources({ bois: 2, mouton: 3 })).toBe(true);
 		});
+
+		/* jshint loopfunc: true */
+		for (let wrongCost of ['value', [], {}]) {
+			it(`rejects wrong cost such as '${wrongCost}'`, function() {
+				expect(() => this.player.hasResources({ bois: wrongCost })).toThrowError(TypeError, /is not a number/i);
+			});
+		}
 	});
 
 	describe('#receiveResources', function() {
@@ -77,7 +84,7 @@ describe('Player', function() {
 		});
 
 		it('updates the number of resources from an array', function() {
-			this.player.receiveResources([ 'ble', 'bois', 'mouton', 'ble' ]);
+			this.player.receiveResources(['ble', 'bois', 'mouton', 'ble']);
 			expect(this.player.resources).toEqual({ ble: 2, mouton: 1, bois: 1 });
 		});
 
@@ -94,7 +101,7 @@ describe('Player', function() {
 		});
 
 		it('updates the number of resources from an array', function() {
-			this.player.useResources([ 'ble', 'bois', 'caillou', 'ble' ]);
+			this.player.useResources(['ble', 'bois', 'caillou', 'ble']);
 			expect(this.player.resources).toEqual({ ble: 1, caillou: 0, bois: 1 });
 		});
 

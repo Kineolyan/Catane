@@ -1,7 +1,7 @@
 import tests from 'client/js/components/libs/test';
 
 import React from 'react/addons';
-import {Text} from 'react-art';
+import { Text } from 'react-art';
 
 import Message from 'client/js/components/parts/GameInterface/Message.react';
 
@@ -12,7 +12,7 @@ describe('The message box', function() {
 
   beforeAll(function() {
     var self = this;
-    this._ctx = tests.getCtx({message: 'Start'});
+    this._ctx = tests.getCtx({ message: 'Start' });
 
     var proxy = React.createClass({
 

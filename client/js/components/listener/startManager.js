@@ -26,19 +26,19 @@ export default class StartManager extends Manager {
 
 	/**
 	 * Update the player in the game
-	 * @param  {Array.{id, name}} list The list of player
+	 * @param  {Array} newPlayers list of players as {id, name}
 	 */
-	updatePlayerList({players: newPlayers}) {
+	updatePlayerList({ players: newPlayers }) {
 		var colors = Globals.interface.player.colors;
 		var players = this._binding.get('players').toJS();
 
-		//delete the players
+		// delete the players
 		players.deleteAll();
 
-		//re-create a new list
-		newPlayers.forEach((player, index) => players.createPlayer(player.id, player.name, colors[ index ]));
+		// re-create a new list
+		newPlayers.forEach((player, index) => players.createPlayer(player.id, player.name, colors[index]));
 
-		//save
+		// save
 		this._binding.set('players', Immutable.fromJS(players));
 	}
 
@@ -50,7 +50,7 @@ export default class StartManager extends Manager {
 		var players = this._binding.get('players').toJS();
 		var player = players.getPlayer(newPlayer.player.id);
 
-		//change the name
+		// change the name
 		player.name = newPlayer.player.name;
 
 		this._binding.set('players', Immutable.fromJS(players));
@@ -58,9 +58,9 @@ export default class StartManager extends Manager {
 
 	/**
 	 * Start the game with a board
-	 * @param  {Object} options.board: board  The original board
+	 * @param  {Object} board: board  The original board
 	 */
-	startGame({board: board}) {
+	startGame({ board: board }) {
 		this._binding.atomically()
 				.set('game.board', Immutable.fromJS(MapHelper.init(board)))
 				.set('step', Globals.step.prepare)
@@ -72,10 +72,10 @@ export default class StartManager extends Manager {
 	 */
 	quitGame() {
 		var players = this._binding.get('players').toJS();
-		//delete the others players
+		// delete the others players
 		players.deleteOthers();
 
-		//reset the selection
+		// reset the selection
 		this._binding.atomically()
 				.set('start.gameChosen', Immutable.fromJS({}))
 				.set('players', Immutable.fromJS(players))
@@ -84,17 +84,17 @@ export default class StartManager extends Manager {
 
 	/**
 	 * Create a new game
-	 * @param  {Object} options.game: game The created game
+	 * @param  {Object} game: game The created game
 	 */
-	gameCreate({game: game}) {
+	gameCreate({ game: game }) {
 		this._binding.set('start.gameChosen', Immutable.fromJS(game));
 	}
 
 	/**
 	 * Update the list of availables games
-	 * @param  {Object} options.games: games All the availables games
+	 * @param  {Object} games: games All the availables games
 	 */
-	updateGameList({games: games}) {
+	updateGameList({ games: games }) {
 		this._binding.set('start.games', Immutable.fromJS(games));
 	}
 
@@ -103,7 +103,7 @@ export default class StartManager extends Manager {
 	 */
 	gameJoin({ id: gameId }) {
 		var games = this._binding.get('start.games');
-		var joinedGame = games.filter(game => game.get('id') === gameId).toJS()[ 0 ];
+		var joinedGame = games.filter(game => game.get('id') === gameId).toJS()[0];
 		this._binding.set('start.gameChosen', Immutable.fromJS(joinedGame));
 	}
 }

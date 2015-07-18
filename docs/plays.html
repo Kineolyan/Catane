@@ -114,6 +114,34 @@
 		Serveur->All: ws/play:move:thieves\n{ tile: { x: 12, y: 34 } }
 	</div>
 
+	<div class="diagram">
+		Title: Convertir des cartes
+		participant Joueur
+		participant Serveur
+		Joueur->Serveur: ws/play:resources:convert\n{ from: r1, to: r2 } }
+		Note right of Joueur: Convertit 4 r1 en 1 r2 (Ex: { from: "bois", to: "ble" })
+		Serveur->Joueur: ws/play:resources:convert\n{ resources: { r1: (-4), r2: (+1)} }
+	</div>
+
+	<div class="diagram">
+		Title: Échange entre 2 joueurs
+		participant J1
+		participant Serveur
+		participant J2
+		J1->Serveur: ws/play:resources:offer\n{ to: j2Id, give: {r1s..}, receive: {r2s..} } }
+		Note right of J1: Propose d'échanger des resources avec J2. Il donne r1s et reçoit r2s.
+		Serveur->J1: ws/play:resources:offer\n{ exchange: { id: exchangeId } }
+		Serveur->J2: ws/play:resources:offer\n{ exchange: { id: exchangeId, from: j1Id, give: {r2s..}, receive: {r1s..} }
+		Note left of J2: J2 accepte
+		J2->Serveur: ws/play:resources:exchange\n{ id: exchangeId, status: 'accept' }
+		Serveur->J2: ws/play:resources:exchange\n{ resources: {..}, exchange: { id: exchangeId, status: 'done' } }
+		Serveur->J1: ws/play:resources:exchange\n{ resources: {..}, exchange: { id: exchangeId, status: 'done' } }
+		Note left of J2: J2 refuse
+		J2->Serveur: ws/play:resources:exchange\n{ id: exchangeId, status: 'reject' }
+		Serveur->J2: ws/play:resources:exchange\n{ exchange: { id: exchangeId, status: 'cancelled' } }
+		Serveur->J1: ws/play:resources:exchange\n{ exchange: { id: exchangeId, status: 'cancelled' } }
+	</div>
+
 	<script src="libs/jquery.min.js"></script>
 	<script src="libs/underscore-min.js"></script>
 	<script src="libs/raphael-min.js"></script>

@@ -7,8 +7,8 @@
 import Globals from 'client/js/components/libs/globals';
 import Socket from 'client/js/components/libs/socket';
 import reactBootstrap from 'react-bootstrap';
-import React from 'react';
 
+import React from 'react'; // eslint-disable-line no-unused-vars
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 var Button = reactBootstrap.Button;
@@ -19,16 +19,15 @@ export default class Room extends MoreartyComponent {
 
   /**
    * Render the room interface
-   * @return {React.Element} the rendered element
+   * @return {Object} the rendered element
    */
   render() {
-
     var playersRendered,
         binding = this.getDefaultBinding(),
         players = binding.get('players').toJS().getMap(),
         startButton;
 
-    //include himself if no players in the room
+    // include himself if no players in the room
 
     playersRendered = [];
     for (let player of players.values()) {

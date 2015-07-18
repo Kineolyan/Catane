@@ -24,7 +24,7 @@ export default class Board {
 
 	/**
 	 * Gets the thieves location
-	 * @return {null|Location}
+	 * @return {Location} the location or null if not defined
 	 */
 	get thieves() {
 		return this._thieves;
@@ -75,7 +75,7 @@ export default class Board {
 
 	/**
 	 * Gets the tile at a given location
-	 * @param location the asked location
+	 * @param {Location} location the asked location
 	 * @return {Tile} the tile at the location or undefined if emtpy
 	 */
 	getTile(location) {
@@ -84,7 +84,7 @@ export default class Board {
 
 	/**
 	 * Gets the city at a given location
-	 * @param location the asked location
+	 * @param {Location} location the asked location
 	 * @returns {City} the city at the location or undefined if empty
 	 */
 	getCity(location) {
@@ -104,7 +104,7 @@ export default class Board {
 
 	/**
 	 * Gets all the paths leaving from a location.
-	 * @param location start location for path
+	 * @param {Location} location start location for path
 	 * @return {Array} the paths starting from the location
 	 */
 	getPathsFrom(location) {
@@ -113,7 +113,7 @@ export default class Board {
 
 	/**
 	 * Gets the cities around a given location.
-	 * @param location the asked location
+	 * @param {Location} location the asked location
 	 * @return {Array} list of cities around the location
 	 */
 	getSurroundingCities(location) {
@@ -129,7 +129,7 @@ export default class Board {
 
 	/**
 	 * Gets the tiles surrounding a city.
-	 * @param location city location
+	 * @param {Location} location city location
 	 * @return {Array} the tiles around the city
 	 */
 	getSurroundingTiles(location) {
@@ -145,7 +145,7 @@ export default class Board {
 
 	/**
 	 * Gets the tiles with the given dice value.
-	 * @param value the dice value to look for
+	 * @param {Number} value the dice value to look for
 	 * @param {boolean?} excludeThieves do not include tiles with thieves
 	 * @return {Array} the tiles with that dice value.
 	 */

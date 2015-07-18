@@ -11,7 +11,7 @@ describe('maps module', function() {
 			};
 			var count = 0;
 			for (let [key, value] of maps.entries(obj)) {
-				switch(key) {
+				switch (key) {
 					case 'a':
 						expect(value).toBe(1);
 						break;
@@ -32,7 +32,9 @@ describe('maps module', function() {
 
 	it('supports empty maps', function() {
 		var count = 0;
-		for (let [ , value] of maps.entries({})) { count += value; }
+		for (let [, value] of maps.entries({})) {
+			count += value;
+		}
 		expect(count).toEqual(0);
 	});
 

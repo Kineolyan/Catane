@@ -13,7 +13,7 @@ export default class Reconnect extends React.Component {
 		this.localStorage = window.localStorage;
 		this.loadPreviousSession();
 		this.storeSession();
-		this.state = {display: this.hasPreviousSession()};
+		this.state = { display: this.hasPreviousSession() };
 	}
 
 	hasPreviousSession() {
@@ -36,9 +36,9 @@ export default class Reconnect extends React.Component {
 
 		if (this.state.display) {
 			reconnectBtn = (
-				<Button onClick={this.reconnect.bind(this)}>
-					<Glyphicon glyph={"repeat"}/>
-				</Button>
+					<Button onClick={this.reconnect.bind(this)}>
+						<Glyphicon glyph={"repeat"}/>
+					</Button>
 			);
 		}
 
@@ -49,7 +49,7 @@ export default class Reconnect extends React.Component {
 
 	reconnect() {
 		Socket.emit(Globals.socket.reconnect, this.previousSession.sid);
-		this.setState({display: false});
+		this.setState({ display: false });
 	}
 }
 
