@@ -276,7 +276,7 @@ gulp.task('develop', function() {
  * This will perform all actions to build and test the application.
  */
 gulp.task('do_the_thing', function () {
-	runSequence('clean', 'build', 'test', 'docs:install', function () {
+	runSequence('clean', 'build', 'test', function () {
 		console.log('All things are done Sir :)');
 		process.exit();
 	});
