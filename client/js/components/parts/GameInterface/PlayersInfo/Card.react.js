@@ -3,10 +3,12 @@
 /*
  React component containing the card
  */
+import Globals from 'client/js/components/libs/globals';
 
 import React from 'react';
 import { Group, Text } from 'react-art';
 import Rectangle from 'react-art/shapes/rectangle';
+
 
 export default class Card extends React.Component {
 
@@ -14,15 +16,16 @@ export default class Card extends React.Component {
 	 * @return {React.Element} the rendered element
 	 */
 	render() {
+    const y = this.props.isSelected ? this.props.y - 10 : this.props.y;
 		return (
-				<Group x={this.props.x} y={this.props.y} width={this.props.width} height={this.props.height}>
+				<Group x={this.props.x} y={y} width={this.props.width} height={this.props.height}>
 					<Rectangle
 							width={this.props.width}
 							height={this.props.height}
 							stroke='black'
-							fill='white'
+							fill={Globals.map.resources[this.props.type]}
 							/>
-					<Text fill="black" y={20} x={this.props.width / 2} alignment="center" font={{ 'font-size': '12px' }}>{this.props.type}</Text>
+					<Text fill="black" y={6} x={this.props.width / 2} alignment="center" font={{ 'font-size': '12px' }}>{this.props.type}</Text>
 				</Group>
 		);
 	}

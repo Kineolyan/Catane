@@ -47,7 +47,8 @@ Socket.on(Globals.socket.init, (data) => {
 
 			players: Players, // all player in the game, see common/player.js
 			step: Globals.step.init, // current step of the game. See lib/global.js
-			server: data.server // info send by the server for the reconnect
+			server: data.server, // info send by the server for the reconnect
+      render: 0 // quick hack for forcing re render. TODO, reimplement width/height of the game
 		}
 	});
 

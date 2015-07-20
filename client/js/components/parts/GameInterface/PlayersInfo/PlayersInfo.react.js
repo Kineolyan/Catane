@@ -25,7 +25,9 @@ export default class PlayersInfo extends MoreartyComponent {
 				renderedPlayers = [],
 				color = 'white',
 				me = players.getMe(),
-				name = '';
+				name = '',
+        widthDeck = window.innerWidth / 3,
+        heightDeck = 130;
 
 		if (me) {
 			color = me.color;
@@ -38,7 +40,7 @@ export default class PlayersInfo extends MoreartyComponent {
 				                                  index={index}
 				                                  color={element.color}
 				                                  name={element.name}
-						{...element} />);
+						                              {...element} />);
 				index += 1;
 			}
 		});
@@ -49,7 +51,12 @@ export default class PlayersInfo extends MoreartyComponent {
 
 					<Text ref="name" y={-5} x={15} fill="black" font={{ 'font-size': '12px' }}>{name}</Text>
 
-					<Deck cards={me.cards} width={window.innerWidth / 3} height={100} y={window.innerHeight - 220}/>
+					<Deck cards={me.cards}
+                width={widthDeck}
+                height={heightDeck}
+                y={window.innerHeight - this.props.y - heightDeck}
+                x={(window.innerWidth - widthDeck) / 2 - this.props.x}
+                xParent={this.props.x}/>
 
 					<Group y={60}>
 						{renderedPlayers}

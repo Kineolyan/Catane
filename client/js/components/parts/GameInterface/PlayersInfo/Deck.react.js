@@ -11,36 +11,102 @@ import Card from 'client/js/components/parts/GameInterface/PlayersInfo/Card.reac
 
 export default class Deck extends React.Component {
 
+  constructor() {
+    super(...arguments);
+
+    this.state = { mouseIn: false, mousePos: { x: 0, y: 0 } };
+  }
 	/**
+   * The goal is to draw something like this:
+   *
+   * _______________
+   * | | | | | |   |
+   * |_|_|_|_|_|___|
+   *
+   *
 	 * @return {React.Element} the rendered element
+   *
 	 */
 	render() {
-		var deckLength = this.props.cards.length,
-				width = this.props.width,
-				height = this.props.height;
+		const deckLength = this.props.cards.length,
+				  width = this.props.width,
+				  height = this.props.height,
+          y = this.props.y + (!this.state.mouseIn ? height *  3 / 4 : 0);
 
-		var cards = this.props.cards.map((e, index) => {
-			var size = width / (deckLength) - this.props.margin * (deckLength - 1);
-			return <Card
-					type={e}
-					x={(size + this.props.margin) * index}
-					y={0}
-					width={size}
-					height={height}
-					key={index}/>;
+    let selectedElement = null;
+
+    // generate cards
+    // TODO: handle case of too much cards (reduce spaceBetweenCard)
+	  var cards = this.props.cards.map((e, index) => {
+        const center = this.props.width / 2;
+        const widthOfACard = this.props.widthOfACard;
+        const totalSize = (deckLength - 1) * this.props.spaceBetweenCards + widthOfACard;
+        const space = this.props.spaceBetweenCards;
+        const xCard = center - totalSize / 2 + space * index;
+        const xCardAbsolute = xCard + this.props.x + this.props.xParent;
+
+        let isSelected = false;
+
+        if(this.state.mousePos.x > xCardAbsolute && this.state.mousePos.x < (index === deckLength - 1 ? xCardAbsolute + widthOfACard : xCardAbsolute + space)) {
+          isSelected = true;
+        }
+
+        const card = (<Card type={e}
+                           x={xCard}
+                           y={0}
+                           width={widthOfACard}
+                           height={height}
+                           isSelected={isSelected}
+                           key={index}/>);
+
+        if(isSelected) {
+          selectedElement = card;
+        }
+
+        return card;
 		});
 
+    if(selectedElement) {
+      cards.splice(cards.indexOf(selectedElement), 1);
+      cards.push(selectedElement);
+    }
+
 		return (
-				<Group x={this.props.x} y={this.props.y} width={width} height={height}>
+				<Group x={this.props.x}
+               y={y}
+               width={width}
+               height={height}
+               onMouseOver={this.mouseEnter.bind(this)}
+               onMouseOut={this.mouseLeave.bind(this)}
+               onMouseMove={this.mouseMove.bind(this)}>
+
 					{cards}
+
 				</Group>
 		);
 	}
+
+  // TODO: Implement as mixin, see Map/Element.react
+  mouseEnter() {
+    window.document.body.style.cursor = 'pointer';
+    this.setState({ mouseIn: true });
+
+  }
+
+  mouseLeave() {
+    window.document.body.style.cursor = 'auto';
+    this.setState({ mouseIn: false, mousePos: { x: 0, y: 0 } });
+  }
+
+  mouseMove(e) {
+    this.setState({ mousePos: { x: e.x, y: e.y } });
+  }
 }
 
 Deck.propTypes = {
 	cards: React.PropTypes.any.isRequired,
-	margin: React.PropTypes.number,
+	spaceBetweenCards: React.PropTypes.number,
+  widthOfACards: React.PropTypes.number,
 	width: React.PropTypes.number,
 	height: React.PropTypes.number,
 	x: React.PropTypes.number,
@@ -49,7 +115,8 @@ Deck.propTypes = {
 
 Deck.defaultProps = {
 	cards: [],
-	margin: 10,
+	spaceBetweenCards: 30,
+  widthOfACard: 80,
 	width: 200,
 	height: 40,
 	x: 0,

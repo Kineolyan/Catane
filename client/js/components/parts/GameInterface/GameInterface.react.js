@@ -16,6 +16,11 @@ import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.reac
 export default class GameInterface extends MoreartyComponent {
 
 
+  componentDidMount() {
+    window.onresize = () => {
+      this.getDefaultBinding().set('render', this.getDefaultBinding().get('render') + 1);
+    };
+  }
   /**
    * Render the whole interface of the game
    * @return {React.Element} the rendered element
