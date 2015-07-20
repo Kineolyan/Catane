@@ -38,11 +38,11 @@ GLOBALS.socket = {
 // resource
 GLOBALS.map = {};
 GLOBALS.map.resources = {
-  tuile: '#851313',
-  mouton: '#b4fdc0',
-  bois: '#6B5511',
+  tuile: '#E86513',
+  mouton: '#9CBA64',
+  bois: '#AD6242',
   caillou: '#919191',
-  ble: '#DADE64',
+  ble: '#FFD629',
   desert: '#E1F507'
 };
 
