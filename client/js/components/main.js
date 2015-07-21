@@ -18,19 +18,20 @@ import Morearty from 'morearty';
 
 import GameReact from 'client/js/components/parts/Game.react';
 
-Socket.on(Globals.socket.init, (data) => {
+Socket.on(Globals.socket.init, ({ player: player, server: server, message: message }) => {
 	console.log('game start !');
 
-	// create 'I', the first player
-	Players.deleteAll();
-	Players.myId = parseInt(data.player.id, 10);
-	Players.createPlayer(Players.myId, data.player.name);
+	var myId = player.id;
+	// FIXME Players.createPlayer(Players.myId, player.name);
+	var players = [
+		{ id: myId, name: player.name, me: true }
+	];
 
 	var ctx = Morearty.createContext({
 		initialState: {
 			// state for the start
 			start: {
-				games: [], // all the games availables [{id: 3, id: 6}]
+				games: [], // all the available games [{id: 3, id: 6}]
 				gameChosen: {} // the game chosen  {id: 2}
 			},
 
@@ -42,12 +43,19 @@ Socket.on(Globals.socket.init, (data) => {
 					values: [1, 1], // values on the dice
 					resources: {} // resources given by the dice
 				},
-				message: data.message // message displayed for the current status
+				message: message // message displayed for the current status
 			},
 
-			players: Players, // all player in the game, see common/player.js
+			// 'I', the first player
+			me: {
+				id: myId
+			},
+
+			// Other players
+			players: players, // all player in the game, see common/player.js
+
 			step: Globals.step.init, // current step of the game. See lib/global.js
-			server: data.server // info send by the server for the reconnect
+			server: server // info send by the server for the reconnect
 		}
 	});
 

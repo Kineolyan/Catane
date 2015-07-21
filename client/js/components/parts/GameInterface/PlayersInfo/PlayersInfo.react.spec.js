@@ -4,44 +4,45 @@ import React from 'react/addons';
 import { Text } from 'react-art';
 import Immutable from 'immutable';
 
+import { PlayersBinding } from 'client/js/components/common/players';
 import PlayersInfo from 'client/js/components/parts/GameInterface/PlayersInfo/PlayersInfo.react';
 import Deck from 'client/js/components/parts/GameInterface/PlayersInfo/Deck.react';
-import OtherPlayer from 'client/js/components/parts/GameInterface/PlayersInfo/OtherPlayer.react';
+import PlayerInfo from 'client/js/components/parts/GameInterface/PlayersInfo/PlayerInfo.react';
+import OtherPlayerInfo from 'client/js/components/parts/GameInterface/PlayersInfo/OtherPlayerInfo.react';
 
-var utils = React.addons.TestUtils;
+class TestRoot extends tests.Wrapper {
+	render() {
+		return (<PlayersInfo binding={this.binding.sub('players')} />);
+	}
+}
 
-describe('A player in the game', function() {
+describe('<PlayersInfo>', function() {
 
 	beforeAll(function() {
 		this._ctx = tests.getCtx();
 
 		var binding = this._ctx.getBinding();
-		var players = binding.get('players').toJS();
+		var players = new PlayersBinding(binding.get('players'));
 
 		players.deleteAll();
-		players.myId = 1;
-		players.createPlayer(1, 'tom', 'green');
-		players.createPlayer(2, 'bob', 'yellow');
-		players.createPlayer(3, 'lolo', 'blue');
+		players.setIPlayer(1, 'tom', 'green');
+		players.setPlayer(2, 'bob', 'yellow');
+		players.setPlayer(3, 'lolo', 'blue');
+		binding.set('players', players.binding);
 
-		binding.set('players', Immutable.fromJS(players));
-
-		var PlayersInfoB = this._ctx.bootstrap(PlayersInfo);
-
-		this.player = utils.renderIntoDocument(<PlayersInfoB />);
-
+		this.info = tests.bootstrap(this._ctx, TestRoot);
 	});
 
 	it('should have a deck of cards', function() {
-		expect(tests.getRenderedElements(this.player, Deck).length).toEqual(1);
+		expect(tests.getRenderedElements(this.info, Deck).length).toEqual(1);
 	});
 
-	it('render the other player', function() {
-		expect(tests.getRenderedElements(this.player, OtherPlayer).length).toEqual(2);
+	it('renders my information', function() {
+		expect(tests.getRenderedElements(this.info, PlayerInfo)).toHaveLength(1);
 	});
 
-	it('have the good name for the current player', function() {
-		expect(tests.getRenderedElements(this.player, Text)[0]._store.props.children).toBe('tom');
+	it('renders the other players', function() {
+		expect(tests.getRenderedElements(this.info, OtherPlayerInfo)).toHaveLength(2);
 	});
 
 });

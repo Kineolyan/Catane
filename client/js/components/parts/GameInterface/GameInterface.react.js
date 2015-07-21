@@ -15,7 +15,6 @@ import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.reac
 
 export default class GameInterface extends MoreartyComponent {
 
-
   /**
    * Render the whole interface of the game
    * @return {React.Element} the rendered element
@@ -48,7 +47,7 @@ export default class GameInterface extends MoreartyComponent {
                                />
 
                       <PlayersInfo ref="player"
-                                  binding={binding}
+                                  binding={binding.sub('players')}
                                   y={90}
                                   x={20}
                                   />

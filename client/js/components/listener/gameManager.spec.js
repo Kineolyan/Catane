@@ -14,10 +14,9 @@ describe('Game Manager', function() {
 
 	describe('pick some element for a player', function() {
 		it('throw if not if the good step', function() {
-			var func = () => {
+			expect(() => {
 				this.game.playPickElement();
-			};
-			expect(func).toThrow();
+			}).toThrow();
 		});
 
 		describe('should pick the element', function() {
@@ -83,7 +82,7 @@ describe('Game Manager', function() {
 		expect(this.binding.get('step')).toEqual(Globals.step.prepare);
 	});
 
-	describe('can start a new turn', function() {
+	describe('on new turn', function() {
 		beforeEach(function() {
 			var board = MapHelper.init({
 				tiles: [{ x: 0, y: 0 }],
@@ -93,18 +92,30 @@ describe('Game Manager', function() {
 			this.binding.set('game.board', Immutable.fromJS(board));
 		});
 
-		it('for \'me\' while preparing', function() {
-			this.binding.set('step', Globals.step.prepare);
-			this.game.playTurnNew({ player: 1 });
-			var city = this.binding.get('game.board').toJS().board.getElementOfType('cities', { x: 0, y: 0 });
-			expect(city.selectable).toBe(true);
-		});
+		describe('for "me"', function() {
+			describe('during preparation', function() {
+				beforeEach(function() {
+					this.binding.set('step', Globals.step.prepare);
+					this.game.playTurnNew({ player: 1 });
+				});
 
-		it('for \'me\' when started', function() {
-			this.binding.set('step', Globals.step.started);
-			this.game.playTurnNew({ player: 1 });
-			var enabled = this.binding.get('game.dice.enabled');
-			expect(enabled).toBe(true);
+				it('enables available cities', function() {
+					var city = this.binding.get('game.board').toJS().board.getElementOfType('cities', { x: 0, y: 0 });
+					expect(city.selectable).toBe(true);
+				});
+			});
+
+			describe('during game', function() {
+				beforeEach(function() {
+					this.binding.set('step', Globals.step.started);
+					this.game.playTurnNew({ player: 1 });
+				});
+
+				it('enables dice', function() {
+					var enabled = this.binding.get('game.dice.enabled');
+					expect(enabled).toBe(true);
+				});
+			});
 		});
 	});
 

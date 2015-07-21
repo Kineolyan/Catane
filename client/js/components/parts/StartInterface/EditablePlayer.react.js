@@ -12,25 +12,27 @@ import reactBoostrap from 'react-bootstrap';
 
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
+import { PlayersBinding } from 'client/js/components/common/players';
+
 var Button = reactBoostrap.Button;
 var Glyphicon = reactBoostrap.Glyphicon;
 
-export default class Player extends MoreartyComponent {
+export default class EditablePlayer extends MoreartyComponent {
 
 	/**
 	 * Render the player interface
 	 * @return {React.Element} the rendered element
 	 */
 	render() {
-		var btn,
-				room,
-				binding = this.getDefaultBinding(),
-				me = binding.get('players').toJS().getMe();
+		var binding = this.getDefaultBinding();
+		var players = new PlayersBinding(binding.get('players'));
+		var me = players.getMe();
 
-		btn = (<Button bsSize="small" className={'pull-right'} ref="modify" onClick={this.triggerChangeName.bind(this)}>
+		var btn = (<Button bsSize="small" className={'pull-right'} ref="modify" onClick={this.triggerChangeName.bind(this)}>
 			Change <Glyphicon glyph="pencil"/>
 		</Button>);
 
+		var room;
 		if (binding.get('start.gameChosen.id')) {
 			room = <span>/ Room #{binding.get('start.gameChosen.id')}</span>;
 		}
@@ -38,11 +40,9 @@ export default class Player extends MoreartyComponent {
 		return (
 				<div className={'player clearfix'}>
 					<div className={'name pull-left'}>
-						{me.name} {room}
-
+						{me.get('name')} {room}
 					</div>
 					{btn}
-
 				</div>
 		);
 	}
@@ -58,4 +58,4 @@ export default class Player extends MoreartyComponent {
 
 }
 
-Player.displayName = 'Player';
+EditablePlayer.displayName = 'EditablePlayer';

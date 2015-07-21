@@ -2,9 +2,9 @@ import Immutable from 'immutable';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 import Bootstrap from 'react-bootstrap';
 
+import React from 'react'; // eslint-disable-line no-unused-vars
 import Globals from 'client/js/components/libs/globals';
 import MapHelper from 'client/js/components/common/map';
-
 
 var Button = Bootstrap.Button;
 var Glyphicon = Bootstrap.Glyphicon;
@@ -109,13 +109,24 @@ export default class DevTool extends MoreartyComponent {
 				.commit();
 	}
 
-	setContext({ board: board }, ctx) {
+	setContext({ board: board, players: players, me: myInfo }, ctx) {
 		if (ctx === undefined) {
 			ctx = this.getDefaultBinding();
 		}
-		return ctx
-				.set('game.board', Immutable.fromJS(MapHelper.init(board)))
-				.set('step', Globals.step.started);
+
+		if (board) { ctx.set('game.board', Immutable.fromJS(MapHelper.init(board))); }
+		if (players) {
+			let playersBinding = this.getDefaultBinding().get('players')
+					.withMutations(binding => {
+						binding.clear();
+						players.forEach((player) => binding.push(Immutable.fromJS(player)));
+					});
+
+			ctx.set('players', playersBinding);
+		}
+		if (myInfo) { ctx.set('me', Immutable.fromJS(myInfo)); }
+
+		return ctx.set('step', Globals.step.started);
 	}
 }
 

@@ -1,6 +1,7 @@
 import tests from 'client/js/components/libs/test';
 import StartManager from 'client/js/components/listener/startManager';
 import Globals from 'client/js/components/libs/globals';
+import { PlayersBinding } from 'client/js/components/common/players';
 
 import Immutable from 'immutable';
 
@@ -18,21 +19,28 @@ describe('StartManager', function() {
 		});
 
 		it('has all the players', function() {
-			expect(this.binding.get('players').toJS().getMap().size).toEqual(2);
+			var playersBinding = this.binding.get('players');
+			expect(playersBinding).toHaveSize(2);
+			var helper = new PlayersBinding(playersBinding);
+
+			expect(helper.getPlayer(1).get('name')).toEqual('bob');
+			expect(helper.getPlayer(1).get('me')).toEqual(true);
+
+			expect(helper.getPlayer(2).get('name')).toEqual('tom');
 		});
 
-		it('reset if updated again', function() {
+		it('resets list if updated again', function() {
 			this.mgr.updatePlayerList({ players: [{ id: 1, name: 'bob' }] });
-			expect(this.binding.get('players').toJS().getMap().size).toEqual(1);
+			expect(this.binding.get('players')).toHaveSize(1);
 		});
 	});
 
 	it('update one player\'s nickname', function() {
-		expect(this.binding.get('players').toJS().getMe().name).toEqual('Bob');
-
-		this.mgr.updatePlayerNickname({ player: { id: 1, name: 'tom' } });
-
-		expect(this.binding.get('players').toJS().getMe().name).toEqual('tom');
+		expect(() => {
+			this.mgr.updatePlayerNickname({ player: { id: 1, name: 'tom' } });
+		}).toChangeFromTo(() => {
+			return (new PlayersBinding(this.binding.get('players'))).getPlayer(1).get('name');
+		}, 'Bob', 'tom');
 	});
 
 	it('start the game', function() {
@@ -42,17 +50,16 @@ describe('StartManager', function() {
 		expect(this.binding.get('game.board').toJS()).toBeDefined();
 	});
 
-	describe('leave the current game', function() {
-
-		it('remove all the others players', function() {
+	describe('when leaving the game', function() {
+		it('removes all others players', function() {
 			this.binding.set('start.gameChosen', Immutable.fromJS({ id: 1 }));
 			this.mgr.updatePlayerList({ players: [{ id: 1, name: 'bob' }, { id: 2, name: 'tom' }] });
 			this.mgr.quitGame();
 
-			expect(this.binding.get('players').toJS().getMap().size).toEqual(1);
+			expect(this.binding.get('players')).toHaveSize(1);
 		});
 
-		it('disable the current gameChosen', function() {
+		it('disables the current gameChosen', function() {
 			expect(this.binding.get('start.gameChosen').toJS()).toEqual({});
 		});
 	});
@@ -70,7 +77,7 @@ describe('StartManager', function() {
 	it('can join a game', function() {
 		this.mgr.updateGameList({ games: [{ id: 2 }, { id: 3 }] });
 		this.mgr.gameJoin({ id: 2 });
-		expect(this.binding.get('start.gameChosen').toJS()).toEqual({ id: 2 });
 
+		expect(this.binding.get('start.gameChosen').toJS()).toEqual({ id: 2 });
 	});
 });

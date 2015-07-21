@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import Globals from 'client/js/components/libs/globals';
 import Manager from 'client/js/components/listener/manager';
 import MapHelper from 'client/js/components/common/map';
-
+import { PlayersBinding } from 'client/js/components/common/players';
 
 /**
  * Manager for the starting part
@@ -29,31 +29,37 @@ export default class StartManager extends Manager {
 	 * @param  {Array} newPlayers list of players as {id, name}
 	 */
 	updatePlayerList({ players: newPlayers }) {
-		var colors = Globals.interface.player.colors;
-		var players = this._binding.get('players').toJS();
+		//var colors = Globals.interface.player.colors;
+		var myId = this._binding.get('me.id');
+		var playersBinding = this._binding.get('players').withMutations(binding => {
+			var players = new PlayersBinding(binding);
 
-		// delete the players
-		players.deleteAll();
+			// delete the players
+			players.deleteAll();
 
-		// re-create a new list
-		newPlayers.forEach((player, index) => players.createPlayer(player.id, player.name, colors[index]));
+			// re-create a new list
+			newPlayers.forEach((player) => {
+				if (player.id === myId) {
+					players.setIPlayer(player.id, player.name);
+				} else {
+					players.setPlayer(player.id, player.name);
+				}
+			});
+		});
 
 		// save
-		this._binding.set('players', Immutable.fromJS(players));
+		this._binding.set('players', playersBinding);
 	}
 
 	/**
 	 * Update the name of one player
 	 * @param  {Object} newPlayer The player with the new name
 	 */
-	updatePlayerNickname(newPlayer) {
-		var players = this._binding.get('players').toJS();
-		var player = players.getPlayer(newPlayer.player.id);
+	updatePlayerNickname({ player: newPlayer }) {
+		var players = new PlayersBinding(this._binding.get('players'));
+		players.updatePlayer(newPlayer.id, newPlayer);
 
-		// change the name
-		player.name = newPlayer.player.name;
-
-		this._binding.set('players', Immutable.fromJS(players));
+		this._binding.set('players', players.binding);
 	}
 
 	/**
@@ -71,14 +77,14 @@ export default class StartManager extends Manager {
 	 * Leave the current game
 	 */
 	quitGame() {
-		var players = this._binding.get('players').toJS();
+		var players = new PlayersBinding(this._binding.get('players'));
 		// delete the others players
 		players.deleteOthers();
 
 		// reset the selection
 		this._binding.atomically()
 				.set('start.gameChosen', Immutable.fromJS({}))
-				.set('players', Immutable.fromJS(players))
+				.set('players', players.binding)
 				.commit();
 	}
 

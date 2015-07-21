@@ -1,8 +1,20 @@
 import jsdom from 'jsdom';
 import Morearty from 'morearty';
+import React from 'react';
 
 import Globals from 'client/js/components/libs/globals';
 import Players from 'client/js/components/common/players';
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
+
+export class TestWrapper extends MoreartyComponent {
+	get binding() {
+		return this.getDefaultBinding();
+	}
+
+	render() {
+		return (<div>Wrapper empty content. Override !</div>);
+	}
+}
 
 var tests = {
 	jsdom: jsdom,
@@ -32,12 +44,7 @@ var tests = {
 		return ret;
 	},
 	getCtx(init = '') {
-
-		Players.deleteAll();
-		Players.myId = 1;
-		Players.createPlayer(Players.myId, 'Bob');
-
-		var initState = {
+		var defaultInitState = {
 			start: {
 				games: [],
 				gameChosen: {}
@@ -53,20 +60,22 @@ var tests = {
 				message: 'Hello'
 			},
 
-			players: Players,
+			me: { id: 1 },
+			players: [ { id: 1, name: 'Bob', me: true } ],
 			step: Globals.step.init,
 			server: { id: 1, sid: 2 }
 		};
 
-		if (init) {
-			initState = init;
-		}
-
 		this.ctx = Morearty.createContext({
-			initialState: initState
+			initialState: init || defaultInitState
 		});
 
 		return this.ctx;
+	},
+	Wrapper: TestWrapper,
+	bootstrap: function(ctx, rootComp) {
+		var Bootstrap = ctx.bootstrap(rootComp);
+		return React.addons.TestUtils.renderIntoDocument(<Bootstrap />);
 	}
 };
 

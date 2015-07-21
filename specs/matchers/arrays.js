@@ -52,7 +52,13 @@ var arrayMatchers = {
 	toBeEmpty: function() {
 		return {
 			compare: function(actual) {
-				var result = { pass: actual.length === 0 };
+				var empty;
+				if (actual.isEmpty !== undefined) { empty = actual.isEmpty(); }
+				else if (actual.size !== undefined) { empty = actual.size === 0; }
+				else if (actual.length !== undefined) { empty = actual.length === 0; }
+				else { throw new Error('No function to get size of ' + n_util.inspect(actual)); }
+
+				var result = { pass: empty };
 				result.message = 'Expecting ' + actual
 					+ (result.pass === true ? ' not' : '')
 					+ ' to be empty';

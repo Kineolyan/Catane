@@ -1,9 +1,9 @@
 import tests from 'client/js/components/libs/test';
 
 import React from 'react/addons';
-import Immutable from 'immutable';
 
 import Room from 'client/js/components/parts/StartInterface/Room.react';
+import { PlayersBinding } from 'client/js/components/common/players';
 
 var utils = React.addons.TestUtils;
 
@@ -11,36 +11,37 @@ describe('A room', function() {
 
 	beforeEach(function() {
 		this._ctx = tests.getCtx();
-		var RoomB = this._ctx.bootstrap(Room);
-		this.room = utils.renderIntoDocument(<RoomB />);
+		this.room = tests.bootstrap(this._ctx, Room);
 
+		this.setPlayers = function(players) {
+			var binding = this._ctx.getBinding();
+			var helper = PlayersBinding.from(binding);
+			helper.deleteAll();
+			players.forEach(player => helper.setPlayer(...player));
+			helper.save(binding);
+		}
 	});
 
-	describe('should display the correct number of player', function() {
-
+	describe('should display', function() {
 		it('#2 players', function(done) {
-			var binding = this._ctx.getBinding();
-			var players = binding.get('players').toJS();
-			players.deleteAll();
-			players.createPlayer(1, 'bob', 'green');
-			players.createPlayer(2, 'tom', 'yellow');
+			this.setPlayers([
+				[1, 'bob', 'green'],
+				[2, 'tom', 'yellow']
+			]);
 
-			binding.set('players', Immutable.fromJS(players));
 			setTimeout(() => {
-				expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'player-elem').length).toBe(2);
+				expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'player-elem')).toHaveLength(2);
 				done();
 			}, 100);
 		});
 
 		it('#3 players', function(done) {
-			var binding = this._ctx.getBinding();
-			var players = binding.get('players').toJS();
-			players.deleteAll();
-			players.createPlayer(1, 'bob', 'green');
-			players.createPlayer(2, 'tom', 'yellow');
-			players.createPlayer(3, 'lolo', 'blue');
+			this.setPlayers([
+				[1, 'bob', 'green'],
+				[2, 'tom', 'yellow'],
+				[3, 'lolo', 'blue']
+			]);
 
-			binding.set('players', Immutable.fromJS(players));
 			setTimeout(() => {
 				expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'player-elem').length).toBe(3);
 				done();
@@ -54,14 +55,11 @@ describe('A room', function() {
 	});
 
 	it('should render the button with more than 2 players', function(done) {
-		var binding = this._ctx.getBinding();
-		var players = binding.get('players').toJS();
-		players.deleteAll();
-		players.createPlayer(1, 'bob', 'green');
-		players.createPlayer(2, 'tom', 'yellow');
-		players.createPlayer(3, 'mailis', 'blue');
-
-		binding.set('players', Immutable.fromJS(players));
+		this.setPlayers([
+			[1, 'bob', 'green'],
+			[2, 'tom', 'yellow'],
+			[3, 'mailis', 'blue']
+		]);
 
 		setTimeout(() => {
 			expect(utils.scryRenderedDOMComponentsWithClass(this.room, 'start').length).toBe(1);

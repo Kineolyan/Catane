@@ -74,8 +74,6 @@ export default class Lobby extends MoreartyComponent {
 
 		Socket.emit(Globals.socket.gameJoin, game.id);
 	}
-
-
 }
 
 Lobby.displayName = 'Lobby';

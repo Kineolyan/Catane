@@ -1,9 +1,10 @@
+import Immutable from 'immutable';
+
 var players = new Map();
 var manager;
 
 class Player {
   constructor(id, name, color) {
-
     this._id = parseInt(id, 10);
     this._color = color;
     this._name = name;
@@ -55,6 +56,95 @@ class Player {
 
 }
 
+export class PlayersBinding {
+
+  constructor(binding) {
+    this._binding = binding;
+  }
+
+	static from(binding) {
+		return new PlayersBinding(binding.get('players'));
+	}
+
+	save(binding) {
+		return binding.set('players', this._binding);
+	}
+
+  get binding() {
+    return this._binding;
+  }
+
+	setIPlayer(id, ...args) {
+		var player = PlayersBinding.createPlayer(id, ...args);
+		player.me = true;
+		this.set(id, player);
+	}
+
+	setPlayer(id, ...args) {
+		var player = PlayersBinding.createPlayer(id, ...args);
+		this.set(id, player);
+	}
+
+	updatePlayer(id, values) {
+		var player = this.getPlayer(id);
+		if (player !== null) {
+			this._binding = this._binding.update(
+					this._binding.findIndex(player => player.get('id') === id),
+					player => player.merge(values)
+			);
+		} else {
+			throw new Error(`Player ${id} does not exist`);
+		}
+	}
+
+	static createPlayer(id, name, color, nbCards) {
+		return {
+			id: id, name: name,
+			color: color,
+			nbOfCards: nbCards
+		};
+	}
+
+	set(id, player) {
+		var pIdx = null;
+		this._binding.forEach((p, i) => {
+			if (id === p.get('id')) {
+				pIdx = i;
+				return false;
+			} else {
+				return true;
+			}
+		});
+
+		if (pIdx != null) {
+			this._binding = this._binding.set(pIdx, Immutable.fromJS(player));
+		} else {
+			this._binding = this._binding.push(Immutable.fromJS(player));
+		}
+	}
+
+	getPlayer(id) {
+		var result = this._binding.filter(player => player.get('id') === id);
+		return !result.isEmpty() ? result.first() : null;
+	}
+
+	getMe() {
+		return this._binding.filter(PlayersBinding.isMe).first();
+	}
+
+  deleteOthers() {
+    this._binding = this._binding.filter(PlayersBinding.isMe);
+  }
+
+	deleteAll() {
+		this._binding = this._binding.clear();
+	}
+
+  static isMe(playerBinding) {
+    return playerBinding.get('me') === true;
+  }
+}
+
 manager = {
   myId: 0,
   createPlayer() {
@@ -86,9 +176,11 @@ manager = {
   },
 
   createFromJS(obj) {
-    let player = new Player();
+    let player = new Player(obj.id, obj.name);
     players.set(obj.id, player);
-    return Object.assign(player, obj);
+    player.giveCards(obj.cards);
+
+    return player;
   },
 
   toJS() {

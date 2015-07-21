@@ -22,17 +22,17 @@ export default class Room extends MoreartyComponent {
    * @return {Object} the rendered element
    */
   render() {
-    var playersRendered,
-        binding = this.getDefaultBinding(),
-        players = binding.get('players').toJS().getMap(),
-        startButton;
+    var binding = this.getDefaultBinding();
+    var players = binding.get('players');
+    var startButton;
 
     // include himself if no players in the room
 
-    playersRendered = [];
-    for (let player of players.values()) {
-      playersRendered.push(<li className={'player-elem'} key={player.id}><Glyphicon glyph="user" /> {player.name}</li>);
-    }
+    var playersRendered = players.map(player => {
+      return (<li className={'player-elem'} key={player.get('id')}>
+        <Glyphicon glyph="user" /> {player.get('name')}
+      </li>);
+    }).toArray();
 
     if(players.size >= 2) {
       startButton = (<Button bsSize={'small'} className={'pull-right start'} bsStyle={'success'} ref="startButton" onClick={this.start.bind(this)}>
@@ -44,7 +44,6 @@ export default class Room extends MoreartyComponent {
 
     return (
       <div className={'room'}>
-
         <ul className={'list-info'}>
           {playersRendered}
         </ul>

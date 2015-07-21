@@ -9,7 +9,7 @@ import reactBoostrap from 'react-bootstrap';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 import Room from 'client/js/components/parts/StartInterface/Room.react';
-import Player from 'client/js/components/parts/StartInterface/Player.react';
+import EditablePlayer from 'client/js/components/parts/StartInterface/EditablePlayer.react';
 import Lobby from 'client/js/components/parts/StartInterface/Lobby.react';
 
 var Jumbotron = reactBoostrap.Jumbotron;
@@ -32,7 +32,7 @@ export default class StartInterface extends MoreartyComponent {
 						<Row>
 							<Col md={4} mdOffset={4}>
 								<Jumbotron>
-									<Player binding={binding}/>
+									<EditablePlayer binding={binding}/>
 									{this.renderChooseLobby()}
 									{this.renderInLobby()}
 								</Jumbotron>

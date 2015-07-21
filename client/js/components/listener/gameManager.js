@@ -3,6 +3,7 @@ import Immutable from 'immutable';
 import Globals from 'client/js/components/libs/globals';
 import Manager from 'client/js/components/listener/manager';
 import Socket from 'client/js/components/libs/socket';
+import { PlayersBinding } from 'client/js/components/common/players';
 
 export default class GameManager extends Manager {
 
@@ -22,7 +23,7 @@ export default class GameManager extends Manager {
 	playPickElement(res) {
 		if (this._binding.get('step') === Globals.step.prepare) {
 			// get the map
-			var players = this._binding.get('players').toJS();
+			var players = new PlayersBinding(this._binding.get('players'));
 			var boardContainer = this._binding.get('game.board').toJS();
 			var board = boardContainer.getBoard();
 
@@ -42,7 +43,7 @@ export default class GameManager extends Manager {
 			}
 
 			// give an element to a player
-			board.giveElement(key, payload, player);
+			board.giveElement(key, payload, player.toJS());
 			this._binding.set('game.board', Immutable.fromJS(boardContainer));
 		} else {
 			throw new Error('Not the good step');
@@ -91,30 +92,26 @@ export default class GameManager extends Manager {
 
 	/**
 	 * New player started to play
-	 * @param {*} player the player whose turn starts
+	 * @param {*} playerId the player whose turn starts
 	 */
-	playTurnNew({ player: player }) {
+	playTurnNew({ player: playerId }) {
 		// get the board and player
-		var players = this._binding.get('players').toJS();
+		var players = new PlayersBinding(this._binding.get('players'));
 		var boardContainer = this._binding.get('game.board').toJS();
 		var board = boardContainer.getBoard();
-		var playing = players.getPlayer(player);
+		var currentPlayer = players.getPlayer(playerId);
 		var transaction = this._binding.atomically();
 
-		if (playing.isMe()) {
-
-			// choose a colony at start
-			if (this._binding.get('step') === Globals.step.prepare) {
+		if (PlayersBinding.isMe(currentPlayer)) {
+			if (this._binding.get('step') === Globals.step.prepare) { // choose a colony at start
 				transaction.set('game.message', 'Choose a colony then a path');
 				board.setSelectableType('cities');
-
 			} else { // Roll the dice
 				transaction.set('game.message', 'Roll the dice');
 				transaction.set('game.dice.enabled', true);
 			}
-		} else { // passiv turn
-			transaction.set('game.message', `Playing : ${playing.name}`);
-
+		} else { // passive turn
+			transaction.set('game.message', `Playing : ${currentPlayer.get('name')}`);
 			board.setSelectableType(null);
 		}
 

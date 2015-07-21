@@ -9,8 +9,10 @@ import Circle from 'react-art/shapes/circle';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import Deck from 'client/js/components/parts/GameInterface/PlayersInfo/Deck.react';
-import OtherPlayer from 'client/js/components/parts/GameInterface/PlayersInfo/OtherPlayer.react';
+import PlayerInfo from 'client/js/components/parts/GameInterface/PlayersInfo/PlayerInfo.react';
+import OtherPlayerInfo from 'client/js/components/parts/GameInterface/PlayersInfo/OtherPlayerInfo.react';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
+import { PlayersBinding } from 'client/js/components/common/players';
 
 export default class PlayersInfo extends MoreartyComponent {
 
@@ -20,40 +22,24 @@ export default class PlayersInfo extends MoreartyComponent {
 	 */
 	render() {
 		var binding = this.getDefaultBinding();
-		var players = binding.get('players').toJS();
-		var index = 0,
-				renderedPlayers = [],
-				color = 'white',
-				me = players.getMe(),
-				name = '';
 
-		if (me) {
-			color = me.color;
-			name = me.name;
-		}
+		var players = binding.get();
+		var me = players.filter(p => p.get('me') === true).first();
+		var renderedPlayers = players.map((player, index) => {
+			var playerBinding = binding.sub(index);
 
-		players.getMap().forEach((element) => {
-			if (!element.isMe()) {
-				renderedPlayers.push(<OtherPlayer key={index}
-				                                  index={index}
-				                                  color={element.color}
-				                                  name={element.name}
-						{...element} />);
-				index += 1;
+			if (PlayersBinding.isMe(player)) {
+				return (<PlayerInfo key={playerBinding.get('id')} binding={playerBinding} index={index} />);
+			} else {
+				return (<OtherPlayerInfo key={playerBinding.get('id')} binding={playerBinding} index={index} />);
 			}
 		});
 
 		return (
 				<Group x={this.props.x} y={this.props.y}>
-					<Circle radius={10} fill={color} stroke="black"/>
-
-					<Text ref="name" y={-5} x={15} fill="black" font={{ 'font-size': '12px' }}>{name}</Text>
+					{renderedPlayers.toArray()}
 
 					<Deck cards={me.cards} width={window.innerWidth / 3} height={100} y={window.innerHeight - 220}/>
-
-					<Group y={60}>
-						{renderedPlayers}
-					</Group>
 				</Group>
 		);
 	}
