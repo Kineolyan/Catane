@@ -101,7 +101,7 @@ export class PlayersBinding {
 		return {
 			id: id, name: name,
 			color: color,
-			nbOfCards: nbCards
+			nbOfCards: (nbCards || 0)
 		};
 	}
 

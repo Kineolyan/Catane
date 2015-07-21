@@ -91,7 +91,7 @@ describe('PlayersBinding', function() {
 				this.helper.setPlayer(1, 'Olivier');
 
 				var player = this.helper.binding.get(0).toJS();
-				expect(player).toEqual({ id: 1, name: 'Olivier', color: undefined, nbOfCards: undefined });
+				expect(player).toEqual({ id: 1, name: 'Olivier', color: undefined, nbOfCards: 0 });
 			});
 		});
 
@@ -121,7 +121,7 @@ describe('PlayersBinding', function() {
 				this.helper.setIPlayer(1, 'Olivier');
 
 				var player = this.helper.binding.get(0).toJS();
-				expect(player).toEqual({ id: 1, name: 'Olivier', color: undefined, nbOfCards: undefined, me: true });
+				expect(player).toEqual({ id: 1, name: 'Olivier', color: undefined, nbOfCards: 0, me: true });
 			});
 		});
 

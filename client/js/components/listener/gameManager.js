@@ -48,7 +48,6 @@ export default class GameManager extends Manager {
 		} else {
 			throw new Error('Not the good step');
 		}
-
 	}
 
 	/**

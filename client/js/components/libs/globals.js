@@ -53,7 +53,12 @@ Object.keys(GLOBALS.map.resources).forEach(e => {
 
 GLOBALS.interface = {};
 GLOBALS.interface.player = {};
-GLOBALS.interface.player.colors = ['yellow', 'red', 'navy', 'silver'];
+GLOBALS.interface.player.colors = [
+  /* 0 */ 'yellow',
+  /* 1 */ 'red',
+  /* 2 */ 'navy',
+  /* 3 */ 'silver'
+];
 
 
 export default GLOBALS;

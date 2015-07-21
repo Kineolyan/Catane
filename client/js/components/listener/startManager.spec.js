@@ -43,11 +43,35 @@ describe('StartManager', function() {
 		}, 'Bob', 'tom');
 	});
 
-	it('start the game', function() {
-		this.mgr.startGame({ board: {} });
+	describe('on game start', function() {
+		beforeEach(function() {
+			this.mgr.updatePlayerList({ players: [
+				{ id: 1, name: 'Oliv' },
+				{ id: 2, name: 'Pierrick' },
+				{ id: 3, name: 'Tom' }
+			] });
 
-		expect(this.binding.get('step')).toEqual(Globals.step.prepare);
-		expect(this.binding.get('game.board').toJS()).toBeDefined();
+			// start the game
+			this.mgr.startGame({ board: {}, players: [2, 3, 1] });
+		});
+
+		it('reorders players', function() {
+			var order = this.binding.get('players').map(player => player.get('id'));
+			expect(order.toJS()).toEqual([2, 3, 1]);
+		});
+
+		it('assigns a color to each player', function() {
+			var colors = this.binding.get('players').map(player => player.get('color'));
+			expect(colors.toJS()).toEqual(Globals.interface.player.colors.slice(0, 3));
+		});
+
+		it('creates the board from data', function() {
+			expect(this.binding.get('game.board').toJS()).toBeDefined();
+		});
+
+		it('moves to prepare phase', function() {
+			expect(this.binding.get('step')).toEqual(Globals.step.prepare);
+		});
 	});
 
 	describe('when leaving the game', function() {

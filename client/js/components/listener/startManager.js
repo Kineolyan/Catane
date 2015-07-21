@@ -29,7 +29,6 @@ export default class StartManager extends Manager {
 	 * @param  {Array} newPlayers list of players as {id, name}
 	 */
 	updatePlayerList({ players: newPlayers }) {
-		//var colors = Globals.interface.player.colors;
 		var myId = this._binding.get('me.id');
 		var playersBinding = this._binding.get('players').withMutations(binding => {
 			var players = new PlayersBinding(binding);
@@ -56,7 +55,7 @@ export default class StartManager extends Manager {
 	 * @param  {Object} newPlayer The player with the new name
 	 */
 	updatePlayerNickname({ player: newPlayer }) {
-		var players = new PlayersBinding(this._binding.get('players'));
+		var players = PlayersBinding.from(this._binding);
 		players.updatePlayer(newPlayer.id, newPlayer);
 
 		this._binding.set('players', players.binding);
@@ -64,10 +63,19 @@ export default class StartManager extends Manager {
 
 	/**
 	 * Start the game with a board
-	 * @param  {Object} board: board  The original board
+	 * @param {Object} board The original board
+	 * @param {Array} playerIds the ids of the players in play order
 	 */
-	startGame({ board: board }) {
+	startGame({ board: board, players: playerIds }) {
+		var colors = Globals.interface.player.colors;
+		var players = this._binding.get('players');
+		var orderMap = {};
+		playerIds.forEach((id, index) => orderMap[id] = index);
+		var sortedPlayers = players.sortBy((player) => orderMap[player.get('id')])
+			.map((player, i) => player.set('color', colors[i]));
+
 		this._binding.atomically()
+				.set('players', sortedPlayers)
 				.set('game.board', Immutable.fromJS(MapHelper.init(board)))
 				.set('step', Globals.step.prepare)
 				.commit();
