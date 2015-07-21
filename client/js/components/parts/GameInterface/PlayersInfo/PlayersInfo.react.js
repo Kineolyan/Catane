@@ -54,8 +54,8 @@ export default class PlayersInfo extends MoreartyComponent {
 					<Deck cards={me.cards}
                 width={widthDeck}
                 height={heightDeck}
-                y={window.innerHeight - this.props.y - heightDeck}
-                x={(window.innerWidth - widthDeck) / 2 - this.props.x}
+                y={binding.get('game.height') - this.props.y - heightDeck}
+                x={(binding.get('game.width')  - widthDeck) / 2 - this.props.x}
                 xParent={this.props.x}/>
 
 					<Group y={60}>

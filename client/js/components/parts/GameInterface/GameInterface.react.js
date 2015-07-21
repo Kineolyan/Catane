@@ -18,7 +18,10 @@ export default class GameInterface extends MoreartyComponent {
 
   componentDidMount() {
     window.onresize = () => {
-      this.getDefaultBinding().set('render', this.getDefaultBinding().get('render') + 1);
+      let binding = this.getDefaultBinding();
+      
+      binding.set('game.width', window.innerWidth);
+      binding.set('game.height', window.innerHeight);
     };
   }
   /**
@@ -26,9 +29,9 @@ export default class GameInterface extends MoreartyComponent {
    * @return {React.Element} the rendered element
    */
   render() {
-    var width = window.innerWidth;
-    var height = window.innerHeight;
     var binding = this.getDefaultBinding();
+    var width = binding.get('game.width');
+    var height = binding.get('game.height');
 
     if(binding.get('game.board').toJS().board) {
         return (

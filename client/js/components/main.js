@@ -42,13 +42,14 @@ Socket.on(Globals.socket.init, (data) => {
 					values: [1, 1], // values on the dice
 					resources: {} // resources given by the dice
 				},
-				message: data.message // message displayed for the current status
+				message: data.message,
+        width: window.innerWidth,
+        height: window.innerHeight // message displayed for the current status
 			},
 
 			players: Players, // all player in the game, see common/player.js
 			step: Globals.step.init, // current step of the game. See lib/global.js
-			server: data.server, // info send by the server for the reconnect
-      render: 0 // quick hack for forcing re render. TODO, reimplement width/height of the game
+			server: data.server // info send by the server for the reconnect
 		}
 	});
 
