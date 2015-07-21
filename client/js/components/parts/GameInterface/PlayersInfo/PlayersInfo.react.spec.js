@@ -1,8 +1,6 @@
 import tests from 'client/js/components/libs/test';
 
-import React from 'react/addons';
-import { Text } from 'react-art';
-import Immutable from 'immutable';
+import React from 'react/addons'; // eslint-disable-line no-unused-vars
 
 import { PlayersBinding } from 'client/js/components/common/players';
 import PlayersInfo from 'client/js/components/parts/GameInterface/PlayersInfo/PlayersInfo.react';

@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- React component containing information about one other player
+ * React component containing information about one other player
  */
 
 import React from 'react';
@@ -32,22 +32,6 @@ export default class OtherPlayerInfo extends MoreartyComponent {
 					</Group>
 				</Group>
 		);
-
-		//return (
-		//		<Group x={this.props.x} y={this.props.height * this.props.index}>
-		//			<Rectangle
-		//					width={this.props.width}
-		//					height={this.props.height}
-		//					stroke='black'
-		//					fill={this.props.color}
-		//					/>
-		//			<Group x={10} y={10}>
-		//				<Text ref="name" fill="black" font={{ 'font-size': '12px' }}>{this.props.name}</Text>
-		//				<Text ref="cards" y={20} fill="black"
-		//				      font={{ 'font-size': '12px' }}>{'Cards : ' + this.props.nbOfCards}</Text>
-		//			</Group>
-		//		</Group>
-		//);
 	}
 }
 

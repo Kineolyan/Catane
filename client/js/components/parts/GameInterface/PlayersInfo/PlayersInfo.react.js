@@ -4,8 +4,7 @@
  React component containing all the players informations
  */
 
-import { Group, Text } from 'react-art';
-import Circle from 'react-art/shapes/circle';
+import { Group } from 'react-art';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import Deck from 'client/js/components/parts/GameInterface/PlayersInfo/Deck.react';

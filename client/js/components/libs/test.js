@@ -3,7 +3,6 @@ import Morearty from 'morearty';
 import React from 'react';
 
 import Globals from 'client/js/components/libs/globals';
-import Players from 'client/js/components/common/players';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 export class TestWrapper extends MoreartyComponent {

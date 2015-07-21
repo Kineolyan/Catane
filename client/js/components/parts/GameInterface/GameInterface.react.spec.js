@@ -29,7 +29,7 @@ describe('A game interface', function() {
 		beforeAll(function(done) {
 			this.board = {
 				tiles: [
-					{ x: 0, y: 0, resource: 'tuile', diceValue: 1 }/*,
+					{ x: 0, y: 0, resource: 'tuile', diceValue: 1 }/* ,
 					{ x: 1, y: 1, resource: 'tuile', diceValue: 1 },
 					{ x: 2, y: -1, resource: 'tuile', diceValue: 1 },
 					{ x: 1, y: -2, resource: 'tuile', diceValue: 1 },
@@ -42,7 +42,7 @@ describe('A game interface', function() {
 					{ x: 1, y: -1 },
 					{ x: 0, y: -1 },
 					{ x: -1, y: 0 },
-					{ x: -1, y: 1 }/*,
+					{ x: -1, y: 1 }/* ,
 					{ x: 1, y: 2 },
 					{ x: 2, y: 1 },
 					{ x: 2, y: 0 },
@@ -67,7 +67,7 @@ describe('A game interface', function() {
 					{ from: { x: 0, y: -1 }, to: { x: 1, y: -1 } },
 					{ from: { x: 0, y: -1 }, to: { x: -1, y: 0 } },
 					{ from: { x: -1, y: 0 }, to: { x: -1, y: 1 } },
-					{ from: { x: -1, y: 1 }, to: { x: 0, y: 1 } }/*,
+					{ from: { x: -1, y: 1 }, to: { x: 0, y: 1 } }/* ,
 					{ from: { x: 2, y: 1 }, to: { x: 1, y: 2 } },
 					{ from: { x: 2, y: 0 }, to: { x: 2, y: 1 } },
 					{ from: { x: 1, y: 0 }, to: { x: 2, y: 0 } },

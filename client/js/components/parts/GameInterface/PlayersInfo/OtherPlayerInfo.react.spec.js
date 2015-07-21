@@ -19,7 +19,6 @@ describe('<OtherPlayerInfo>', function() {
 	  var player = PlayersBinding.createPlayer(1, 'Tom', 'green', 3);
     this.ctx = tests.getCtx(player);
 	  this.otherInfo = tests.bootstrap(this.ctx, TestRoot);
-	  //this.otherInfo = tests.getRenderedElements(root, OtherPlayerInfo);
   });
 
 	it('has correct elements', function() {

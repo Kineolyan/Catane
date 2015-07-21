@@ -19,7 +19,7 @@ describe('A room', function() {
 			helper.deleteAll();
 			players.forEach(player => helper.setPlayer(...player));
 			helper.save(binding);
-		}
+		};
 	});
 
 	describe('should display', function() {
