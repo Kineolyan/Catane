@@ -21,8 +21,8 @@ var source = require('vinyl-source-stream');
 var runSequence = require('run-sequence');
 
 function pathItem(name) {
-	return function (children) {
-		var items = [ name ];
+	return function(children) {
+		var items = [name];
 		if (this instanceof Function) {
 			items.unshift(this());
 		}
@@ -60,7 +60,7 @@ PATHS.bower = pathItem('bower');
 
 /** Builds all js transpiling from ES6 to ES5 */
 function buildJs() {
-	return gulp.src([ PATHS.server('**/*.js') ], { base: PATHS.server() })
+	return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
 			.pipe(cached('server-js'))
 			.pipe(plumber({ errorHandler: notify.onError("Build server : <%= error.message %>") }))
 			.pipe(babel({ sourceRoot: PATHS.server() }))
@@ -119,27 +119,27 @@ function cleanOutput(done) {
 
 gulp.task('build:js:server', buildJs);
 
-gulp.task('build:sass', function () {
+gulp.task('build:sass', function() {
 	return gulp.src([
 		PATHS.client.scss('*.scss'),
 		PATHS.client.scssLib('**/*.scss')
 	])
 			.pipe(sass({
-				includePaths: [ PATHS.client.scssLib() ]
+				includePaths: [PATHS.client.scssLib()]
 			}))
 			.pipe(gulp.dest(PATHS.build.client('css')));
 });
 
 gulp.task('build:js:client', buildJsx);
 
-gulp.task('build:js', [ 'build:js:server', 'build:js:client' ]);
+gulp.task('build:js', ['build:js:server', 'build:js:client']);
 
-gulp.task('build:dependencies', function () {
-	return gulp.src([ PATHS.bower('/*/dist/**/*') ])
+gulp.task('build:dependencies', function() {
+	return gulp.src([PATHS.bower('/*/dist/**/*')])
 			.pipe(gulp.dest(PATHS.build.client('bower')));
 });
 
-gulp.task('build:browserify', [ 'build:js:client', 'build:dependencies' ], function () {
+gulp.task('build:browserify', ['build:js:client', 'build:dependencies'], function() {
 	return browserify({
 		entries: './' + PATHS.build.client('js/components/main.js'),
 		debug: true
@@ -148,17 +148,17 @@ gulp.task('build:browserify', [ 'build:js:client', 'build:dependencies' ], funct
 			.pipe(gulp.dest(PATHS.build.client('js'))); // the output directory
 });
 
-gulp.task('build', [ 'build:js', 'build:sass', 'build:browserify' ]);
+gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
 /* -- Test task -- */
 
-gulp.task('test:js:server', [ 'build:js:server' ], testJsServer);
+gulp.task('test:js:server', ['build:js:server'], testJsServer);
 
-gulp.task('test:js:client', [ 'build:js:client', 'test:js:server' ], testJsClient);
+gulp.task('test:js:client', ['build:js:client'], testJsClient);
 
-gulp.task('test:js', [ 'test:js:server', 'test:js:client' ]);
+gulp.task('test:js', ['test:js:server', 'test:js:client']);
 
-gulp.task('test:lint', function () {
+gulp.task('test:lint', function() {
 	return gulp.src([
 		PATHS.bin('*.js'),
 		PATHS.client('**/*.js'),
@@ -167,47 +167,50 @@ gulp.task('test:lint', function () {
 			.pipe(eslint())
 			.pipe(eslint.formatEach('stylish'))
 			.pipe(eslint.failOnError());
-			//.pipe(plumber.stop());
+	//.pipe(plumber.stop());
 });
 
-gulp.task('test', [ 'test:js', 'test:lint' ]);
+gulp.task('test', ['test:js', 'test:lint']);
 
 /* -- Watcher -- */
 
 // Special task to order properly tasks
-gulp.task('watch:js:test-server', [ 'build:js:server' ], function () {
+gulp.task('watch:js:test-server', ['build:js:server'], function() {
 	return testJsServer(false);
 });
 
-gulp.task('watch:js:test-client', [ 'build:js:client' ], function () {
+gulp.task('watch:js:test-client', ['build:js:client'], function() {
 	return testJsClient(false);
 });
 
-gulp.task('watch:js:test-all', [ 'build:js', 'watch:js:test-server' ], function () {
+gulp.task('watch:js:test-all', ['build:js', 'watch:js:test-server'], function() {
 	return testJsClient(false);
-})
+});
 
-gulp.task('watch:js', function () {
+gulp.task('watch:js', function() {
 	gulp.watch([
-		PATHS.server('**/*.js'), // Tests server and client when server changes
-		PATHS.specs('**/*.js') // Run all tests when spec helper changes
-	], [ 'watch:js:test-server' ]);
+		PATHS.server('**/*.js') // Tests server and client when server changes
+	], ['watch:js:test-server']);
 	/* Changes in server should also run client tests or at least integration tests but apparently, there are none of them. */
 
 	gulp.watch([
 		PATHS.client('**/*.js'), // Tests only client when client changes
 	], ['watch:js:test-client']);
+
+	gulp.watch([
+		PATHS.specs('**/*.js') // Run all tests when spec helper changes
+	], ['watch:js:test-all']);
 });
 
-gulp.task('watch:sass', function () {
-	gulp.watch(PATHS.client.scss('*.scss'), [ 'build:sass' ]);
+gulp.task('watch:sass', function() {
+	gulp.watch(PATHS.client.scss('*.scss'), ['build:sass']);
 });
 
-gulp.task('watch', [ 'watch:js', 'watch:sass' ]);
+gulp.task('watch', ['watch:js', 'watch:sass']);
 
 /* -- Documentation -- */
 
-gulp.task('docs:install', function () {
+gulp.task('docs:install', function() {
 	var request = require('request');
 
 	// Fetch the master version of mermaid for documentation
@@ -215,21 +218,21 @@ gulp.task('docs:install', function () {
 			.pipe(fs.createWriteStream(PATHS.docs.libs('mermaid.js')));
 });
 
-gulp.task('docs:serve', function () {
+gulp.task('docs:serve', function() {
 	// Somehow provide a way to navigate through documentation
 });
 
-gulp.task('docs', [ 'docs:install', 'docs:serve' ]);
+gulp.task('docs', ['docs:install', 'docs:serve']);
 
 //default gulp
-gulp.task('default', [ 'build', 'test', 'docs' ]);
+gulp.task('default', ['build', 'test', 'docs']);
 
 
 gulp.task('clean:cache', cleanCache);
 
 gulp.task('clean:output', cleanOutput);
 
-gulp.task('clean', [ 'clean:output', 'clean:cache' ]);
+gulp.task('clean', ['clean:output', 'clean:cache']);
 
 //develop task
 gulp.task('develop', function() {
@@ -239,44 +242,41 @@ gulp.task('develop', function() {
 	var bs;
 
 	gulp.watch(PATHS.client('**/*.js'), function() {
-			runSequence('build:browserify', function() {
-					nodemon.emit('restart'); //restart the nodemon server
-			});
+		runSequence('build:browserify', function() {
+			nodemon.emit('restart'); //restart the nodemon server
+		});
 	});
 
 	nodemon({
 		script: 'bin/catane',
-	  stdout: false,
-	  ignore: ["**/*"]
+		stdout: false,
+		ignore: ["**/*"]
 	});
 
 	nodemon.on('stdout', function(buffer) {
 		var data = buffer.toString();
 		console.log(data);
-		if(data.match(/Running on port/)) {
-				if(bs) {
-		  	bs.reload();
-		  } else {
-		  	bs = browserSync.init({
-	        proxy: "localhost:3000",
-	        port: 4000,
-	        open: false,
-	        ghostMode: false
-	   		});
-		  }
+		if (data.match(/Running on port/)) {
+			if (bs) {
+				bs.reload();
+			} else {
+				bs = browserSync.init({
+					proxy: "localhost:3000",
+					port: 4000,
+					open: false,
+					ghostMode: false
+				});
+			}
 		}
 	});
-
-
-
 });
 /**
  * Master task to rebuild all the project
  * Named in hommage to 'Legend of Korra'
  * This will perform all actions to build and test the application.
  */
-gulp.task('do_the_thing', function () {
-	runSequence('clean', 'build', 'test', function () {
+gulp.task('do_the_thing', function() {
+	runSequence('clean', 'build', 'test', function() {
 		console.log('All things are done Sir :)');
 		process.exit();
 	});
