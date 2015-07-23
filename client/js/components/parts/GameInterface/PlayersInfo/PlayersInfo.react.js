@@ -27,17 +27,23 @@ export default class PlayersInfo extends MoreartyComponent {
 			var playerBinding = binding.sub(index);
 
 			if (PlayersBinding.isMe(player)) {
-				return (<PlayerInfo key={playerBinding.get('id')} binding={playerBinding} index={index} />);
+				return (<PlayerInfo key={playerBinding.get('id')} binding={playerBinding} index={index}/>);
 			} else {
-				return (<OtherPlayerInfo key={playerBinding.get('id')} binding={playerBinding} index={index} />);
+				return (<OtherPlayerInfo key={playerBinding.get('id')} binding={playerBinding} index={index}/>);
 			}
 		});
 
-		var me = this.getBinding('me');
+		var meBinding = this.getBinding('me');
+		const widthDeck = window.innerWidth / 3;
+		const heightDeck = 130;
 		return (
 				<Group x={this.props.x} y={this.props.y}>
 					{renderedPlayers.toArray()}
-					<Deck binding={me.sub('cards')} width={window.innerWidth / 3} height={100} y={window.innerHeight - 220}/>
+					<Deck binding={meBinding.sub('resources')}
+					      width={widthDeck} height={heightDeck}
+					      y={binding.get('game.height') - this.props.y - heightDeck}
+					      x={(binding.get('game.width')  - widthDeck) / 2 - this.props.x}
+					      xParent={this.props.x}/>
 				</Group>
 		);
 	}

@@ -76,7 +76,7 @@ export default class StartManager extends Manager {
 
 		this._binding.atomically()
 				.set('players', sortedPlayers)
-				.set('game.board', Immutable.fromJS(MapHelper.init(board)))
+				.set('game.board', Immutable.fromJS(MapHelper.init(board, 10, this._binding.get('game.width'), this._binding.get('game.height'))))
 				.set('step', Globals.step.prepare)
 				.commit();
 	}

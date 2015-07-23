@@ -1,8 +1,8 @@
 'use strict';
 
 /*
-  React component containing the game interface
-*/
+ React component containing the game interface
+ */
 
 import { Surface } from 'react-art';
 
@@ -15,49 +15,54 @@ import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.reac
 
 export default class GameInterface extends MoreartyComponent {
 
-  /**
-   * Render the whole interface of the game
-   * @return {React.Element} the rendered element
-   */
-  render() {
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-    var binding = this.getDefaultBinding();
+	componentDidMount() {
+		window.onresize = () => {
+			let binding = this.getDefaultBinding();
 
-    if(binding.get('game.board').toJS().board) {
-        return (
-                  <Surface x={0} y={0} width={width} height={height}>
-                      <DiceReact x={10}
-                                 y={10}
-                                 size={50}
-                                 binding={binding.sub('game.dice')}
-                                 ref="dice"
-                                 />
+			binding.set('game.width', window.innerWidth);
+			binding.set('game.height', window.innerHeight);
+		};
+	}
 
-                      <MapReact ref="map"
-                                binding={binding.sub('game.board')}
-                                width={width}
-                                height={height}
-                                margin={50}
-                                />
+	/**
+	 * Render the whole interface of the game
+	 * @return {React.Element} the rendered element
+	 */
+	render() {
+		var binding = this.getDefaultBinding();
+		var width = binding.get('game.width');
+		var height = binding.get('game.height');
 
-                      <Message y={120}
-                               x={20}
-                               binding={binding.sub('game.message')}
-                               />
+		if (binding.get('game.board').toJS().board) {
+			return (
+					<Surface x={0} y={0} width={width} height={height}>
+						<DiceReact x={10} y={10}
+						           size={50}
+						           binding={binding.sub('game.dice')}
+						           ref="dice"
+								/>
 
-                      <PlayersInfo ref="player"
-                                  binding={{ default: binding.sub('players'), me: binding.sub('me') }}
-                                  y={90}
-                                  x={20}
-                                  />
-                  </Surface>
-              );
-    } else {
-      return false;
-    }
+						<MapReact ref="map"
+						          binding={binding.sub('game.board')}
+						          width={width} height={height}
+						          margin={50}
+								/>
 
-  }
+						<Message y={120} x={20}
+						         binding={binding.sub('game.message')}
+								/>
+
+						<PlayersInfo ref="player"
+						             binding={{ default: binding.sub('players'), me: binding.sub('me') }}
+						             y={90} x={20}
+								/>
+					</Surface>
+			);
+		} else {
+			return false;
+		}
+
+	}
 }
 
 GameInterface.displayName = 'GameInterface';

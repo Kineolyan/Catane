@@ -21,7 +21,6 @@ Socket.on(Globals.socket.init, ({ player: player, server: server, message: messa
 	console.log('game start !');
 
 	var myId = player.id;
-	// FIXME Players.createPlayer(Players.myId, player.name);
 	var players = [
 		{ id: myId, name: player.name, me: true }
 	];
@@ -42,7 +41,9 @@ Socket.on(Globals.socket.init, ({ player: player, server: server, message: messa
 					values: [1, 1], // values on the dice
 					resources: {} // resources given by the dice
 				},
-				message: message // message displayed for the current status
+				message: message, // message displayed for the current status
+				width: window.innerWidth,
+				height: window.innerHeight // message displayed for the current status
 			},
 
 			// 'I', the first player

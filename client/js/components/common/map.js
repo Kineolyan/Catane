@@ -166,13 +166,13 @@ class Path extends MapElement {
  */
 class MapHelpher {
 
-	constructor(board, margin = 10) {
+	constructor(board, margin = 10, width = window.innerWidth, height = window.innerHeight) {
 		if (!board.tiles) {
 			return {};
 		}
 
 		// set the size of the base unit
-		unitSize = getSize(board.tiles, window.innerHeight, window.innerWidth, margin);
+		unitSize = getSize(board.tiles, height, width, margin);
 
 		this._elements = new Map();
 

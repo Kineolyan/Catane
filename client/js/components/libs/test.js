@@ -59,7 +59,10 @@ var tests = {
 				message: 'Hello'
 			},
 
-			me: { id: 1 },
+			me: {
+				id: 1,
+				resources: []
+			},
 			players: [ { id: 1, name: 'Bob', me: true } ],
 			step: Globals.step.init,
 			server: { id: 1, sid: 2 }

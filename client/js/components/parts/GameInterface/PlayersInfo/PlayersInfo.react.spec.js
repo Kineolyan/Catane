@@ -10,7 +10,7 @@ import OtherPlayerInfo from 'client/js/components/parts/GameInterface/PlayersInf
 
 class TestRoot extends tests.Wrapper {
 	render() {
-		return (<PlayersInfo binding={this.binding.sub('players')} />);
+		return (<PlayersInfo binding={{ default: this.binding.sub('players'), me: this.binding.sub('me') }} />);
 	}
 }
 
