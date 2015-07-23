@@ -16,16 +16,20 @@ export default class PlayerInfo extends MoreartyComponent {
 		var name = binding.get('name');
 
 		return (
-				<Group x={this.props.x} y={this.props.index * 100}>
-					<Circle radius={10} fill={color} stroke="black"/>
-					<Text ref="name" y={-5} x={15} fill="black" font={{ 'font-size': '12px' }}>{name}</Text>
+				<Group x={this.props.x} y={this.props.height * this.props.index}>
+					<Circle x={10} y={this.props.height / 2 - 5}
+					        radius={10} fill={color} stroke="black"/>
+					<Text ref="name" x={25} y={this.props.height / 2 - 10}
+					      fill="black" font={{ 'font-size': '12px' }}>{name}</Text>
 				</Group>
 		);
 	}
 }
 
 PlayerInfo.defaultProps = {
-	x: 0
+	x: 0,
+	width: 100,
+	height: 60
 };
 
 PlayerInfo.displayName = 'PlayerInfo';
