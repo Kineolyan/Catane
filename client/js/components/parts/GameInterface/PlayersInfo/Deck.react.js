@@ -8,26 +8,26 @@ import React from 'react';
 import { Group } from 'react-art';
 
 import Card from 'client/js/components/parts/GameInterface/PlayersInfo/Card.react';
+import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
-export default class Deck extends React.Component {
+export default class Deck extends MoreartyComponent {
 
 	/**
 	 * @return {React.Element} the rendered element
 	 */
 	render() {
-		var deckLength = this.props.cards.length,
-				width = this.props.width,
-				height = this.props.height;
+		var deck = this.getDefaultBinding().get();
+		var deckLength = deck.size;
+		var width = this.props.width;
+		var height = this.props.height;
+		var size = width / (deckLength) - this.props.margin * (deckLength - 1);
 
-		var cards = this.props.cards.map((e, index) => {
-			var size = width / (deckLength) - this.props.margin * (deckLength - 1);
+		var cards = deck.map((card, index) => {
 			return <Card
-					type={e}
-					x={(size + this.props.margin) * index}
-					y={0}
-					width={size}
-					height={height}
-					key={index}/>;
+					type={card}
+					x={(size + this.props.margin) * index} y={0}
+					width={size} height={height}
+					key={index} />;
 		});
 
 		return (

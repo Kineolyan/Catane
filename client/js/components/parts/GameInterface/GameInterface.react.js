@@ -47,7 +47,7 @@ export default class GameInterface extends MoreartyComponent {
                                />
 
                       <PlayersInfo ref="player"
-                                  binding={binding.sub('players')}
+                                  binding={{ default: binding.sub('players'), me: binding.sub('me') }}
                                   y={90}
                                   x={20}
                                   />

@@ -47,7 +47,8 @@ Socket.on(Globals.socket.init, ({ player: player, server: server, message: messa
 
 			// 'I', the first player
 			me: {
-				id: myId
+				id: myId,
+				resources: [] // The resources in my deck
 			},
 
 			// Other players

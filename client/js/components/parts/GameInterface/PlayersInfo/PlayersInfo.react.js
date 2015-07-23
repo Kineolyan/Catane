@@ -23,7 +23,6 @@ export default class PlayersInfo extends MoreartyComponent {
 		var binding = this.getDefaultBinding();
 
 		var players = binding.get();
-		var me = players.filter(p => p.get('me') === true).first();
 		var renderedPlayers = players.map((player, index) => {
 			var playerBinding = binding.sub(index);
 
@@ -34,11 +33,11 @@ export default class PlayersInfo extends MoreartyComponent {
 			}
 		});
 
+		var me = this.getBinding('me');
 		return (
 				<Group x={this.props.x} y={this.props.y}>
 					{renderedPlayers.toArray()}
-
-					<Deck cards={me.cards} width={window.innerWidth / 3} height={100} y={window.innerHeight - 220}/>
+					<Deck binding={me.sub('cards')} width={window.innerWidth / 3} height={100} y={window.innerHeight - 220}/>
 				</Group>
 		);
 	}
