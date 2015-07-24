@@ -41,8 +41,8 @@ export default class PlayersInfo extends MoreartyComponent {
 					{renderedPlayers.toArray()}
 					<Deck binding={meBinding.sub('resources')}
 					      width={widthDeck} height={heightDeck}
-					      y={binding.get('game.height') - this.props.y - heightDeck}
-					      x={(binding.get('game.width')  - widthDeck) / 2 - this.props.x}
+					      y={this.props.height - this.props.y - heightDeck}
+					      x={(this.props.width  - widthDeck) / 2 - this.props.x}
 					      xParent={this.props.x}/>
 				</Group>
 		);
@@ -51,7 +51,9 @@ export default class PlayersInfo extends MoreartyComponent {
 
 PlayersInfo.defaultProps = {
 	x: 0,
-	y: 0
+	y: 0,
+	height: window.innerHeight,
+	width: window.innerWidth
 };
 
 PlayersInfo.displayName = 'PlayersInfo';

@@ -89,7 +89,6 @@ export default class Deck extends MoreartyComponent {
 	mouseEnter() {
 		window.document.body.style.cursor = 'pointer';
 		this.setState({ mouseIn: true });
-
 	}
 
 	mouseLeave() {
