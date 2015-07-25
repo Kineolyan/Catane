@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import Globals from 'client/js/components/libs/globals';
 import Manager from 'client/js/components/listener/manager';
 import Socket from 'client/js/components/libs/socket';
-import { PlayersBinding } from 'client/js/components/common/players';
+import { PlayersBinding, MyBinding } from 'client/js/components/common/players';
 
 export default class GameManager extends Manager {
 
@@ -58,7 +58,7 @@ export default class GameManager extends Manager {
 		this._binding.atomically()
 				.set('game.dice.values', Immutable.fromJS(dice))
 				.set('game.dice.rolling', true)
-                 .set('game.dice.resources', Immutable.fromJS(resources))
+				.set('game.dice.resources', Immutable.fromJS(resources))
 				.commit();
 	}
 
@@ -67,12 +67,13 @@ export default class GameManager extends Manager {
 	 * @param {Object} resources the resources received
 	*/
 	giveCards(resources) {
-		let players = this._binding.get('players').toJS();
-		let me = players.getMe();
+		let myBinding = MyBinding.from(this._binding);
+		myBinding.giveCards(resources);
 
-		me.giveCards(resources);
-
-		this._binding.set('players', Immutable.fromJS(players));
+		this._binding.atomically()
+				.set('me', myBinding.binding)
+				.clear('game.dice.resources')
+				.commit();
 	}
 
 	/**

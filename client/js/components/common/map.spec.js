@@ -1,6 +1,6 @@
 import 'client/js/components/libs/test';
 import MapHelper from 'client/js/components/common/map';
-import Players from 'client/js/components/common/players';
+import { PlayersBinding } from 'client/js/components/common/players';
 
 describe('The map helper', function() {
 	beforeEach(function() {
@@ -122,13 +122,11 @@ describe('The map helper', function() {
 
 
 		describe('affect a player', function() {
-
 			beforeEach(function() {
-				this.player = Players.createPlayer(1, 'bob', 'green');
+				this.player = PlayersBinding.createPlayer(1, 'bob', 'green');
 			});
 
 			it('to a tile', function() {
-
 				this.board.giveElement('tiles', this.initBoard.tiles[1], this.player);
 
 				var b = this.board.getElementOfType('tiles', this.initBoard.tiles[1]);
