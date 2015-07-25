@@ -277,7 +277,11 @@ export default class Game {
 		if (this._prepared === false && this._referee.isPlacementComplete()) {
 			this._prepared = true;
 			this.initiateGame();
-			this.emit('game:play');
+
+			// Send their resources to all players.
+			this._players.forEach(player => {
+				player.emit('game:play', { resources: player.resources });
+			});
 		}
 
 		return this._referee.currentPlayer;

@@ -48,7 +48,7 @@ describe('Placement turn management', function() {
 				var firstPlayerId = this.p1.id;
 
 				for (let p of this.players) {
-					let message  = p.client.lastMessage('play:pick:colony');
+					let message = p.client.lastMessage('play:pick:colony');
 					expect(message.player).toEqual(firstPlayerId);
 					expect(message.colony).toEqual(this.pickedLocation);
 					if (p.id !== firstPlayerId) { expect(message).not.toHaveKey('resources'); }
@@ -58,10 +58,10 @@ describe('Placement turn management', function() {
 			it('provides gained resources to the player', function() {
 				var message = this.p1.client.lastMessage('play:pick:colony');
 				var totalResources = 0;
-				for ( let [, count ] of maps.entries(message.resources)) {
+				for (let [, count ] of maps.entries(message.resources)) {
 					totalResources += count;
 				}
-				expect(totalResources).toBeIn([ 2, 3 ]);
+				expect(totalResources).toBeIn([2, 3]);
 			});
 		});
 
@@ -72,7 +72,7 @@ describe('Placement turn management', function() {
 
 	describe('road picking', function() {
 		beforeEach(function() {
-				this.startGame();
+			this.startGame();
 		});
 
 		describe('of valid path', function() {
@@ -87,7 +87,7 @@ describe('Placement turn management', function() {
 				var firstPlayerId = this.p1.id;
 
 				for (let p of this.players) {
-					let message  = p.client.lastMessage('play:pick:path');
+					let message = p.client.lastMessage('play:pick:path');
 					expect(message.player).toEqual(firstPlayerId);
 					expect(message.path).toEqual({ from: { x: 1, y: 0 }, to: this.pickedLocation }); // Correctly ordered path
 				}
@@ -157,7 +157,15 @@ describe('Placement turn management', function() {
 
 		it('notifies that the game has started', function() {
 			for (let p of this.players) {
-				expect(p.client.lastMessage('game:play')).not.toBeUndefined();
+				var message = p.client.lastMessage('game:play');
+				expect(message).not.toBeUndefined();
+			}
+		});
+
+		it('notifies each player of its resources', function() {
+			for (let p of this.players) {
+				var message = p.client.lastMessage('game:play');
+				expect(message).toHaveKey('resources');
 			}
 		});
 	});
