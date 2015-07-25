@@ -54,7 +54,6 @@ export default class PathR extends React.Component {
 	}
 
 	handleClick() {
-
 		if (this.props.value.selectable) {
 			Socket.emit(Globals.socket.playPickPath, { path: this.props.value.key });
 		}

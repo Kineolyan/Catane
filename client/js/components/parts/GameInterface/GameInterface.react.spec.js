@@ -1,23 +1,18 @@
 import tests from 'client/js/components/libs/test';
 import MapHelper from 'client/js/components/common/map';
 
-import React from 'react/addons';
-
 import Immutable from 'immutable';
 import { Surface } from 'react-art';
 import GameInterface from 'client/js/components/parts/GameInterface/GameInterface.react';
+import EndTurn from 'client/js/components/parts/GameInterface/EndTurn.react';
 
-var utils = React.addons.TestUtils;
+import Globals from 'client/js/components/libs/globals';
 
-describe('A game interface', function() {
+describe('<GameInterface>', function() {
 
 	beforeAll(function() {
 		this._ctx = tests.getCtx();
-
-		var GameInterfaceB = this._ctx.bootstrap(GameInterface);
-
-		this.game = utils.renderIntoDocument(<GameInterfaceB />);
-
+		this.game = tests.bootstrap(this._ctx, GameInterface);
 	});
 
 	it('should not render with no board', function() {
@@ -25,73 +20,24 @@ describe('A game interface', function() {
 	});
 
 	describe('with a board', function() {
-
 		beforeAll(function(done) {
 			this.board = {
 				tiles: [
-					{ x: 0, y: 0, resource: 'tuile', diceValue: 1 }/* ,
-					{ x: 1, y: 1, resource: 'tuile', diceValue: 1 },
-					{ x: 2, y: -1, resource: 'tuile', diceValue: 1 },
-					{ x: 1, y: -2, resource: 'tuile', diceValue: 1 },
-					{ x: -1, y: -1, resource: 'tuile', diceValue: 1 },
-					{ x: -2, y: 1, resource: 'tuile', diceValue: 1 },
-					{ x: -1, y: 2, resource: 'tuile', diceValue: 1 }*/
+					{ x: 0, y: 0, resource: 'tuile', diceValue: 1 }
 				], cities: [
 					{ x: 0, y: 1 },
 					{ x: 1, y: 0 },
 					{ x: 1, y: -1 },
 					{ x: 0, y: -1 },
 					{ x: -1, y: 0 },
-					{ x: -1, y: 1 }/* ,
-					{ x: 1, y: 2 },
-					{ x: 2, y: 1 },
-					{ x: 2, y: 0 },
-					{ x: 0, y: 2 },
-					{ x: 3, y: -1 },
-					{ x: 3, y: -2 },
-					{ x: 2, y: -2 },
-					{ x: 2, y: -3 },
-					{ x: 1, y: -3 },
-					{ x: 0, y: -2 },
-					{ x: -1, y: -2 },
-					{ x: -2, y: -1 },
-					{ x: -2, y: 0 },
-					{ x: -2, y: 2 },
-					{ x: -3, y: 1 },
-					{ x: -3, y: 2 },
-					{ x: -1, y: 3 },
-					{ x: -2, y: 3 }*/
+					{ x: -1, y: 1 }
 				], paths: [
 					{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } },
 					{ from: { x: 1, y: -1 }, to: { x: 1, y: 0 } },
 					{ from: { x: 0, y: -1 }, to: { x: 1, y: -1 } },
 					{ from: { x: 0, y: -1 }, to: { x: -1, y: 0 } },
 					{ from: { x: -1, y: 0 }, to: { x: -1, y: 1 } },
-					{ from: { x: -1, y: 1 }, to: { x: 0, y: 1 } }/* ,
-					{ from: { x: 2, y: 1 }, to: { x: 1, y: 2 } },
-					{ from: { x: 2, y: 0 }, to: { x: 2, y: 1 } },
-					{ from: { x: 1, y: 0 }, to: { x: 2, y: 0 } },
-					{ from: { x: 0, y: 1 }, to: { x: 0, y: 2 } },
-					{ from: { x: 0, y: 2 }, to: { x: 1, y: 2 } },
-					{ from: { x: 3, y: -1 }, to: { x: 2, y: 0 } },
-					{ from: { x: 3, y: -2 }, to: { x: 3, y: -1 } },
-					{ from: { x: 2, y: -2 }, to: { x: 3, y: -2 } },
-					{ from: { x: 2, y: -2 }, to: { x: 1, y: -1 } },
-					{ from: { x: 2, y: -3 }, to: { x: 2, y: -2 } },
-					{ from: { x: 1, y: -3 }, to: { x: 2, y: -3 } },
-					{ from: { x: 1, y: -3 }, to: { x: 0, y: -2 } },
-					{ from: { x: 0, y: -2 }, to: { x: 0, y: -1 } },
-					{ from: { x: -1, y: -2 }, to: { x: 0, y: -2 } },
-					{ from: { x: -1, y: -2 }, to: { x: -2, y: -1 } },
-					{ from: { x: -2, y: -1 }, to: { x: -2, y: 0 } },
-					{ from: { x: -2, y: 0 }, to: { x: -1, y: 0 } },
-					{ from: { x: -1, y: 1 }, to: { x: -2, y: 2 } },
-					{ from: { x: -2, y: 0 }, to: { x: -3, y: 1 } },
-					{ from: { x: -3, y: 1 }, to: { x: -3, y: 2 } },
-					{ from: { x: -3, y: 2 }, to: { x: -2, y: 2 } },
-					{ from: { x: 0, y: 2 }, to: { x: -1, y: 3 } },
-					{ from: { x: -2, y: 2 }, to: { x: -2, y: 3 } },
-					{ from: { x: -2, y: 3 }, to: { x: -1, y: 3 } }*/
+					{ from: { x: -1, y: 1 }, to: { x: 0, y: 1 } }
 				]
 			};
 
@@ -103,10 +49,42 @@ describe('A game interface', function() {
 
 		it('should have the board', function() {
 			expect(tests.getRenderedElements(this.game, Surface).length).toBe(1);
-
 		});
 
+		xdescribe('end turn button', function() {
+			it('is visible on my turn when game is started', function(done) {
+				this._ctx.getBinding().atomically()
+						.set('step', Globals.step.started)
+						.set('game.currentPlayerId', 1)
+						.commit();
 
+				setTimeout(() => {
+					expect(tests.getRenderedElements(this.game, EndTurn)).toHaveLength(1);
+					done();
+				}, 300);
+			});
+
+			it('is hidden when the game is not started yet', function(done) {
+				this._ctx.getBinding().set('step', Globals.step.prepare);
+
+				setTimeout(() => {
+					expect(tests.getRenderedElements(this.game, EndTurn)).toBeEmpty();
+					done();
+				}, 200);
+			});
+
+			it('is hidden on someone\'s else turn', function(done) {
+				this._ctx.getBinding().atomically()
+						.set('step', Globals.step.started)
+						.set('game.currentPlayerId', 2)
+						.commit();
+
+				setTimeout(() => {
+					expect(tests.getRenderedElements(this.game, EndTurn)).toBeEmpty();
+					done();
+				}, 200);
+			});
+		});
 	});
 
 

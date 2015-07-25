@@ -114,8 +114,12 @@ export default class GameManager extends Manager {
 		var boardContainer = this._binding.get('game.board').toJS();
 		var board = boardContainer.getBoard();
 		var currentPlayer = players.getPlayer(playerId);
-		var transaction = this._binding.atomically();
 
+		var transaction = this._binding.atomically();
+		// Stores the id of the current player
+		transaction.set('game.currentPlayerId', playerId);
+
+		// Prepare the actions
 		if (PlayersBinding.isMe(currentPlayer)) {
 			if (this._binding.get('step') === Globals.step.prepare) { // choose a colony at start
 				transaction.set('game.message', 'Choose a colony then a path');
@@ -131,6 +135,7 @@ export default class GameManager extends Manager {
 
 		// update the board
 		transaction.set('game.board', Immutable.fromJS(boardContainer));
+
 		transaction.commit();
 	}
 

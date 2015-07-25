@@ -34,6 +34,7 @@ Socket.on(Globals.socket.init, ({ player: player, server: server, message: messa
 			},
 
 			game: {
+				currentPlayerId: null, // Id of the current player
 				board: {}, // the board for the game, see common/map.js
 				dice: { // dice
 					enabled: false, // can throw

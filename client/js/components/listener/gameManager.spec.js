@@ -104,10 +104,18 @@ describe('Game Manager', function() {
 			this.binding.set('game.board', Immutable.fromJS(board));
 		});
 
-		describe('for "me"', function() {
-			describe('during preparation', function() {
+		it('stores the id of the current player', function() {
+			this.game.playTurnNew({ player: 1 });
+			expect(this.binding.get('game.currentPlayerId')).toEqual(1);
+		});
+
+		describe('during preparation', function() {
+			beforeEach(function() {
+				this.binding.set('step', Globals.step.prepare);
+			});
+
+			describe('for "me"', function() {
 				beforeEach(function() {
-					this.binding.set('step', Globals.step.prepare);
 					this.game.playTurnNew({ player: 1 });
 				});
 
@@ -116,10 +124,14 @@ describe('Game Manager', function() {
 					expect(city.selectable).toBe(true);
 				});
 			});
+		});
 
-			describe('during game', function() {
+		describe('during game', function() {
+			beforeEach(function() {
+				this.binding.set('step', Globals.step.started);
+			});
+			describe('for "me"', function() {
 				beforeEach(function() {
-					this.binding.set('step', Globals.step.started);
 					this.game.playTurnNew({ player: 1 });
 				});
 
@@ -131,4 +143,5 @@ describe('Game Manager', function() {
 		});
 	});
 
-});
+})
+;
