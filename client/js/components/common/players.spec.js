@@ -10,6 +10,14 @@ describe('PlayersBinding', function() {
 		this.helper = new PlayersBinding(this.binding);
 	});
 
+	describe('::from', function() {
+		it('creates a binding taking the correct part of the global context', function() {
+			var ctx = tests.getCtx({ players: [{ id: 1, name: 'O' }] });
+			var helper = PlayersBinding.from(ctx.getBinding());
+			expect(helper.getPlayer(1).get('name')).toEqual('O');
+		});
+	});
+
 	describe('#getPlayer', function() {
 		beforeEach(function() {
 			['a', 'b', 'c'].forEach((name, i) => this.helper.setPlayer(i + 1, name));
@@ -152,6 +160,14 @@ describe('MyBinding', function() {
 	beforeEach(function() {
 		var ctx = tests.getCtx({ id: 1, resources: ['ble', 'bois'] });
 		this.helper = new MyBinding(ctx.getBinding().get());
+	});
+
+	describe('::from', function() {
+		it('creates a binding taking the correct part of the global context', function() {
+			var ctx = tests.getCtx({ me: { id: 1 } });
+			var helper = MyBinding.from(ctx.getBinding());
+			expect(helper.binding.get('id')).toEqual(1);
+		});
 	});
 
 	describe('#giveCards', function() {

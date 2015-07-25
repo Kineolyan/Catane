@@ -12,7 +12,7 @@ export class MyBinding {
 	 * @param {Object} binding the top-level binding
 	 * @return {MyBinding} an instance
 	 */
-	from(binding) {
+	static from(binding) {
 		return new MyBinding(binding.get('me'));
 	}
 

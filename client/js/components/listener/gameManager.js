@@ -39,11 +39,18 @@ export default class GameManager extends Manager {
 				key = 'paths';
 				payload = res.path;
 				board.setSelectableType(null);
-				Socket.emit(Globals.socket.playTurnEnd);
 			}
 
 			// give an element to a player
 			board.giveElement(key, payload, player.toJS());
+
+			// For me, complete the turn after selecting the path
+			if (res.path) {
+				let myBinding = MyBinding.from(this._binding);
+				if (myBinding.binding.get('id') === res.player) {
+					Socket.emit(Globals.socket.playTurnEnd);
+				}
+			}
 			this._binding.set('game.board', Immutable.fromJS(boardContainer));
 		} else {
 			throw new Error('Not the good step');
