@@ -48,13 +48,13 @@ export default class GameInterface extends MoreartyComponent {
 						          margin={50}
 								/>
 
-						<Message y={120} x={20}
+						<Message y={90} x={20}
 						         binding={binding.sub('game.message')}
 								/>
 
 						<PlayersInfo ref="player"
 						             binding={{ default: binding.sub('players'), me: binding.sub('me') }}
-						             y={90} x={20}
+						             y={120} x={20}
 						             height={binding.get('game.height')} width={binding.get('game.width')}
 								/>
 					</Surface>

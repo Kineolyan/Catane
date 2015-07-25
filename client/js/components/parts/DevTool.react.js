@@ -109,7 +109,7 @@ export default class DevTool extends MoreartyComponent {
 				.commit();
 	}
 
-	setContext({ board: board, players: players, me: myInfo }, ctx) {
+	setContext({ board: board, players: players, me: myInfo, message: message }, ctx) {
 		if (ctx === undefined) {
 			ctx = this.getDefaultBinding();
 		}
@@ -125,6 +125,7 @@ export default class DevTool extends MoreartyComponent {
 			ctx.set('players', playersBinding);
 		}
 		if (myInfo) { ctx.set('me', Immutable.fromJS(myInfo)); }
+		if (message) { ctx.set('game.message', Immutable.fromJS(message)); }
 
 		return ctx.set('step', Globals.step.started);
 	}
