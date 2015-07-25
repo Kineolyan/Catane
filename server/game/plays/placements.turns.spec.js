@@ -1,5 +1,5 @@
 import * as starter from 'server/game/games/game-spec.starter.js';
-import * as maps from '../../util/maps.js';
+import * as maps from 'libs/collections/maps.js';
 
 describe('Placement turn management', function() {
 	beforeEach(function() {

@@ -3,7 +3,7 @@ import { RoundGenerator } from 'server/elements/boards/generators/maps';
 import Dice from 'server/elements/dice/dice';
 import { PlacementReferee, GameReferee, ResourceCosts } from 'server/game/referees/referee';
 import { DropResourcesDelegate } from 'server/game/referees/delegates.js';
-import { shuffle } from 'server/util/arrays';
+import { shuffle } from 'libs/collections/arrays';
 
 const logger = global.logger;
 

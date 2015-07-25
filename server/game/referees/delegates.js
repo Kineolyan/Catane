@@ -1,4 +1,4 @@
-import * as map from 'server/util/maps.js';
+import * as map from 'libs/collections/maps.js';
 
 /**
  * Delegate class handling dropping of rsources for all players

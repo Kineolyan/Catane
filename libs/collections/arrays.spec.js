@@ -1,4 +1,4 @@
-import * as util from './arrays';
+import * as util from './arrays.js';
 
 describe('Array utils', function() {
 

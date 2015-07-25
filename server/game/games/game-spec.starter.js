@@ -7,7 +7,7 @@ import Player from 'server/game/players/player.js';
 // Managers
 import Games from './games.js';
 import Plays from 'server/game/plays/plays.js';
-import * as maps from 'server/util/maps.js';
+import * as maps from 'libs/collections/maps.js';
 
 export const PICK_ARGS = [
 		// Outer city ring

@@ -37,6 +37,7 @@ var PATHS = pathItem('.');
 PATHS.bin = pathItem('bin');
 
 PATHS.server = pathItem('server');
+PATHS.libs = pathItem('libs');
 
 PATHS.client = pathItem('client');
 PATHS.client.scssLib = pathItem('scss_lib');
@@ -44,6 +45,7 @@ PATHS.client.scss = pathItem('scss');
 PATHS.client.js = pathItem('js');
 
 PATHS.build = pathItem('build');
+PATHS.build.libs = pathItem('libs');
 PATHS.build.server = pathItem('server');
 PATHS.build.client = pathItem('client');
 PATHS.build.client.js = pathItem('js');
@@ -59,7 +61,15 @@ PATHS.bower = pathItem('bower');
 /* -- Actions -- */
 
 /** Builds all js transpiling from ES6 to ES5 */
-function buildJs() {
+function buildLibs() {
+	return gulp.src([PATHS.libs('**/*.js')], { base: PATHS.libs() })
+			.pipe(cached('libs-js'))
+			.pipe(plumber({ errorHandler: notify.onError("Build libs : <%= error.message %>") }))
+			.pipe(babel({ sourceRoot: PATHS.libs() }))
+			.pipe(plumber.stop())
+			.pipe(gulp.dest(PATHS.build.libs()));
+}
+function buildServer() {
 	return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
 			.pipe(cached('server-js'))
 			.pipe(plumber({ errorHandler: notify.onError("Build server : <%= error.message %>") }))
@@ -68,7 +78,7 @@ function buildJs() {
 			.pipe(gulp.dest(PATHS.build.server()));
 }
 
-function buildJsx() {
+function buildClient() {
 	return gulp.src(PATHS.client.js('components/**/*.js'))
 			.pipe(cached('client-js'))
 			.pipe(plumber({ errorHandler: notify.onError("Build:jsx : <%= error.message %>") }))
@@ -86,11 +96,19 @@ function runTests(stream, verbose) {
 			.pipe(jas({ includeStackTrace: true, verbose: verbose }));
 }
 
+function testJsLibs(verbose) {
+	return runTests(gulp.src([
+		PATHS.specs('server-env.js'),
+		PATHS.specs.matchers('**/*.js'),
+		PATHS.build.libs('**/*.spec.js')
+	]), verbose);
+}
+
 function testJsServer(verbose) {
 	return runTests(gulp.src([
 		PATHS.specs('server-env.js'),
 		PATHS.specs.matchers('**/*.js'),
-		PATHS.build.server('**/*.spec.js'),
+		PATHS.build.server('**/*.spec.js')
 	]), verbose);
 }
 
@@ -117,7 +135,9 @@ function cleanOutput(done) {
 
 /* --  Build tasks -- */
 
-gulp.task('build:js:server', buildJs);
+gulp.task('build:js:libs', buildLibs);
+
+gulp.task('build:js:server', ['build:js:libs'], buildServer);
 
 gulp.task('build:sass', function() {
 	return gulp.src([
@@ -130,9 +150,9 @@ gulp.task('build:sass', function() {
 			.pipe(gulp.dest(PATHS.build.client('css')));
 });
 
-gulp.task('build:js:client', buildJsx);
+gulp.task('build:js:client', ['build:js:libs'], buildClient);
 
-gulp.task('build:js', ['build:js:server', 'build:js:client']);
+gulp.task('build:js', ['build:js:libs', 'build:js:server', 'build:js:client']);
 
 gulp.task('build:dependencies', function() {
 	return gulp.src([PATHS.bower('/*/dist/**/*')])
@@ -152,15 +172,18 @@ gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
 
 /* -- Test task -- */
 
+gulp.task('test:js:libs', ['build:js:libs'], testJsLibs);
+
 gulp.task('test:js:server', ['build:js:server'], testJsServer);
 
 gulp.task('test:js:client', ['build:js:client'], testJsClient);
 
-gulp.task('test:js', ['test:js:server', 'test:js:client']);
+gulp.task('test:js', ['test:js:libs', 'test:js:server', 'test:js:client']);
 
 gulp.task('test:lint', function() {
 	return gulp.src([
 		PATHS.bin('*.js'),
+		PATHS.libs('**/*.js'),
 		PATHS.client('**/*.js'),
 		PATHS.server('**/*.js')
 	])//.pipe(plumber({ errorHandler: notify.onError("test:lint : <%= error.message %>") }))
@@ -175,15 +198,15 @@ gulp.task('test', ['test:js', 'test:lint']);
 /* -- Watcher -- */
 
 // Special task to order properly tasks
+gulp.task('watch:js:test-libs', ['build:js:libs'], function() {
+	return testJsLibs(false);
+});
+
 gulp.task('watch:js:test-server', ['build:js:server'], function() {
 	return testJsServer(false);
 });
 
 gulp.task('watch:js:test-client', ['build:js:client'], function() {
-	return testJsClient(false);
-});
-
-gulp.task('watch:js:test-all', ['build:js', 'watch:js:test-server'], function() {
 	return testJsClient(false);
 });
 
@@ -198,8 +221,9 @@ gulp.task('watch:js', function() {
 	], ['watch:js:test-client']);
 
 	gulp.watch([
+		PATHS.libs('**/*.js'), // Run all tests
 		PATHS.specs('**/*.js') // Run all tests when spec helper changes
-	], ['watch:js:test-all']);
+	], ['watch:js:test-libs', 'watch:js:test-server', 'watch:js:test-client']);
 });
 
 gulp.task('watch:sass', function() {
