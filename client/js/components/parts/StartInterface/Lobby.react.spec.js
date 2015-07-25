@@ -7,30 +7,27 @@ import Lobby from 'client/js/components/parts/StartInterface/Lobby.react';
 
 var utils = React.addons.TestUtils;
 
-
-describe('A lobby', function() {
+describe('<Lobby>', function() {
 
 	beforeEach(function() {
-
 		this._ctx = tests.getCtx();
 
-		var LobbyB = this._ctx.bootstrap(Lobby);
+		// Initializes some games
+		var binding = this._ctx.getBinding();
+		binding.set('start.games', Immutable.fromJS([{ id: 3 }, { id: 1 }, { id: 2 }]));
 
-		this.lobby = utils.renderIntoDocument(<LobbyB />);
-
+		this.lobby = tests.bootstrap(this._ctx, Lobby);
 	});
 
+	it('should render the list of games', function() {
+		var elems = utils.scryRenderedDOMComponentsWithClass(this.lobby, 'game-elem');
+		expect(elems).toHaveLength(3);
+	});
 
-	it('should render the list of game', function(done) {
-		var binding = this._ctx.getBinding();
-		binding.set('start.games', Immutable.fromJS([{ id: 1 }, { id: 2 }]));
-
-		setTimeout(() => {
-			var elems = utils.scryRenderedDOMComponentsWithClass(this.lobby, 'game-elem');
-			expect(elems.length).toBe(2);
-			done();
-		}, 100);
-
+	it('assigns the game id to each entry', function() {
+		var ids = utils.scryRenderedDOMComponentsWithClass(this.lobby, 'game-elem')
+				.map(elem => elem.props['data-id']);
+		expect(ids).toEqual([3, 1, 2]);
 	});
 
 });

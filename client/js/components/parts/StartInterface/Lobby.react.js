@@ -28,24 +28,22 @@ export default class Lobby extends MoreartyComponent {
 	 * @return {Object} the rendered element
 	 */
 	render() {
-		var index = 0;
 		var binding = this.getDefaultBinding();
 
 		var games = binding.get('start.games').map((game) => {
-			return (<li className={'game-elem'} key={game.get('id')} data-index={index} onClick={this.chooseGame.bind(this)}>
-				Join Game {game.get('id')} <Glyphicon glyph="arrow-right"/>
+			var gameId = game.get('id');
+			return (<li className={'game-elem'} key={gameId} data-id={gameId}
+			            onClick={this.chooseGame.bind(this)}>
+				Join Game {gameId} <Glyphicon glyph="arrow-right"/>
 			</li>);
-		}).toArray();
+		});
 
-		// no games availables
-		if (games.length === 0) {
-			games = <div>No games availables. Create one to start !</div>;
-		}
+		const noGame = (<div>No games available. Create one to start !</div>);
 
 		return (
 				<div className={'lobby'}>
 					<ul className={'list-info'}>
-						{games}
+						{!games.isEmpty() ? games.toArray() : noGame}
 					</ul>
 					<Button className={'pull-right'} bsSize="small" bsStyle="success" ref="createGameBtn"
 					        onClick={this.createGame.bind(this)}>
@@ -68,11 +66,8 @@ export default class Lobby extends MoreartyComponent {
 	 * @param  {Event} event the click event
 	 */
 	chooseGame(event) {
-		var binding = this.getDefaultBinding();
-		var games = binding.get('start.games').toJS();
-		var game = games[event.currentTarget.dataset.index];
-
-		Socket.emit(Globals.socket.gameJoin, game.id);
+		var gameId = parseInt(event.currentTarget.dataset.id, 10);
+		Socket.emit(Globals.socket.gameJoin, gameId);
 	}
 }
 
