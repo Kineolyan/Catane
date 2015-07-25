@@ -67,4 +67,8 @@ export class DropResourcesDelegate {
 	}
 
 	/* -- Additional methods to act as a referee -- */
+
+	checkTurn() {
+		throw new Error('Dropping resources. No turn to check');
+	}
 }

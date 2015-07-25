@@ -66,6 +66,20 @@ describe('DropResourcesDelegate', function() {
 		});
 	});
 
+	describe('#checkTurn', function() {
+		beforeEach(function() {
+			this.delegate = new DropResourcesDelegate(this.referee);
+		});
+
+		['checkTurn'].forEach(method => {
+			it(`throws with a warning to the user when calling #${method}`, function() {
+				expect(() => {
+					this.delegate[method]();
+				}).toThrowError(/drop.* resources/i);
+			});
+		});
+	});
+
 	describe('dropping', function() {
 		describe('without resources to drop', function() {
 			beforeEach(function() {
