@@ -2,6 +2,10 @@ import Immutable from 'immutable';
 
 import * as maps from 'libs/collections/maps';
 
+/**
+ * Helper wrapping a binding of the personal information.
+ * This provides utilities to add cards, ...
+ */
 export class MyBinding {
 	constructor(binding) {
 		this._binding = binding;
@@ -21,6 +25,16 @@ export class MyBinding {
 	}
 
 	/**
+	 * Saves the internal binding into the global one
+	 * @param {Object} binding the global binding representation
+	 *  This could be a Binding or a TransactionContext
+	 * @return {*} the global binding
+	 */
+	save(binding) {
+		return binding.set('me', this._binding);
+	}
+
+	/**
 	 * Gives the cards to the players
 	 * @param {Object} cards map of cards as [resource]=count
 	 */
@@ -34,22 +48,37 @@ export class MyBinding {
 	}
 }
 
+/**
+ * Helper wrapping a binding about players.
+ * This allows insert new players, update values, find a player by its id.
+ */
 export class PlayersBinding {
 
 	constructor(binding) {
 		this._binding = binding;
 	}
 
+	/**
+	 * Creates an instance from the top-level binding looking for 'players'.
+	 * @param {Object} binding the top-level binding
+	 * @return {MyBinding} an instance
+	 */
 	static from(binding) {
 		return new PlayersBinding(binding.get('players'));
 	}
 
-	save(binding) {
-		return binding.set('players', this._binding);
-	}
-
 	get binding() {
 		return this._binding;
+	}
+
+	/**
+	 * Saves the internal binding into the global one
+	 * @param {Object} binding the global binding representation
+	 *  This could be a Binding or a TransactionContext
+	 * @return {*} the global binding
+	 */
+	save(binding) {
+		return binding.set('players', this._binding);
 	}
 
 	setIPlayer(id, ...args) {

@@ -85,9 +85,16 @@ export default class GameManager extends Manager {
 
 	/**
 	 * Launch the game
+	 * @param {Object} resources the resources at the beginning of the game
 	 */
-	launchGame() {
-		this._binding.set('step', Globals.step.started);
+	launchGame({ resources: resources }) {
+		var myBinding = MyBinding.from(this._binding);
+		myBinding.giveCards(resources);
+
+		var transaction = this._binding.atomically()
+			.set('step', Globals.step.started);
+		myBinding.save(transaction);
+		transaction.commit();
 	}
 
 	/**

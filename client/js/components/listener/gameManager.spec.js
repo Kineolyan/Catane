@@ -72,9 +72,21 @@ describe('Game Manager', function() {
 		expect(this.binding.get('game.dice.rolling')).toBe(true);
 	});
 
-	it('launch the game', function() {
-		this.game.launchGame();
-		expect(this.binding.get('step')).toEqual(Globals.step.started);
+	describe('#launchGame', function() {
+		beforeEach(function() {
+			this.game.launchGame({ resources: { bois: 1, ble: 2 } });
+		});
+
+		it('sets the step to "started"', function() {
+			expect(this.binding.get('step')).toEqual(Globals.step.started);
+		});
+
+		it('assigns the received resources to the player', function() {
+			var resources = {};
+			this.binding.get('me.resources')
+					.forEach(resource => resources[resource] = (resources[resource] || 0) + 1);
+			expect(resources).toEqual({ bois: 1, ble: 2 });
+		});
 	});
 
 	it('prepare the game', function() {
