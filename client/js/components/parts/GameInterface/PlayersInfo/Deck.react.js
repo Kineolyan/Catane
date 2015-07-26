@@ -18,6 +18,11 @@ export default class Deck extends MoreartyComponent {
 		this.state = { mouseIn: false, mousePos: { x: 0, y: 0 } };
 	}
 
+  //New definition to accept a local state
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.state !== nextState || super.shouldComponentUpdate(nextProps, nextState);
+  }
+
 	/**
 	 * The goal is to draw something like this:
 	 *
@@ -41,6 +46,7 @@ export default class Deck extends MoreartyComponent {
 		const widthOfACard = this.props.widthOfACard;
 		const totalSize = (deckLength - 1) * this.props.spaceBetweenCards + widthOfACard;
 		const space = this.props.spaceBetweenCards;
+
 		var cards = deck.map((cardBinding, index) => {
 			const xCard = center - totalSize / 2 + space * index;
 			const xCardAbsolute = xCard + this.props.x + this.props.xParent;
@@ -65,7 +71,7 @@ export default class Deck extends MoreartyComponent {
 			}
 
 			return card;
-		});
+		}).toArray();
 
 		if (selectedElement) {
 			cards.splice(cards.indexOf(selectedElement), 1);
