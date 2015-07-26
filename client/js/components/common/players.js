@@ -35,12 +35,14 @@ export class MyBinding {
 	}
 
 	/**
-	 * Gives the cards to the players
+	 * Set the cards to the players
 	 * @param {Object} cards map of cards as [resource]=count
 	 */
-	giveCards(cards) {
+	setCards(cards) {
 		var resources = this._binding.get('resources').withMutations(binding => {
-			for (let [resource, count] of maps.entries(cards)) {
+
+      binding.clear();
+      for (let [resource, count] of maps.entries(cards)) {
 				for (let i = 0; i < count; i += 1) { binding.push(resource); }
 			}
 		});

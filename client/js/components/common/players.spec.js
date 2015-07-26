@@ -170,18 +170,24 @@ describe('MyBinding', function() {
 		});
 	});
 
-	describe('#giveCards', function() {
+	describe('#setCards', function() {
 		beforeEach(function() {
-			this.helper.giveCards({ mouton: 3, ble: 2, caillou: 4 });
+			this.helper.setCards({ mouton: 3, ble: 2, caillou: 4, bois: 1 });
 			this.count = function(resource) {
 				return this.helper.binding.get('resources').filter(res => res === resource).size;
 			};
 		});
 
-		for (let [resource, count] of maps.entries({ mouton: 3, bois: 1, ble: 3, caillou: 4 })) {
+		for (let [resource, count] of maps.entries({ mouton: 3, bois: 1, ble: 2, caillou: 4 })) {
 			it(`counts ${count} ${resource} to the resources`, function() {
 				expect(this.count(resource)).toEqual(count);
 			});
 		}
+
+		it(`doesn't stack the cards`, function() {
+			this.helper.setCards({ mouton: 3, ble: 2, caillou: 4 });
+			this.helper.setCards({ mouton: 3, ble: 2, caillou: 4, bois: 1 });
+			expect(this.helper.binding.get('resources').size).toEqual(10);
+		});
 	});
 });

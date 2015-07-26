@@ -70,12 +70,12 @@ export default class GameManager extends Manager {
 	}
 
 	/**
-	* Give some resouces to the current player
+	* Give some resources to the current player
 	 * @param {Object} resources the resources received
 	*/
-	giveCards(resources) {
+	setMyCards(resources) {
 		let myBinding = MyBinding.from(this._binding);
-		myBinding.giveCards(resources);
+		myBinding.setCards(resources);
 
 		this._binding.atomically()
 				.set('me', myBinding.binding)
@@ -89,7 +89,7 @@ export default class GameManager extends Manager {
 	 */
 	launchGame({ resources: resources }) {
 		var myBinding = MyBinding.from(this._binding);
-		myBinding.giveCards(resources);
+		myBinding.setCards(resources);
 
 		var transaction = this._binding.atomically()
 			.set('step', Globals.step.started);

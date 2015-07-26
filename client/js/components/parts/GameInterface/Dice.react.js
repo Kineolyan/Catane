@@ -47,7 +47,7 @@ export default class Dice extends MoreartyComponent {
 					chg(parseInt(time, 10), initValues);
 				} else {
 					binding.set('rolling', false);
-          Listener.gameManager.giveCards(binding.get('resources').toJS());
+          Listener.gameManager.setMyCards(binding.get('resources').toJS());
 				}
 
 			}, time);

@@ -18,9 +18,8 @@ export default class Deck extends MoreartyComponent {
 		this.state = { mouseIn: false, mousePos: { x: 0, y: 0 } };
 	}
 
-  //New definition to accept a local state
   shouldComponentUpdate(nextProps, nextState) {
-    return this.state !== nextState || super.shouldComponentUpdate(nextProps, nextState);
+    return this.state !== nextState || super.shouldComponentUpdate(nextProps, nextState); // New definition to accept a local state
   }
 
 	/**
