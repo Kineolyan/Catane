@@ -1,23 +1,25 @@
 'use strict';
 
+import Immutable from 'immutable';
+
 import Players from 'client/js/components/common/players';
 
 var unitSize = 60;
+const SIN_PI_3 = 0.87;
+const COS_PI_3 = 0.5
 
 /**
  * Get the size of one edge of a tiles
  * @param {Number} x x-coordinate in hexacoordinate
  * @param {Number} y y-coordinate in hexacoordinate
- * @param {Number?} sz of the coordinate
  * @return {Object} new position in the orthogonal coordinate
  */
-function convert(x, y, sz) {
-	var size = typeof sz !== 'undefined' ? sz : unitSize;
+function convert({ x: x, y: y }) {
+	var newCoords = this || {};
+	newCoords.x = y + x * COS_PI_3;
+	newCoords.y = x * SIN_PI_3;
 
-	return {
-		y: x * 0.87 * size, // sin(pi/3)
-		x: (y + x / 2) * size
-	};
+	return newCoords;
 }
 
 /**
@@ -41,7 +43,7 @@ function getSize(tiles, width, height, margin) {
 	var size = 0;
 	for (let i = 0; i < tiles.length; i += 1) {
 		var t = tiles[i];
-		for (let j of ['x', 'y']) { // jshint ignore:line
+		for (let j of ['x', 'y']) {
 
 			if (t[j] > 0 && t[j] > max[j]) {
 				max[j] = t[j];
@@ -56,7 +58,7 @@ function getSize(tiles, width, height, margin) {
 	var tmpWidth = parseInt((width - margin) / ((max.x - min.x)), 10);
 	var tmpHeight = parseInt((height - margin) / ((max.y - min.y)), 10);
 
-	var tmp = convert(tmpWidth, tmpHeight, 1);
+	var tmp = convert(tmpWidth, tmpHeight);
 	if (tmp.x < tmp.y) {
 		size = tmp.x;
 	} else {
@@ -69,96 +71,84 @@ function getSize(tiles, width, height, margin) {
 // Abstract class for a map element
 var index = 0;
 
-class MapElement {
-	constructor(element) {
-		Object.assign(this, element);
-
-		this.unitSize = unitSize;
-		this.index = this.x + ',' + this.y + ',' + index;
-		this.key = element;
-
-		this.ortho = convert(this.x, this.y);
-		index += 1;
-
-		this._player = null;
-		if (element._player) {
-			this._player = Players.createFromJS(element._player);
-		}
-
-
-		this._selectable = element._selectable;
+export class GeometryBinding {
+	constructor(binding) {
+		this._binding = binding;
 	}
 
-	set player(val) {
-		this._player = val;
+	get binding() {
+		return this._binding;
 	}
 
-	get player() {
-		return this._player;
+	static from(binding) {
+		return new GeometryBinding(binding.get('geometry'));
 	}
 
-	set selectable(val) {
-		this._selectable = val;
+	save(binding) {
+		return binding.set('geometry', this._binding);
 	}
 
-	get selectable() {
-		return this._selectable;
-	}
-
-}
-// A tile with orthogonal coordinate and vertex
-class Tile extends MapElement {
-	constructor(tile) {
-		super(tile);
-		// vertex
-		this.vertex = [];
-		this.vertex.push(convert(0, -1));
-		this.vertex.push(convert(1, -1));
-		this.vertex.push(convert(1, 0));
-		this.vertex.push(convert(0, 1));
-		this.vertex.push(convert(-1, 1));
-		this.vertex.push(convert(-1, 0));
-
-		// define the key based on coordinates
-		this.key = { x: tile.x, y: tile.y };
-	}
-
-
-}
-
-// A city with orthogonal coordinate
-class City extends MapElement {
-	constructor(city) {
-		super(city);
-
-		// define the key based on coordinates
-		this.key = { x: city.x, y: city.y };
+	computeUnitSize(tiles, margin, width, height) {
+		width = width || this.binding.get('width') || window.innerWidth;
+		height = height || this.binding.get('height') || window.innerHeight;
 	}
 }
 
-// A path with orthogonal coordinate
-class Path extends MapElement {
-	constructor(path) {
-
-		super(path);
-
-		this.to = Object.assign({}, path.to);
-		this.from = Object.assign({}, path.from);
-		this.to.ortho = convert(this.to.x, this.to.y);
-		this.from.ortho = convert(this.from.x, this.from.y);
-
-		// define the key based on coordinates
-		this.key = { from: path.from, to: path.to };
+export class BoardBinding {
+	constructor(binding) {
+		this._binding = binding;
 	}
 
-	get x() {
-		return this.from.x;
+	get binding() {
+		return this._binding;
 	}
 
-	get y() {
-		return this.from.y;
+	static from(binding) {
+		return new BoardBinding(binding.get('board'));
 	}
 
+	save(binding) {
+		return binding.set('board', this._binding);
+	}
+
+	buildBoard(definition) {
+		var tiles = definition.tiles.map(BoardBinding.buildTile);
+		var cities = definition.cities.map(BoardBinding.buildCity);
+		var paths = definition.paths.map(BoardBinding.buildPath);
+
+		this._binding = this._binding
+			.set('tiles', Immutable.fromJS(tiles))
+			.set('cities', Immutable.fromJS(cities))
+			.set('paths', Immutable.fromJS(paths));
+	}
+
+	static buildTile(definition) {
+		var tile = Object.assign({}, definition);
+		tile.key = { x: tile.x, y: tile.y };
+		convert.call(tile, tile);
+
+		return tile;
+	}
+
+	static buildCity(definition) {
+		var city = Object.assign({}, definition);
+		city.key = { x: city.x, y: city.y };
+		convert.call(city, city);
+
+		return city;
+	}
+
+	static buildPath(definition) {
+		var path = Object.assign({}, definition);
+		path.key = {
+			from: Object.assign({}, path.from),
+			to: Object.assign({}, path.to)
+		};
+		convert.call(path.from, path.from);
+		convert.call(path.to, path.to);
+
+		return path;
+	}
 }
 
 /**
@@ -207,8 +197,6 @@ class MapHelpher {
 
 				this._elements.set(type, elements);
 			}
-
-
 		}
 
 	}

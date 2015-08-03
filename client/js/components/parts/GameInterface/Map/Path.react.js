@@ -6,30 +6,33 @@
 import Socket from 'client/js/components/libs/socket';
 import Globals from 'client/js/components/libs/globals';
 
-import React from 'react';
+import React from 'react'; // eslint-disable-line no-unused-vars
 import { Path, Shape } from 'react-art';
 
-import Element from 'client/js/components/parts/GameInterface/Map/Element.react';
+import MapElement from 'client/js/components/parts/GameInterface/Map/Element.react';
 
-export default class PathR extends React.Component {
+export default class PathR extends MapElement {
 
-	render() {
-		var path = this.props.value,
-				p = new Path(),
-				coef,
-				color = 'black',
-				thickness = this.props.thickness;
+	get x() {
+		return this.getDefaultBinding().get('from.x');
+	}
 
-		if (path.player) {
-			color = path.player.color;
-		}
+	get y() {
+		return this.getDefaultBinding().get('from.y');
+	}
 
-		/**
-		 * The idea is to draw a rectangle in any direction using path
-		 */
+	doRender() {
+		var path = this.getDefaultBinding().get();
+		var path = this.props.value;
+		var p = new Path();
+		var thickness = this.props.thickness;
+		var color = path.get('player.color') || 'black';
+
+		/* The idea is to draw a rectangle in any direction using path */
 		// get the direction of the path
-		if (path.to.ortho.y - path.from.ortho.y) {
-			coef = -1 * (path.to.ortho.x - path.from.ortho.x) / (path.to.ortho.y - path.from.ortho.y);
+		var coef;
+		if (path.to.y !== path.from.y) {
+			coef = -1 * (path.to.x - path.from.x) / (path.to.y - path.from.y);
 		} else {
 			coef = 1;
 			thickness *= 1.5;
@@ -38,19 +41,20 @@ export default class PathR extends React.Component {
 		var diff = Math.sqrt(Math.pow(thickness, 2) / (1 + Math.pow(coef, 2)));
 
 		// draw
-		p.moveTo(path.ortho.x - diff, path.ortho.y - diff * coef);
-		p.lineTo(path.ortho.x + diff, path.ortho.y + diff * coef);
-		p.lineTo(path.to.ortho.x + diff, path.to.ortho.y + diff * coef);
-		p.lineTo(path.to.ortho.x - diff, path.to.ortho.y - diff * coef);
+		p.moveTo(units(path.get('from.x') - diff), units(path.get('from.y') - diff) * coef);
+		p.lineTo(units(path.get('from.x') + diff), units(path.get('from.y') + diff) * coef);
+		p.lineTo(units(path.get('to.x') + diff), units(path.get('to.y') + diff) * coef);
+		p.lineTo(units(path.get('to.x') - diff), units(path.get('to.y') - diff) * coef);
 		p.close();
 
-		return (
-				<Element {...this.props} onClick={this.handleClick.bind(this)}>
-					<Shape d={p}
-					       fill={color}
-							/>
-				</Element>
-		);
+		return (<Shape d={p} fill={color}	/>);
+	}
+
+	get actions() {
+		var actions = super.actions;
+		actions.onClick = this.handleClick.bind(this);
+
+		return actions;
 	}
 
 	handleClick() {

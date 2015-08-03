@@ -19,40 +19,46 @@ export default class MapR extends MoreartyComponent {
 	 * @return {Object} the rendered element
 	 */
 	render() {
-		var board = this.getDefaultBinding().get().toJS().getBoard(),
-				elements = [];
-
-		for (let type of ['tiles', 'paths', 'cities']) { // keep the order of display, tiles under paths under cities
-			var Elem;
-			switch (type) {
-				case 'tiles':
-					Elem = Tile;
-					break;
-
-				case 'paths':
-					Elem = Path;
-					break;
-
-				case 'cities':
-					Elem = City;
-					break;
-			}
-
-			if (!Elem) {
-				continue;
-			}
-
-			board.elements.get(type).forEach((elem) => elements.push(<Elem key={elem.index} value={elem}/>));
-		}
+		var tiles = mapTiles((tile, key) => <Tile index={key} binding={tile}/>);
+		var paths = mapPaths((path, key) => <Path index={key} binding={path} />);
+		var cities = mapCities((city, key) => <City index={key} binding={city} />);
 
 		return (
 				<Group x={this.props.width / 2} y={this.props.height / 2}>
-					{elements}
+					{tiles}
+					{paths}
+					{cities}
 				</Group>
 		);
 	}
 
+	mapTiles(cbk) {
+		var tiles = this.getDefaultBinding().get('tiles');
+		tiles.forEach((tile, i) => {
+			var tileBinding = tiles.sub(i);
+			var hashCode = tile.get('x') * 100 + tile.get('y');
+			cbk(tileBinding, hashCode);
+		});
+	}
 
+	mapPaths(cbk) {
+		var paths = this.getDefaultBinding().get('paths');
+		paths.forEach((path, i) => {
+			var pathBinding = paths.sub(i);
+			// TODO compute the hash of the path
+			var hashCode = null;//path.get('x') * 100 + path.get('y');
+			cbk(pathBinding, hashCode);
+		});
+	}
+
+	mapCities(cbk) {
+		var cities = this.getDefaultBinding().get('cities');
+		cities.forEach((city, i) => {
+			var cityBinding = cities.sub(i);
+			var hashCode = city.get('x') * 100 + city.get('y');
+			cbk(cityBinding, hashCode);
+		});
+	}
 }
 
 MapR.displayName = 'Map';

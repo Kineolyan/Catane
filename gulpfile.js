@@ -64,26 +64,26 @@ PATHS.bower = pathItem('bower');
 function buildLibs() {
 	return gulp.src([PATHS.libs('**/*.js')], { base: PATHS.libs() })
 			.pipe(cached('libs-js'))
-			.pipe(plumber({ errorHandler: notify.onError("Build libs : <%= error.message %>") }))
+			// .pipe(plumber({ errorHandler: notify.onError("Build libs : <%= error.message %>") }))
 			.pipe(babel({ sourceRoot: PATHS.libs() }))
-			.pipe(plumber.stop())
+			// .pipe(plumber.stop())
 			.pipe(gulp.dest(PATHS.build.libs()));
 }
 function buildServer() {
 	return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
 			.pipe(cached('server-js'))
-			.pipe(plumber({ errorHandler: notify.onError("Build server : <%= error.message %>") }))
+			// .pipe(plumber({ errorHandler: notify.onError("Build server : <%= error.message %>") }))
 			.pipe(babel({ sourceRoot: PATHS.server() }))
-			.pipe(plumber.stop())
+			// .pipe(plumber.stop())
 			.pipe(gulp.dest(PATHS.build.server()));
 }
 
 function buildClient() {
 	return gulp.src(PATHS.client.js('components/**/*.js'))
 			.pipe(cached('client-js'))
-			.pipe(plumber({ errorHandler: notify.onError("Build:jsx : <%= error.message %>") }))
+			// .pipe(plumber({ errorHandler: notify.onError("Build:jsx : <%= error.message %>") }))
 			.pipe(babel())
-			.pipe(plumber.stop())
+			// .pipe(plumber.stop())
 			.pipe(gulp.dest(PATHS.build.client('js/components')));
 }
 
