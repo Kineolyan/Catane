@@ -25,16 +25,16 @@ export default class City extends MapElement {
 
 	get actions() {
 		var actions = super.actions;
-		actions.onClick = this.handleClick.bind(this);
+		if(this.isSelectable()) {
+			actions.onClick = this.handleClick.bind(this);
+		}
 
 		return actions;
 	}
 
 	handleClick() {
-		if(this.isSelectable()) {
-			var city = this.getDefaultBinding();
-			Socket.emit(Globals.socket.playPickColony, { colony: city.get('key').toJS() });
-		}
+		var city = this.getDefaultBinding();
+		Socket.emit(Globals.socket.playPickColony, { colony: city.get('key').toJS() });
 	}
 }
 

@@ -26,4 +26,9 @@ fdescribe('<City>', function() {
 		// city (15, 8.7) * 60
 		expect(coordinates).toEqual({ x: 900, y: 522 });
 	});
+
+	it('has no click action', function() {
+		var group = tests.getRenderedElements(this.element, Group)[0];
+		expect(group.props).not.toHaveKey('onClick');
+	});
 });

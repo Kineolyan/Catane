@@ -23,7 +23,6 @@ export default class PathR extends MapElement {
 
 	doRender() {
 		var path = this.getDefaultBinding().get();
-		var path = this.props.value;
 		var p = new Path();
 		var thickness = this.props.thickness;
 		var color = path.get('player.color') || 'black';
@@ -31,8 +30,8 @@ export default class PathR extends MapElement {
 		/* The idea is to draw a rectangle in any direction using path */
 		// get the direction of the path
 		var coef;
-		if (path.to.y !== path.from.y) {
-			coef = -1 * (path.to.x - path.from.x) / (path.to.y - path.from.y);
+		if (path.get('to.y') !== path.get('from.y')) {
+			coef = -1 * (path.get('to.x') - path.get('from.x')) / (path.get('to.y') - path.get('from.y'));
 		} else {
 			coef = 1;
 			thickness *= 1.5;
@@ -41,10 +40,10 @@ export default class PathR extends MapElement {
 		var diff = Math.sqrt(Math.pow(thickness, 2) / (1 + Math.pow(coef, 2)));
 
 		// draw
-		p.moveTo(units(path.get('from.x') - diff), units(path.get('from.y') - diff) * coef);
-		p.lineTo(units(path.get('from.x') + diff), units(path.get('from.y') + diff) * coef);
-		p.lineTo(units(path.get('to.x') + diff), units(path.get('to.y') + diff) * coef);
-		p.lineTo(units(path.get('to.x') - diff), units(path.get('to.y') - diff) * coef);
+		p.moveTo(this.units(path.get('from.x') - diff), this.units(path.get('from.y') - diff) * coef);
+		p.lineTo(this.units(path.get('from.x') + diff), this.units(path.get('from.y') + diff) * coef);
+		p.lineTo(this.units(path.get('to.x') + diff), this.units(path.get('to.y') + diff) * coef);
+		p.lineTo(this.units(path.get('to.x') - diff), this.units(path.get('to.y') - diff) * coef);
 		p.close();
 
 		return (<Shape d={p} fill={color}	/>);
@@ -52,15 +51,16 @@ export default class PathR extends MapElement {
 
 	get actions() {
 		var actions = super.actions;
-		actions.onClick = this.handleClick.bind(this);
+
+		if (this.isSelectable()) {
+			actions.onClick = this.handleClick.bind(this);
+		}
 
 		return actions;
 	}
 
 	handleClick() {
-		if (this.props.value.selectable) {
-			Socket.emit(Globals.socket.playPickPath, { path: this.props.value.key });
-		}
+		Socket.emit(Globals.socket.playPickPath, { path: this.props.value.key });
 	}
 }
 
