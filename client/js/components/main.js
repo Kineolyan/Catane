@@ -11,7 +11,6 @@ import 'babel/register';
 import Socket from 'client/js/components/libs/socket';
 import Globals from 'client/js/components/libs/globals';
 import Listener from 'client/js/components/listener/listener';
-import { GeometryBinding } from 'client/js/components/common/map';
 
 import React from 'react';
 import Morearty from 'morearty';

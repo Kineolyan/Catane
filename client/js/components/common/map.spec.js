@@ -25,7 +25,7 @@ describe('BoardBinding', function() {
 
 		it('has resource', function() {
 			expect(this.tile.resource).toEqual('tuile');
-		})
+		});
 
 		it('has no player', function() {
 			expect(this.tile).not.toHaveKey('player');
@@ -180,12 +180,12 @@ describe('BoardBinding', function() {
 		});
 
 		it('finds tiles', function() {
-			var tile = this.helper.getElement('tiles', { x: 0, y: 0});
+			var tile = this.helper.getElement('tiles', { x: 0, y: 0 });
 			expect(tile.get('diceValue')).toEqual(1);
 		});
 
 		it('finds cities', function() {
-			var location = { x: 0, y: 1};
+			var location = { x: 0, y: 1 };
 			var city = this.helper.getElement('cities', location);
 			expect(city.get('key').toJS()).toEqual(location);
 		});
@@ -197,12 +197,12 @@ describe('BoardBinding', function() {
 
 		it('throws on wrong type', function() {
 			expect(() => {
-				this.helper.getElement('zozo', { x: 0, y: 0});
+				this.helper.getElement('zozo', { x: 0, y: 0 });
 			}).toThrowError();
 		});
 
 		it('returns null if it does not exist', function() {
-			var tile = this.helper.getElement('tiles', { x: 1, y: 0});
+			var tile = this.helper.getElement('tiles', { x: 1, y: 0 });
 			expect(tile).toBe(null);
 		});
 	});
@@ -274,7 +274,7 @@ describe('BoardBinding', function() {
 					{ x: 1, y: -1 }
 				], paths: [
 					{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 }, player: 1 },
-					{ from: { x: 0, y: 1 }, to: { x: 1, y:1  } },
+					{ from: { x: 0, y: 1 }, to: { x: 1, y: 1 } }
 				]
 			};
 
@@ -287,7 +287,7 @@ describe('BoardBinding', function() {
 			this.helper.setSelectable('cities', true, () => true);
 
 			expect(this.helper.binding.get('cities').every(city => city.get('selectable') === true)).toBe(true);
-		})
+		});
 
 		it('sets selectable to empty cities', function() {
 			this.helper.setSelectable('cities', true, BoardBinding.emptyElement);

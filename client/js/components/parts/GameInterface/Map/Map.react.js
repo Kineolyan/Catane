@@ -14,17 +14,28 @@ import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.reac
 
 export default class MapR extends MoreartyComponent {
 
+	constructor() {
+		super(...arguments);
+		this.unit = 10;
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		return this.props !== nextProps // default logic
+			|| super.shouldComponentUpdate(nextProps, nextState); // Morearty logic
+	}
+
 	/**
 	 * Render the whole map of the game
 	 * @return {Object} the rendered element
 	 */
 	render() {
+		this.unit = MapR.computeUnit(this.getDefaultBinding().get('cities'), this.props.width, this.props.height, this.props.margin);
 		var tiles = this.mapElements('tiles', Tile);
 		var paths = this.mapElements('paths', Path);
 		var cities = this.mapElements('cities', City);
 
 		return (
-				<Group x={this.props.width / 2} y={this.props.height / 2}>
+				<Group x={this.props.x + this.props.width / 2} y={this.props.y + this.props.height / 2}>
 					{tiles.toArray()}
 					{paths.toArray()}
 					{cities.toArray()}
@@ -38,30 +49,30 @@ export default class MapR extends MoreartyComponent {
 		return elements.map((element, i) => {
 			var elementBinding = binding.sub(i);
 			var key = element.get('key');
-			return <Element key={key} binding={elementBinding} unit={this.props.unit}/>;
+			return <Element key={key} binding={elementBinding} unit={this.unit}/>;
 		});
 	}
 
 	/**
-	 * Get the unit size of one edge of a tiles
-	 * @param {Array} binding of the tiles of the game
+	 * Get the unit of the board in pixels
+	 * @param {Binding} cities cities of the board
 	 * @param {Number} width width of the map
 	 * @param {Number} height height of the map
 	 * @param {Number} margin top and bottom margin of the map
-	 * @return {Number} the size of one edge
+	 * @return {Number} the size of the grid
 	 */
-	static computeUnit(tiles, width, height, margin) {
+	static computeUnit(cities, width, height, margin) {
 		var min = {	x: 0,	y: 0 };
 		var max = { x: 0, y: 0 };
-		tiles.forEach(tile => {
+		cities.forEach(city => {
 			for (let axis of ['x', 'y']) {
-				let value = tile.get(axis);
-				if (value > 0 && value > max[j]) {
-					max[j] = value;
+				let value = city.get(axis);
+				if (value > 0 && value > max[axis]) {
+					max[axis] = value;
 				}
 
-				if (value < 0 && value < min[j]) {
-					min[j] = value;
+				if (value < 0 && value < min[axis]) {
+					min[axis] = value;
 				}
 			}
 		});
@@ -75,5 +86,7 @@ export default class MapR extends MoreartyComponent {
 MapR.displayName = 'Map';
 
 MapR.defaultProps = {
-	unit: 60
+	x: 0,
+	y: 0,
+	margin: 10
 };

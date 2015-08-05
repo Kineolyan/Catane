@@ -1,7 +1,6 @@
 import tests from 'client/js/components/libs/test';
 import { BoardBinding } from 'client/js/components/common/map';
 
-import Immutable from 'immutable';
 import { Surface } from 'react-art';
 import GameInterface from 'client/js/components/parts/GameInterface/GameInterface.react';
 import EndTurn from 'client/js/components/parts/GameInterface/EndTurn.react';

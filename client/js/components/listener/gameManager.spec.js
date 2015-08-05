@@ -5,8 +5,6 @@ import { Step } from 'client/js/components/libs/globals';
 import { BoardBinding } from 'client/js/components/common/map';
 import { PlayersBinding } from 'client/js/components/common/players';
 
-import Immutable from 'immutable';
-
 describe('GameManager', function() {
 	beforeEach(function() {
 		var ctx = tests.getCtx();

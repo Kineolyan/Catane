@@ -3,12 +3,9 @@ import tests from 'client/js/components/libs/test';
 import { BoardBinding } from 'client/js/components/common/map';
 import { Board } from 'client/js/components/libs/globals';
 
-import React from 'react/addons';
 import { Text, Shape, Group } from 'react-art';
 
 import Tile from 'client/js/components/parts/GameInterface/Map/Tile.react';
-
-var utils = React.addons.TestUtils;
 
 describe('<Tile>', function() {
 	beforeEach(function() {
@@ -20,7 +17,9 @@ describe('<Tile>', function() {
 	it('represents the value of the dice', function() {
 		var content = tests.getRenderedElements(this.element, Text);
 		expect(content).toHaveLength(1);
-		expect(content[0].props.children).toEqual(1);
+
+		// It is important for rendering to have a string
+		expect(content[0].props.children).toEqual('1');
 	});
 
 	it('should have the correct color', function() {

@@ -17,8 +17,6 @@ import EndTurn from 'client/js/components/parts/GameInterface/EndTurn.react';
 
 import Globals from 'client/js/components/libs/globals';
 
-const MARGIN = 10;
-
 export default class GameInterface extends MoreartyComponent {
 
 	constructor() {
@@ -30,10 +28,17 @@ export default class GameInterface extends MoreartyComponent {
 		};
 	}
 
+	shouldComponentUpdate(nextProps, nextState) {
+		return this.state !== nextState // Default logic
+			|| super.shouldComponentUpdate(nextProps, nextState); // Morearty logic
+	}
+
 	componentDidMount() {
 		window.onresize = () => {
-			this.setState('width', window.innerWidth);
-			this.setState('height', window.innerHeight);
+			this.setState({
+				width: window.innerWidth,
+				height: window.innerHeight
+			});
 		};
 	}
 
@@ -45,30 +50,26 @@ export default class GameInterface extends MoreartyComponent {
 		var binding = this.getDefaultBinding();
 		var width = this.state.width;
 		var height = this.state.height;
-		var unit = GameInterface.computeUnit(binding.get('game.board.tiles'), width, height, MARGIN);
 
 		return (<Surface x={0} y={0} width={width} height={height}>
 			<DiceReact x={10} y={10}
-			           size={50}
-			           binding={binding.sub('game.dice')}
-			           ref="dice"
-					/>
+								 size={50}
+								 binding={binding.sub('game.dice')}
+								 ref="dice"	/>
 
 			<MapReact ref="map"
-			          binding={binding.sub('game.board')}
-			          width={width} height={height} unit={unit}
-			          margin={50}
-					/>
+								binding={binding.sub('game.board')}
+								x={120} y={0}
+								width={width - 120} height={height}
+								margin={50}	/>
 
 			<Message y={90} x={20}
-			         binding={binding.sub('game.message')}
-					/>
+							 binding={binding.sub('game.message')} />
 
 			<PlayersInfo ref="player"
-			             binding={{ default: binding.sub('players'), me: binding.sub('me') }}
-			             y={120} x={20}
-			             height={height} width={width}
-					/>
+									 binding={{ default: binding.sub('players'), me: binding.sub('me') }}
+									 y={120} x={20}
+									 height={height} width={width} />
 
 			{ this.displayEndTurn() ? <EndTurn x={width - 75} y={10} height={30} width={60} /> : null }
 		</Surface>);
@@ -79,35 +80,6 @@ export default class GameInterface extends MoreartyComponent {
 
 		return binding.get('me.id') === binding.get('game.currentPlayerId') // it player's turn
 			&& binding.get('step') === Globals.step.started;
-	}
-
-	/**
-	 * Get the unit size of one edge of a tiles
-	 * @param {Array} binding of the tiles of the game
-	 * @param {Number} width width of the map
-	 * @param {Number} height height of the map
-	 * @param {Number} margin top and bottom margin of the map
-	 * @return {Number} the size of one edge
-	 */
-	static computeUnit(tiles, width, height, margin) {
-		var min = {	x: 0,	y: 0 };
-		var max = { x: 0, y: 0 };
-		tiles.forEach(tile => {
-			for (let axis of ['x', 'y']) {
-				let value = tile.get(axis);
-				if (value > 0 && value > max[axis]) {
-					max[axis] = value;
-				}
-
-				if (value < 0 && value < min[axis]) {
-					min[axis] = value;
-				}
-			}
-		});
-
-		var xUnit = parseInt((width - margin) / (max.x - min.x), 10);
-		var yUnit = parseInt((height - margin) / (max.y - min.y), 10);
-		return Math.min(xUnit, yUnit);
 	}
 }
 

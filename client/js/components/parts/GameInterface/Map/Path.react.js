@@ -13,16 +13,18 @@ import MapElement from 'client/js/components/parts/GameInterface/Map/Element.rea
 
 export default class PathR extends MapElement {
 
+	// TODO maybe do better to place the element at a place and draw
+	// only the required path
 	get x() {
-		return this.getDefaultBinding().get('from.x');
+		return 0;
 	}
 
 	get y() {
-		return this.getDefaultBinding().get('from.y');
+		return 0;
 	}
 
 	doRender() {
-		var path = this.getDefaultBinding().get();
+		var path = this.getDefaultBinding();
 		var p = new Path();
 		var thickness = this.props.thickness;
 		var color = path.get('player.color') || 'black';
@@ -40,10 +42,10 @@ export default class PathR extends MapElement {
 		var diff = Math.sqrt(Math.pow(thickness, 2) / (1 + Math.pow(coef, 2)));
 
 		// draw
-		p.moveTo(this.units(path.get('from.x') - diff), this.units(path.get('from.y') - diff) * coef);
-		p.lineTo(this.units(path.get('from.x') + diff), this.units(path.get('from.y') + diff) * coef);
-		p.lineTo(this.units(path.get('to.x') + diff), this.units(path.get('to.y') + diff) * coef);
-		p.lineTo(this.units(path.get('to.x') - diff), this.units(path.get('to.y') - diff) * coef);
+		p.moveTo(this.units(path.get('from.x')) - diff, this.units(path.get('from.y')) - diff * coef);
+		p.lineTo(this.units(path.get('from.x')) + diff, this.units(path.get('from.y')) + diff * coef);
+		p.lineTo(this.units(path.get('to.x')) + diff, this.units(path.get('to.y')) + diff * coef);
+		p.lineTo(this.units(path.get('to.x')) - diff, this.units(path.get('to.y')) - diff * coef);
 		p.close();
 
 		return (<Shape d={p} fill={color}	/>);

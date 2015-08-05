@@ -2,11 +2,8 @@
 
 import Immutable from 'immutable';
 
-import Players from 'client/js/components/common/players';
-
-var unitSize = 60;
 const SIN_PI_3 = 0.87;
-const COS_PI_3 = 0.5
+const COS_PI_3 = 0.5;
 
 /**
  * Get the size of one edge of a tiles
@@ -14,13 +11,22 @@ const COS_PI_3 = 0.5
  * @param {Number} y y-coordinate in hexacoordinate
  * @return {Object} new position in the orthogonal coordinate
  */
-function convert({ x: x, y: y }) {
+export function convert({ x: x, y: y }) {
 	var newCoords = this || {};
 	newCoords.x = y + x * COS_PI_3;
 	newCoords.y = x * SIN_PI_3;
 
 	return newCoords;
 }
+
+export const VERTICES = [
+	convert({ x: 0, y: -1 }),
+	convert({ x: 1, y: -1 }),
+	convert({ x: 1, y: 0 }),
+	convert({ x: 0, y: 1 }),
+	convert({ x: -1, y: 1 }),
+	convert({ x: -1, y: 0 })
+];
 
 const MAX_COORD = 50;
 const HASH_BASE = 101;
@@ -55,7 +61,7 @@ export class BoardBinding {
 			tiles: locationHash,
 			cities: locationHash,
 			paths: vectorHash
-		}
+		};
 	}
 
 	get binding() {
@@ -178,7 +184,7 @@ export class BoardBinding {
 		if (this._binding.has(type)) {
 			this._binding = this.binding.update(type, typeBinding => {
 				return typeBinding.map(element => {
-					return element.set('selectable', state && (cbk != undefined) && cbk(element));
+					return element.set('selectable', state && (cbk !== undefined) && cbk(element));
 				});
 			});
 		} else {

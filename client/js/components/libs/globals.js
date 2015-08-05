@@ -66,7 +66,7 @@ export const Interface = {
 			/* 3 */ 'silver'
 		]
 	}
-}
+};
 
 GLOBALS.interface = Interface;
 

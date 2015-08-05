@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; // eslint-disable-line no-unused-vars
 import { Group } from 'react-art';
 
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
@@ -10,18 +10,23 @@ import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.reac
  */
 export default class MapElement extends MoreartyComponent {
 	constructor() {
-		super();
+		super(...arguments);
 
 		this.state = { mouseIn: false };
 	}
 
-  get x() {
-    return this.getDefaultBinding().get('x');
-  }
+	shouldComponentUpdate(nextProps, nextState) {
+		return this.props !== nextProps // default logic
+			|| super.shouldComponentUpdate(nextProps, nextState); // Morearty logic
+	}
 
-  get y() {
-    return this.getDefaultBinding().get('y');
-  }
+	get x() {
+		return this.getDefaultBinding().get('x');
+	}
+
+	get y() {
+		return this.getDefaultBinding().get('y');
+	}
 
 	isSelectable() {
 		return this.getDefaultBinding().get('selectable') === true;

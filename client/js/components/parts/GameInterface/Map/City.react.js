@@ -34,7 +34,7 @@ export default class City extends MapElement {
 
 	handleClick() {
 		var city = this.getDefaultBinding();
-		Socket.emit(Globals.socket.playPickColony, { colony: this.props.key });
+		Socket.emit(Globals.socket.playPickColony, { colony: city.get('key').toJS() });
 	}
 }
 

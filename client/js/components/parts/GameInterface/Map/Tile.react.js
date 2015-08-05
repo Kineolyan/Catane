@@ -4,21 +4,13 @@
  A tile of the map
  */
 import { Board } from 'client/js/components/libs/globals';
+import { VERTICES } from 'client/js/components/common/map';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { Group, Shape, Text, Path } from 'react-art';
 import Circle from 'react-art/shapes/circle';
 
 import MapElement from 'client/js/components/parts/GameInterface/Map/Element.react';
-
-const VERTICES = [
-	[0, -1],
-	[1, -1],
-	[1, 0],
-	[0, 1],
-	[-1, 1],
-	[-1, 0]
-];
 
 export default class Tile extends MapElement {
 
@@ -39,12 +31,11 @@ export default class Tile extends MapElement {
 	}
 
 	doRender() {
-		var tile = this.getDefaultBinding().get();
-		var geometry; // TODO code geometry binding/provider
+		var tile = this.getDefaultBinding();
 		var circleRadius = this.units(1 / 3);
 
 		var path = new Path();
-		VERTICES.forEach(([x, y], i) => {
+		VERTICES.forEach(({ x: x, y: y }, i) => {
 			if (i !== 0) {
 				path.lineTo(this.units(x), this.units(y));
 			} else {
@@ -59,7 +50,7 @@ export default class Tile extends MapElement {
 					<Circle radius={circleRadius} fill="white" stroke="black"/>
 					<Text ref="value" y={-circleRadius / 2} fill="black" alignment="center"
 					      font={{ 'font-size': circleRadius + 'px' }}>
-						{ tile.get('diceValue') }
+						{ tile.get('diceValue').toString() }
 					</Text>
 				</Group>);
 		}
