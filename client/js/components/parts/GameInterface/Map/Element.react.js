@@ -24,11 +24,11 @@ export default class MapElement extends MoreartyComponent {
   }
 
 	isSelectable() {
-		return this.getDefaultBinding().get('selectable');
+		return this.getDefaultBinding().get('selectable') === true;
 	}
 
 	units(value) {
-		var unitSize = 60; // TODO use geometry binding
+		var unitSize = this.props.unit || 60;
 		return value * unitSize;
 	}
 

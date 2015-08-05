@@ -52,7 +52,20 @@ describe('StartManager', function() {
 			] });
 
 			// start the game
-			this.mgr.startGame({ board: {}, players: [2, 3, 1] });
+			this.mgr.startGame({
+				board: {
+					tiles: [
+						{ x: 0, y: 0, resource: 'tuile', diceValue: 1 }
+					], cities: [
+						{ x: 0, y: 1 },
+						{ x: 1, y: 0 },
+						{ x: 1, y: -1 }
+					], paths: [
+						{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } },
+						{ from: { x: 1, y: -1 }, to: { x: 1, y: 0 } }
+					]
+				}, players: [2, 3, 1]
+			});
 		});
 
 		it('reorders players', function() {

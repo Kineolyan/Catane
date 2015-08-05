@@ -50,7 +50,7 @@ var tests = {
 			},
 
 			game: {
-				board: [],
+				board: {},
 				dice: {
 					enabled: false,
 					rolling: false,
@@ -63,7 +63,9 @@ var tests = {
 				id: 1,
 				resources: []
 			},
-			players: [ { id: 1, name: 'Bob', me: true } ],
+			players: [
+				{ id: 1, name: 'Bob', me: true }
+			],
 			step: Globals.step.init,
 			server: { id: 1, sid: 2 }
 		};

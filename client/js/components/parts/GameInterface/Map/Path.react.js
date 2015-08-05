@@ -60,7 +60,7 @@ export default class PathR extends MapElement {
 	}
 
 	handleClick() {
-		Socket.emit(Globals.socket.playPickPath, { path: this.props.value.key });
+		Socket.emit(Globals.socket.playPickPath, { path: this.props.key });
 	}
 }
 

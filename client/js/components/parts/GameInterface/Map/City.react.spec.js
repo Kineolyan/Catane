@@ -8,7 +8,7 @@ import Circle from 'react-art/shapes/circle';
 import { BoardBinding } from 'client/js/components/common/map';
 import City from 'client/js/components/parts/GameInterface/Map/City.react';
 
-fdescribe('<City>', function() {
+describe('<City>', function() {
 	beforeEach(function() {
 		var city = BoardBinding.buildCity({ x: 10, y: 10 });
 		var ctx = tests.getCtx(city);

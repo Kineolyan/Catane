@@ -22,81 +22,40 @@ function convert({ x: x, y: y }) {
 	return newCoords;
 }
 
-/**
- * Get the size of one edge of a tiles
- * @param {Array} tiles of the game
- * @param {Number} width width of the map
- * @param {Number} height height of the map
- * @param {Number} margin top and bottom margin of the map
- * @return {Number} the size of one edge
- */
-function getSize(tiles, width, height, margin) {
-	var min = {
-		x: 0,
-		y: 0
-	};
-	var max = {
-		x: 0,
-		y: 0
-	};
+const MAX_COORD = 50;
+const HASH_BASE = 101;
 
-	var size = 0;
-	for (let i = 0; i < tiles.length; i += 1) {
-		var t = tiles[i];
-		for (let j of ['x', 'y']) {
-
-			if (t[j] > 0 && t[j] > max[j]) {
-				max[j] = t[j];
-			}
-
-			if (t[j] < 0 && t[j] < min[j]) {
-				min[j] = t[j];
-			}
-		}
-	}
-
-	var tmpWidth = parseInt((width - margin) / ((max.x - min.x)), 10);
-	var tmpHeight = parseInt((height - margin) / ((max.y - min.y)), 10);
-
-	var tmp = convert(tmpWidth, tmpHeight);
-	if (tmp.x < tmp.y) {
-		size = tmp.x;
-	} else {
-		size = tmp.y;
-	}
-
-	return size * 0.87;
+function offset(coord) {
+	return coord + MAX_COORD;
 }
 
-// Abstract class for a map element
-var index = 0;
+function locationHash(location) {
+	return (location.x * HASH_BASE + location.y).toString();
+}
 
-export class GeometryBinding {
-	constructor(binding) {
-		this._binding = binding;
-	}
-
-	get binding() {
-		return this._binding;
-	}
-
-	static from(binding) {
-		return new GeometryBinding(binding.get('geometry'));
-	}
-
-	save(binding) {
-		return binding.set('geometry', this._binding);
-	}
-
-	computeUnitSize(tiles, margin, width, height) {
-		width = width || this.binding.get('width') || window.innerWidth;
-		height = height || this.binding.get('height') || window.innerHeight;
+function vectorHash({ from: from, to: to }) {
+	// We order by low x then low y.
+	if ((from.x < to.x && from.y <= to.y)
+		|| (from.x >= to.x && from.y < to.y)) {
+		return (offset(from.x)
+			+ HASH_BASE * (offset(from.y)
+				+ HASH_BASE * (offset(to.x)
+					+ HASH_BASE * offset(to.y)
+				)
+			)).toString();
+	} else {
+		return vectorHash({ from: to, to: from });
 	}
 }
 
 export class BoardBinding {
 	constructor(binding) {
 		this._binding = binding;
+		this.hash = {
+			tiles: locationHash,
+			cities: locationHash,
+			paths: vectorHash
+		}
 	}
 
 	get binding() {
@@ -104,26 +63,37 @@ export class BoardBinding {
 	}
 
 	static from(binding) {
-		return new BoardBinding(binding.get('board'));
+		return new BoardBinding(binding.get('game.board'));
 	}
 
 	save(binding) {
-		return binding.set('board', this._binding);
+		return binding.set('game.board', this._binding);
 	}
 
 	buildBoard(definition) {
-		var tiles = definition.tiles.map(BoardBinding.buildTile);
-		var cities = definition.cities.map(BoardBinding.buildCity);
-		var paths = definition.paths.map(BoardBinding.buildPath);
+		var tiles = BoardBinding.mapElements(definition.tiles, BoardBinding.buildTile, this.hash.tiles);
+		var cities = BoardBinding.mapElements(definition.cities, BoardBinding.buildCity, this.hash.cities);
+		var paths = BoardBinding.mapElements(definition.paths, BoardBinding.buildPath, this.hash.paths);
 
 		this._binding = this._binding
 			.set('tiles', Immutable.fromJS(tiles))
 			.set('cities', Immutable.fromJS(cities))
 			.set('paths', Immutable.fromJS(paths));
+
+		return this;
+	}
+
+	static mapElements(elements, conversion, hash) {
+		var mapping = {};
+		for (let element of elements) {
+			mapping[hash(element)] = conversion(element);
+		}
+
+		return mapping;
 	}
 
 	static buildTile(definition) {
-		var tile = Object.assign({}, definition);
+		var tile = JSON.parse(JSON.stringify(definition));
 		tile.key = { x: tile.x, y: tile.y };
 		convert.call(tile, tile);
 
@@ -131,7 +101,7 @@ export class BoardBinding {
 	}
 
 	static buildCity(definition) {
-		var city = Object.assign({}, definition);
+		var city = JSON.parse(JSON.stringify(definition));
 		city.key = { x: city.x, y: city.y };
 		convert.call(city, city);
 
@@ -139,7 +109,7 @@ export class BoardBinding {
 	}
 
 	static buildPath(definition) {
-		var path = Object.assign({}, definition);
+		var path = JSON.parse(JSON.stringify(definition));
 		path.key = {
 			from: Object.assign({}, path.from),
 			to: Object.assign({}, path.to)
@@ -149,137 +119,76 @@ export class BoardBinding {
 
 		return path;
 	}
-}
-
-/**
- * Map helpher, transforming hexa coordinate to orthogonal.
- */
-class MapHelpher {
-
-	constructor(board, margin = 10, width = window.innerWidth, height = window.innerHeight) {
-		if (!board.tiles) {
-			return {};
-		}
-
-		// set the size of the base unit
-		unitSize = getSize(board.tiles, height, width, margin);
-
-		this._elements = new Map();
-
-		for (let type in board) {
-			if (board.hasOwnProperty(type)) {
-				let Cons;
-				switch (type) {
-					case 'cities':
-						Cons = City;
-						break;
-
-					case 'tiles':
-						Cons = Tile;
-						break;
-
-					case 'paths':
-						Cons = Path;
-						break;
-				}
-
-				if (!Cons) {
-					continue;
-				}
-
-				var elements = new Map();
-
-				for (let i = 0; i < board[type].length; i += 1) {
-					// if a specific key is declared in the original object, for further retrieval
-					var key = board[type][i].key ? board[type][i].key : board[type][i];
-					elements.set(JSON.stringify(key), new Cons(board[type][i]));
-				}
-
-				this._elements.set(type, elements);
-			}
-		}
-
-	}
-
-	get elements() {
-		return this._elements;
-	}
-
-	/**
-	 * Give a map element to a player
-	 * @param  {String} type   The element's type (tiles, cities, paths)
-	 * @param  {Object} key    The key of the element (generaly a json of x and y coordinates)
-	 * @param  {Player} player The player
-	 * @return {MapHelpher} this
-	 */
-	giveElement(type, key, player) {
-		var elem = this.getElementOfType(type, key);
-		if (elem) {
-			elem.player = player;
-		} else {
-			throw new Error(`No elem '${type}' with key ${JSON.stringify(key)}`);
-		}
-
-		return this;
-	}
 
 	/**
 	 * Get the element of a given type
 	 * @param  {String} type   The element's type (tiles, cities, paths)
 	 * @param  {Object} key    The key of the element (generaly a json of x and y coordinates)
-	 * @return {MapElement}    An element of the map
+	 * @return {Binding} binding of the element or null
 	 */
-	getElementOfType(type, key) {
-		if (this._elements.has(type)) {
-			return this._elements.get(type).get(JSON.stringify(key));
+	getElement(type, key) {
+		var typeBinding = this._binding.get(type);
+		if (typeBinding) {
+			return typeBinding.get(this.hash[type](key)) || null;
+		} else {
+			throw new Error(`No elements of type: ${type}`);
+		}
+	}
+
+	updateElement(type, key, updater) {
+		if (this._binding.has(type)) {
+			this._binding = this._binding.update(type, typeBinding => {
+				let hashcode = this.hash[type](key);
+				if (typeBinding.has(hashcode)) {
+					return typeBinding.update(hashcode, updater);
+				} else {
+					throw new Error(`No '${type}' with key ${key}`);
+				}
+			});
 		} else {
 			throw new Error(`No elements of type: ${type}`);
 		}
 	}
 
 	/**
-	 * Set a map element selectable
-	 * @param {String} type The type of element to make selectable
+	 * Give a map element to a player
+	 * @param  {String} type   The element's type (tiles, cities, paths)
+	 * @param  {Object} key    The key of the element (generaly a json of x and y coordinates)
+	 * @param  {Binding} player player binding
 	 * @return {MapHelpher} this
 	 */
-	setSelectableType(type) {
-
-		for (let [elemsType, elems] of this._elements.entries()) {
-			for (let [, part] of elems.entries()) {
-				part.selectable = (type === elemsType && !part.player);
-			}
-
+	giveElement(type, key, player) {
+		if (/cities|paths/.test(type)) {
+			this.updateElement(type, key, element => element.set('player', player.get('id')));
+		} else {
+			throw new Error('Cannot give ' + type);
 		}
 
 		return this;
 	}
-}
 
-export default {
-	board: null,
-	init() {
-		this.board = new MapHelpher(...arguments);
-		return this;
-	},
-
-	getBoard() {
-		return this.board;
-	},
-
-	toJS() {
-		var obj = {};
-
-		this.board.elements.forEach((typeElement, index) => {
-			obj[index] = [];
-			typeElement.forEach((mapElement) => {
-				obj[index].push(mapElement);
+	/**
+	 * Set a map element selectable
+	 * @param {String} type The type of element to make selectable
+	 * @param {Boolean} state selectable state
+	 * @param {Function?} cbk callback on the element
+	 * @return {MapHelpher} this
+	 */
+	setSelectable(type, state, cbk) {
+		if (this._binding.has(type)) {
+			this._binding = this.binding.update(type, typeBinding => {
+				return typeBinding.map(element => {
+					return element.set('selectable', state && (cbk != undefined) && cbk(element));
+				});
 			});
-		});
+		} else {
+			throw new Error(`No elements of type ${type}`);
+		}
 
-		return obj;
-	},
-	reset() {
-		index = 0;
+		return this;
 	}
 
-};
+	static emptyElement(element) {
+		return element.get('player') === undefined;
+	}
+}

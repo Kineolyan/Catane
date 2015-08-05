@@ -10,7 +10,7 @@ import Path from 'client/js/components/parts/GameInterface/Map/Path.react';
 
 var utils = React.addons.TestUtils;
 
-fdescribe('<Path>', function() {
+describe('<Path>', function() {
 	beforeEach(function() {
 		var path = BoardBinding.buildPath({ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } });
 		var ctx = tests.getCtx(path);

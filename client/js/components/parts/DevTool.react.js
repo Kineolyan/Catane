@@ -50,6 +50,10 @@ export default class DevTool extends MoreartyComponent {
 				<Button onClick={this.persist.bind(this)}>
 					<Glyphicon glyph={"floppy-disk"}/>
 				</Button>
+				<Button onClick={this.export.bind(this)}
+					title="Export current context">
+					<Glyphicon glyph={"floppy-save"}/>
+				</Button>
 				{ opened ?
 						<Button onClick={this.clear.bind(this)}>
 							<Glyphicon glyph={"floppy-remove"}/>
@@ -107,6 +111,15 @@ export default class DevTool extends MoreartyComponent {
 				.set('open', false)
 				.set('export', undefined)
 				.commit();
+	}
+
+	export() {
+		var content = JSON.stringify(this.getDefaultBinding().get().toJS());
+
+		this.getBinding().atomically()
+			.set('open', true)
+			.set('export', content)
+			.commit();
 	}
 
 	setContext({ board: board, players: players, me: myInfo, message: message }, ctx) {

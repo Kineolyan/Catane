@@ -1,9 +1,11 @@
 import Immutable from 'immutable';
 
 import Globals from 'client/js/components/libs/globals';
+import { Step } from 'client/js/components/libs/globals';
 import Manager from 'client/js/components/listener/manager';
 import Socket from 'client/js/components/libs/socket';
 import { PlayersBinding, MyBinding } from 'client/js/components/common/players';
+import { BoardBinding } from 'client/js/components/common/map';
 
 export default class GameManager extends Manager {
 
@@ -21,28 +23,27 @@ export default class GameManager extends Manager {
 	 * @param {Object} res result of the picking
 	 */
 	playPickElement(res) {
-		if (this._binding.get('step') === Globals.step.prepare) {
+		if (this._binding.get('step') === Step.prepare) {
 			// get the map
 			var players = new PlayersBinding(this._binding.get('players'));
-			var boardContainer = this._binding.get('game.board').toJS();
-			var board = boardContainer.getBoard();
-
+			var boardBinding = BoardBinding.from(this._binding);
 			var player = players.getPlayer(res.player);
-			var key;
+
+			var type;
 			var payload;
 			// choose what to do
 			if (res.colony) {
-				key = 'cities';
+				type = 'cities';
 				payload = res.colony;
-				board.setSelectableType('paths');
+				boardBinding.setSelectable('paths', true, BoardBinding.emptyElement);
 			} else if (res.path) {
-				key = 'paths';
+				type = 'paths';
 				payload = res.path;
-				board.setSelectableType(null);
+				boardBinding.setSelectable('paths', false);
 			}
 
 			// give an element to a player
-			board.giveElement(key, payload, player.toJS());
+			boardBinding.giveElement(type, payload, player);
 
 			// For me, complete the turn after selecting the path
 			if (res.path) {
@@ -51,7 +52,7 @@ export default class GameManager extends Manager {
 					Socket.emit(Globals.socket.playTurnEnd);
 				}
 			}
-			this._binding.set('game.board', Immutable.fromJS(boardContainer));
+			boardBinding.save(this._binding);
 		} else {
 			throw new Error('Not the good step');
 		}
@@ -110,9 +111,7 @@ export default class GameManager extends Manager {
 	 */
 	playTurnNew({ player: playerId }) {
 		// get the board and player
-		var players = new PlayersBinding(this._binding.get('players'));
-		var boardContainer = this._binding.get('game.board').toJS();
-		var board = boardContainer.getBoard();
+		var players = PlayersBinding.from(this._binding);
 		var currentPlayer = players.getPlayer(playerId);
 
 		var transaction = this._binding.atomically();
@@ -120,21 +119,24 @@ export default class GameManager extends Manager {
 		transaction.set('game.currentPlayerId', playerId);
 
 		// Prepare the actions
+		var boardBinding = BoardBinding.from(this._binding);
 		if (PlayersBinding.isMe(currentPlayer)) {
-			if (this._binding.get('step') === Globals.step.prepare) { // choose a colony at start
+			if (this._binding.get('step') === Step.prepare) { // choose a colony at start
 				transaction.set('game.message', 'Choose a colony then a path');
-				board.setSelectableType('cities');
+				boardBinding.setSelectable('cities', true, BoardBinding.emptyElement);
 			} else { // Roll the dice
 				transaction.set('game.message', 'Roll the dice');
 				transaction.set('game.dice.enabled', true);
 			}
 		} else { // passive turn
 			transaction.set('game.message', `Playing : ${currentPlayer.get('name')}`);
-			board.setSelectableType(null);
+			// TODO one may do better
+			boardBinding.setSelectable('cities', false);
+			boardBinding.setSelectable('paths', false);
 		}
 
 		// update the board
-		transaction.set('game.board', Immutable.fromJS(boardContainer));
+		boardBinding.save(transaction);
 
 		transaction.commit();
 	}

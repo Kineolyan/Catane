@@ -10,7 +10,7 @@ import Tile from 'client/js/components/parts/GameInterface/Map/Tile.react';
 
 var utils = React.addons.TestUtils;
 
-fdescribe('<Tile>', function() {
+describe('<Tile>', function() {
 	beforeEach(function() {
 		var tile = BoardBinding.buildTile({ x: 10, y: 10, resource: 'tuile', diceValue: 1 });
 		var ctx = tests.getCtx(tile);

@@ -19,46 +19,61 @@ export default class MapR extends MoreartyComponent {
 	 * @return {Object} the rendered element
 	 */
 	render() {
-		var tiles = mapTiles((tile, key) => <Tile index={key} binding={tile}/>);
-		var paths = mapPaths((path, key) => <Path index={key} binding={path} />);
-		var cities = mapCities((city, key) => <City index={key} binding={city} />);
+		var tiles = this.mapElements('tiles', Tile);
+		var paths = this.mapElements('paths', Path);
+		var cities = this.mapElements('cities', City);
 
 		return (
 				<Group x={this.props.width / 2} y={this.props.height / 2}>
-					{tiles}
-					{paths}
-					{cities}
+					{tiles.toArray()}
+					{paths.toArray()}
+					{cities.toArray()}
 				</Group>
 		);
 	}
 
-	mapTiles(cbk) {
-		var tiles = this.getDefaultBinding().get('tiles');
-		tiles.forEach((tile, i) => {
-			var tileBinding = tiles.sub(i);
-			var hashCode = tile.get('x') * 100 + tile.get('y');
-			cbk(tileBinding, hashCode);
+	mapElements(type, Element) {
+		var elements = this.getDefaultBinding().get(type);
+		var binding = this.getDefaultBinding().sub(type);
+		return elements.map((element, i) => {
+			var elementBinding = binding.sub(i);
+			var key = element.get('key');
+			return <Element key={key} binding={elementBinding} unit={this.props.unit}/>;
 		});
 	}
 
-	mapPaths(cbk) {
-		var paths = this.getDefaultBinding().get('paths');
-		paths.forEach((path, i) => {
-			var pathBinding = paths.sub(i);
-			// TODO compute the hash of the path
-			var hashCode = null;//path.get('x') * 100 + path.get('y');
-			cbk(pathBinding, hashCode);
-		});
-	}
+	/**
+	 * Get the unit size of one edge of a tiles
+	 * @param {Array} binding of the tiles of the game
+	 * @param {Number} width width of the map
+	 * @param {Number} height height of the map
+	 * @param {Number} margin top and bottom margin of the map
+	 * @return {Number} the size of one edge
+	 */
+	static computeUnit(tiles, width, height, margin) {
+		var min = {	x: 0,	y: 0 };
+		var max = { x: 0, y: 0 };
+		tiles.forEach(tile => {
+			for (let axis of ['x', 'y']) {
+				let value = tile.get(axis);
+				if (value > 0 && value > max[j]) {
+					max[j] = value;
+				}
 
-	mapCities(cbk) {
-		var cities = this.getDefaultBinding().get('cities');
-		cities.forEach((city, i) => {
-			var cityBinding = cities.sub(i);
-			var hashCode = city.get('x') * 100 + city.get('y');
-			cbk(cityBinding, hashCode);
+				if (value < 0 && value < min[j]) {
+					min[j] = value;
+				}
+			}
 		});
+
+		var xUnit = parseInt((width - margin) / (max.x - min.x), 10);
+		var yUnit = parseInt((height - margin) / (max.y - min.y), 10);
+		return Math.min(xUnit, yUnit);
 	}
 }
 
 MapR.displayName = 'Map';
+
+MapR.defaultProps = {
+	unit: 60
+};

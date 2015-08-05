@@ -1,73 +1,82 @@
 import tests from 'client/js/components/libs/test';
 import GameManager from 'client/js/components/listener/gameManager';
 import Globals from 'client/js/components/libs/globals';
-import MapHelper from 'client/js/components/common/map';
+import { Step } from 'client/js/components/libs/globals';
+import { BoardBinding } from 'client/js/components/common/map';
+import { PlayersBinding } from 'client/js/components/common/players';
+
 import Immutable from 'immutable';
 
-describe('Game Manager', function() {
+describe('GameManager', function() {
 	beforeEach(function() {
 		var ctx = tests.getCtx();
 		this.binding = ctx.getBinding();
 
+		var playerBinding = PlayersBinding.from(this.binding);
+		playerBinding.setPlayer(2, 'Mickael');
+		playerBinding.save(this.binding);
+
 		this.game = new GameManager(ctx);
+		this.initBoard = function(board) {
+			var helper = BoardBinding.from(this.binding);
+			helper.buildBoard(board);
+			helper.save(this.binding);
+		};
 	});
 
-	describe('pick some element for a player', function() {
-		it('throw if not if the good step', function() {
+	describe('picking element for a player', function() {
+		beforeEach(function() {
+			this.binding.set('step', Step.prepare);
+			this.initBoard({
+				tiles: [{ x: 0, y: 0 }],
+				cities: [{ x: 0, y: 0 }],
+				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }]
+			});
+		});
+
+		it('throws if not if the good step', function() {
+			this.binding.set('step', Step.init);
 			expect(() => {
 				this.game.playPickElement();
 			}).toThrow();
 		});
 
-		describe('should pick the element', function() {
+		describe('picking a colony', function() {
 			beforeEach(function() {
-				this.binding.set('step', Globals.step.prepare);
-				var board = MapHelper.init({
-					tiles: [{ x: 0, y: 0 }],
-					cities: [{ x: 0, y: 0 }],
-					paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }]
-				});
-				this.binding.set('game.board', Immutable.fromJS(board));
-			});
-
-			it('set a player to a colony', function() {
 				this.game.playPickElement({ player: 1, colony: { x: 0, y: 0 } });
-				var player = this.binding.get('game.board').toJS().board.getElementOfType('cities', { x: 0, y: 0 }).player;
-				expect(player).not.toBeNull();
+				this.boardBinding = BoardBinding.from(this.binding);
 			});
 
-			it('set the paths selectable after picking a colony', function() {
-				this.game.playPickElement({ player: 1, colony: { x: 0, y: 0 } });
-				var path = this.binding.get('game.board').toJS().board.getElementOfType('paths', {
-					from: { x: 0, y: 0 },
-					to: { x: 1, y: 1 }
-				});
-				expect(path.selectable).toBe(true);
+			it('marks the colony as picked', function() {
+				var city = this.boardBinding.getElement('cities', { x: 0, y: 0 });
+				expect(city.get('player')).toEqual(1);
 			});
 
-			it('set a player to a path', function() {
-				this.game.playPickElement({ player: 1, path: { from: { x: 0, y: 0 }, to: { x: 1, y: 1 } } });
-				var player = this.binding.get('game.board').toJS().board.getElementOfType('paths', {
-					from: { x: 0, y: 0 },
-					to: { x: 1, y: 1 }
-				}).player;
-				expect(player).not.toBeNull();
+			it('makes paths selectable', function() {
+				expect(this.boardBinding.binding.get('paths').every(path => path.get('selectable') === true)).toBe(true);
 			});
-
-			it('set the paths selectable after picking a colony', function() {
-				this.game.playPickElement({ player: 1, path: { from: { x: 0, y: 0 }, to: { x: 1, y: 1 } } });
-				var path = this.binding.get('game.board').toJS().board.getElementOfType('paths', {
-					from: { x: 0, y: 0 },
-					to: { x: 1, y: 1 }
-				});
-				expect(path.selectable).toBe(false);
-			});
-
 		});
 
+		describe('picking a path after a colony', function() {
+			beforeEach(function() {
+				this.game.playPickElement({ player: 1, colony: { x: 0, y: 0 } });
+				this.game.playPickElement({ player: 1, path: { from: { x: 0, y: 0 }, to: { x: 1, y: 1 } } });
+
+				this.boardBinding = BoardBinding.from(this.binding);
+			});
+
+			it('assigns the path to the player', function() {
+				var path = this.boardBinding.getElement('paths', { from: { x: 0, y: 0 }, to: { x: 1, y: 1 } });
+				expect(path.get('player')).toEqual(1);
+			});
+
+			it('unsets paths selectable', function() {
+				expect(this.boardBinding.binding.get('paths').every(path => path.get('selectable') !== true)).toBe(true);
+			});
+		});
 	});
 
-	it('roll the dice', function() {
+	it('rolls the dice', function() {
 		this.game.rollDice([1, 2]);
 		expect(this.binding.get('game.dice.rolling')).toBe(true);
 	});
@@ -96,12 +105,11 @@ describe('Game Manager', function() {
 
 	describe('on new turn', function() {
 		beforeEach(function() {
-			var board = MapHelper.init({
+			this.initBoard({
 				tiles: [{ x: 0, y: 0 }],
 				cities: [{ x: 0, y: 0 }],
 				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }]
 			});
-			this.binding.set('game.board', Immutable.fromJS(board));
 		});
 
 		it('stores the id of the current player', function() {
@@ -120,8 +128,24 @@ describe('Game Manager', function() {
 				});
 
 				it('enables available cities', function() {
-					var city = this.binding.get('game.board').toJS().board.getElementOfType('cities', { x: 0, y: 0 });
-					expect(city.selectable).toBe(true);
+					var cities = this.binding.get('game.board.cities');
+					expect(cities.every(city => city.get('selectable') === true)).toBe(true);
+				});
+			});
+
+			describe('for someone else', function() {
+				beforeEach(function() {
+					this.game.playTurnNew({ player: 2 });
+				});
+
+				it('deactivates all cities', function() {
+					var cities = this.binding.get('game.board.cities');
+					expect(cities.every(city => city.get('selectable') !== true)).toBe(true);
+				});
+
+				it('deactivates all paths', function() {
+					var paths = this.binding.get('game.board.paths');
+					expect(paths.every(path => path.get('selectable') !== true)).toBe(true);
 				});
 			});
 		});
@@ -130,6 +154,7 @@ describe('Game Manager', function() {
 			beforeEach(function() {
 				this.binding.set('step', Globals.step.started);
 			});
+
 			describe('for "me"', function() {
 				beforeEach(function() {
 					this.game.playTurnNew({ player: 1 });

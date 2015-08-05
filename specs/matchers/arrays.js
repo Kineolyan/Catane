@@ -23,7 +23,7 @@ var arrayMatchers = {
 			compare: function(actual, length) {
 				var actualLength = actual.length;
 				var result = { pass: actualLength === length };
-				result.message = 'Expecting item'
+				result.message = 'Expecting ' + actual
 					+ (result.pass === true ? ' not' : '')
 					+ ' to have length of ' + length;
 				if (!result.pass) {

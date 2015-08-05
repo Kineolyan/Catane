@@ -1,8 +1,9 @@
 import Immutable from 'immutable';
 
 import Globals from 'client/js/components/libs/globals';
+import { Step, Interface } from 'client/js/components/libs/globals';
 import Manager from 'client/js/components/listener/manager';
-import MapHelper from 'client/js/components/common/map';
+import { BoardBinding } from 'client/js/components/common/map';
 import { PlayersBinding } from 'client/js/components/common/players';
 
 /**
@@ -67,19 +68,25 @@ export default class StartManager extends Manager {
 	 * @param {Array} playerIds the ids of the players in play order
 	 */
 	startGame({ board: board, players: playerIds }) {
-		var colors = Globals.interface.player.colors;
+		var colors = Interface.player.colors;
+
+		// Order players
 		var players = this._binding.get('players');
 		var orderMap = {};
 		playerIds.forEach((id, index) => orderMap[id] = index);
 		var sortedPlayers = players.sortBy((player) => orderMap[player.get('id')])
 			.map((player, i) => player.set('color', colors[i]));
 
+		// Create the board
+		var boardBinding = BoardBinding.from(this._binding);
+		boardBinding.buildBoard(board);
+
 		this._binding.atomically()
-				.set('players', sortedPlayers)
-				.set('game.board', Immutable.fromJS(MapHelper.init(board, 10, this._binding.get('game.width'), this._binding.get('game.height'))))
-				.set('step', Globals.step.prepare)
-				.commit();
-	}
+			.set('players', sortedPlayers)
+			.set('step', Step.prepare)
+			.set('game.board', boardBinding.binding)
+			.commit();
+}
 
 	/**
 	 * Leave the current game
