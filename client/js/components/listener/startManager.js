@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
-import Globals from 'client/js/components/libs/globals';
 import { Step, Interface } from 'client/js/components/libs/globals';
+import { Channel } from 'client/js/components/libs/socket';
 import Manager from 'client/js/components/listener/manager';
 import { BoardBinding } from 'client/js/components/common/map';
 import { PlayersBinding } from 'client/js/components/common/players';
@@ -16,13 +16,13 @@ export default class StartManager extends Manager {
 	 * Start listening
 	 */
 	startListen() {
-		this.listenToSocket(Globals.socket.gamePlayers, this.updatePlayerList.bind(this));
-		this.listenToSocket(Globals.socket.playerNickname, this.updatePlayerNickname.bind(this));
-		this.listenToSocket(Globals.socket.gameStart, this.startGame.bind(this));
-		this.listenToSocket(Globals.socket.gameQuit, this.quitGame.bind(this));
-		this.listenToSocket(Globals.socket.gameCreate, this.gameCreate.bind(this));
-		this.listenToSocket(Globals.socket.gameList, this.updateGameList.bind(this));
-		this.listenToSocket(Globals.socket.gameJoin, this.gameJoin.bind(this));
+		this.listenToSocket(Channel.gamePlayers, this.updatePlayerList.bind(this));
+		this.listenToSocket(Channel.playerNickname, this.updatePlayerNickname.bind(this));
+		this.listenToSocket(Channel.gameStart, this.onGameStart.bind(this));
+		this.listenToSocket(Channel.gameQuit, this.onGameQuit.bind(this));
+		this.listenToSocket(Channel.gameCreate, this.gameCreate.bind(this));
+		this.listenToSocket(Channel.gameList, this.updateGameList.bind(this));
+		this.listenToSocket(Channel.gameJoin, this.gameJoin.bind(this));
 	}
 
 	/**
@@ -52,6 +52,14 @@ export default class StartManager extends Manager {
 	}
 
 	/**
+	 * Sets the name of the player.
+	 * @param {String} name the new player name
+	 */
+	setName(name) {
+		this._socket.emit(Channel.playerNickname, name);
+	}
+
+	/**
 	 * Update the name of one player
 	 * @param  {Object} newPlayer The player with the new name
 	 */
@@ -67,7 +75,7 @@ export default class StartManager extends Manager {
 	 * @param {Object} board The original board
 	 * @param {Array} playerIds the ids of the players in play order
 	 */
-	startGame({ board: board, players: playerIds }) {
+	onGameStart({ board: board, players: playerIds }) {
 		var colors = Interface.player.colors;
 
 		// Order players
@@ -91,7 +99,7 @@ export default class StartManager extends Manager {
 	/**
 	 * Leave the current game
 	 */
-	quitGame() {
+	onGameQuit() {
 		var players = new PlayersBinding(this._binding.get('players'));
 		// delete the others players
 		players.deleteOthers();
@@ -104,11 +112,26 @@ export default class StartManager extends Manager {
 	}
 
 	/**
+	 * Asks for a new game to be created.
+	 * @see #gameCreate for answer
+	 */
+	createGame() {
+		this._socket.emit(Channel.gameCreate);
+	}
+
+	/**
 	 * Create a new game
 	 * @param  {Object} game: game The created game
 	 */
 	gameCreate({ game: game }) {
 		this._binding.set('start.gameChosen', Immutable.fromJS(game));
+	}
+
+	/**
+	 * Requests for the list of games to be send.
+	 */
+	askGameList() {
+		this._socket.emit(Channel.gameList);
 	}
 
 	/**
@@ -120,11 +143,31 @@ export default class StartManager extends Manager {
 	}
 
 	/**
+	 * Requests that the player joins a given game
+	 * @param  {Number} gameId the id of the game
+	 */
+	joinGame(gameId) {
+		this._socket.emit(Channel.gameJoin, gameId);
+	}
+
+	/**
 	 * Join a game
 	 */
 	gameJoin({ id: gameId }) {
 		var games = this._binding.get('start.games');
 		var joinedGame = games.filter(game => game.get('id') === gameId).toJS()[0];
 		this._binding.set('start.gameChosen', Immutable.fromJS(joinedGame));
+	}
+
+	/**
+	 * Requests that a given game start.
+	 * @param  {Number} gameId the id of the game to start
+	 */
+	startGame(gameId) {
+		this._socket.emit(Channel.gameStart, gameId);
+	}
+
+	quitGame() {
+		this._socket.emit(Channel.gameQuit);
 	}
 }

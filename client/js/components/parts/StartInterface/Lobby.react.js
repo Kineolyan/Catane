@@ -11,6 +11,9 @@ import reactBootstrap from 'react-bootstrap';
 import React from 'react'; // eslint-disable-line no-unused-vars
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
+import { startManager } from 'client/js/components/listener/listener';
+import Listener from 'client/js/components/listener/listener';
+
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;
 
@@ -20,7 +23,7 @@ export default class Lobby extends MoreartyComponent {
 	 * Triggered when the component is rendered, initialize the componenent
 	 */
 	componentDidMount() {
-		Socket.emit(Globals.socket.gameList);
+		startManager().askGameList();
 	}
 
 	/**
@@ -58,7 +61,7 @@ export default class Lobby extends MoreartyComponent {
 	 * Ask to create a game
 	 */
 	createGame() {
-		Socket.emit(Globals.socket.gameCreate);
+		startManager().createGame();
 	}
 
 	/**
@@ -67,7 +70,7 @@ export default class Lobby extends MoreartyComponent {
 	 */
 	chooseGame(event) {
 		var gameId = parseInt(event.currentTarget.dataset.id, 10);
-		Socket.emit(Globals.socket.gameJoin, gameId);
+		startManager().joinGame(gameId);
 	}
 }
 

@@ -1,11 +1,9 @@
 'use strict';
 
-
 /*
 	One city of the game
 */
-import Socket from 'client/js/components/libs/socket';
-import Globals from 'client/js/components/libs/globals';
+import { gameManager } from 'client/js/components/listener/listener';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import Circle from 'react-art/shapes/circle';
@@ -16,7 +14,8 @@ export default class City extends MapElement {
 
 	doRender() {
 		var city = this.getDefaultBinding();
-		var color = city.get('player.color') || 'black';
+		var player = this.getBinding('player');
+		var color =  player !== undefined && player.get('color') || 'black';
 
 		return (
 			<Circle radius={this.props.radius} fill={color}/>
@@ -34,7 +33,7 @@ export default class City extends MapElement {
 
 	handleClick() {
 		var city = this.getDefaultBinding();
-		Socket.emit(Globals.socket.playPickColony, { colony: city.get('key').toJS() });
+		gameManager().selectCity(city.get('key').toJS());
 	}
 }
 

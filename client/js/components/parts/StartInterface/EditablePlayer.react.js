@@ -13,6 +13,7 @@ import reactBoostrap from 'react-bootstrap';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 import { PlayersBinding } from 'client/js/components/common/players';
+import { startManager } from 'client/js/components/listener/listener';
 
 var Button = reactBoostrap.Button;
 var Glyphicon = reactBoostrap.Glyphicon;
@@ -52,7 +53,7 @@ export default class EditablePlayer extends MoreartyComponent {
 	 */
 	triggerChangeName() {
 		var name = window.prompt('What\'s your name ?');
-
+		startManager.setName(name);
 		Socket.emit(Globals.socket.playerNickname, name);
 	}
 

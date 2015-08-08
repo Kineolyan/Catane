@@ -4,13 +4,15 @@
  React component containing the map interface
  */
 
+import React from 'react'; // eslint-disable-line no-unused-vars
 import { Group } from 'react-art';
 
-import React from 'react'; // eslint-disable-line no-unused-vars
 import Tile from 'client/js/components/parts/GameInterface/Map/Tile.react';
 import City from 'client/js/components/parts/GameInterface/Map/City.react';
 import Path from 'client/js/components/parts/GameInterface/Map/Path.react';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
+
+import { PlayersBinding } from 'client/js/components/common/players';
 
 export default class MapR extends MoreartyComponent {
 
@@ -44,12 +46,20 @@ export default class MapR extends MoreartyComponent {
 	}
 
 	mapElements(type, Element) {
+		var playersBinding = this.getBinding('players');
+		var players = new PlayersBinding(playersBinding.get());
+
 		var elements = this.getDefaultBinding().get(type);
 		var binding = this.getDefaultBinding().sub(type);
 		return elements.map((element, i) => {
 			var elementBinding = binding.sub(i);
-			var key = element.get('key');
-			return <Element key={key} binding={elementBinding} unit={this.unit}/>;
+
+			// TODO this is not interesting for tiles. what to do ?
+			var playerId = element.get('player');
+			// TODO have the player binding return a sub binding
+			var playerBinding = playerId !== undefined ? players.getPlayer(playerId, playersBinding) : undefined;
+
+			return <Element key={i} binding={{ default: elementBinding, player: playerBinding }} unit={this.unit}/>;
 		});
 	}
 

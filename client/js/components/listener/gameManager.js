@@ -3,19 +3,35 @@ import Immutable from 'immutable';
 import Globals from 'client/js/components/libs/globals';
 import { Step } from 'client/js/components/libs/globals';
 import Manager from 'client/js/components/listener/manager';
-import Socket from 'client/js/components/libs/socket';
+import { Channel } from 'client/js/components/libs/socket';
 import { PlayersBinding, MyBinding } from 'client/js/components/common/players';
 import { BoardBinding } from 'client/js/components/common/map';
 
 export default class GameManager extends Manager {
 
 	startListen() {
-		this.listenToSocket(Globals.socket.gamePrepare, this.gamePrepare.bind(this));
-		this.listenToSocket(Globals.socket.gamePlay, this.launchGame.bind(this));
-		this.listenToSocket(Globals.socket.playTurnNew, this.playTurnNew.bind(this));
-		this.listenToSocket(Globals.socket.mapDice, this.rollDice.bind(this));
-		this.listenToSocket(Globals.socket.playPickColony, this.playPickElement.bind(this));
-		this.listenToSocket(Globals.socket.playPickPath, this.playPickElement.bind(this));
+		this.listenToSocket(Channel.gamePrepare, this.gamePrepare.bind(this));
+		this.listenToSocket(Channel.gamePlay, this.launchGame.bind(this));
+		this.listenToSocket(Channel.playTurnNew, this.playTurnNew.bind(this));
+		this.listenToSocket(Channel.mapDice, this.rollDice.bind(this));
+		this.listenToSocket(Channel.playPickColony, this.playPickElement.bind(this));
+		this.listenToSocket(Channel.playPickPath, this.playPickElement.bind(this));
+	}
+
+	/**
+	 * Reconnects a player to an existing session.
+	 * @param  {Number} sessionId session id
+	 */
+	reconnect(sessionId) {
+		this._socket.emit(Channel.reconnect, sessionId);
+	}
+
+	selectCity(city) {
+		this._socket.emit(Channel.playPickColony, { colony: city });
+	}
+
+	selectPath(path) {
+		this._socket.emit(Channel.playPickPath, { path: path });
 	}
 
 	/**
@@ -49,7 +65,7 @@ export default class GameManager extends Manager {
 			if (res.path) {
 				let myBinding = MyBinding.from(this._binding);
 				if (myBinding.binding.get('id') === res.player) {
-					Socket.emit(Globals.socket.playTurnEnd);
+					this.endTurn();
 				}
 			}
 			boardBinding.save(this._binding);
@@ -62,7 +78,7 @@ export default class GameManager extends Manager {
 	 * Roll the dice
 	 * @param {Array} dice dice values picked
 	 */
-	 rollDice({ dice: dice, resources: resources }) {
+	rollDice({ dice: dice, resources: resources }) {
 		this._binding.atomically()
 				.set('game.dice.values', Immutable.fromJS(dice))
 				.set('game.dice.rolling', true)
@@ -71,9 +87,9 @@ export default class GameManager extends Manager {
 	}
 
 	/**
-	* Give some resources to the current player
+	 * Give some resources to the current player
 	 * @param {Object} resources the resources received
-	*/
+	 */
 	setMyCards(resources) {
 		let myBinding = MyBinding.from(this._binding);
 		myBinding.setCards(resources);
@@ -103,6 +119,10 @@ export default class GameManager extends Manager {
 	 */
 	gamePrepare() {
 		this._binding.set('step', Globals.step.prepare);
+	}
+
+	endTurn() {
+		this._socket.emit(Channel.playTurnEnd);
 	}
 
 	/**

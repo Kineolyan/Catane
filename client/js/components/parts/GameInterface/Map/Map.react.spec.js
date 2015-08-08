@@ -6,6 +6,14 @@ import Tile from 'client/js/components/parts/GameInterface/Map/Tile.react';
 import Path from 'client/js/components/parts/GameInterface/Map/Path.react';
 import City from 'client/js/components/parts/GameInterface/Map/City.react';
 
+import React from 'react'; // eslint-disable-line no-unused-vars
+
+class MapWrapper extends tests.Wrapper {
+	render() {
+		return <MapReact binding={{ default: this.binding.sub('game.board'), players: this.binding.sub('players') }} />
+	}
+}
+
 describe('<Map>', function() {
 	beforeAll(function() {
 		this.definition = {
@@ -24,11 +32,12 @@ describe('<Map>', function() {
 			]
 		};
 
-		var ctx = tests.getCtx({});
-		var helper = new BoardBinding(ctx.getBinding());
+		var ctx = tests.getCtx();
+		var helper = BoardBinding.from(ctx.getBinding());
 		helper.buildBoard(this.definition);
+		helper.save(ctx.getBinding());
 
-		this.element = tests.bootstrap(ctx, MapReact);
+		this.element = tests.bootstrap(ctx, MapWrapper);
 	});
 
 	it('renders the tiles', function() {

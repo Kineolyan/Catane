@@ -5,8 +5,8 @@ import * as maps from 'libs/collections/maps';
 
 describe('PlayersBinding', function() {
 	beforeEach(function() {
-		var ctx = tests.getCtx({ players: [] });
-		this.binding = ctx.getBinding().get('players');
+		this.ctx = tests.getCtx({ players: [] });
+		this.binding = this.ctx.getBinding().get('players');
 		this.helper = new PlayersBinding(this.binding);
 	});
 
@@ -31,6 +31,13 @@ describe('PlayersBinding', function() {
 		it('gets null on unexisting item', function() {
 			var player = this.helper.getPlayer(10);
 			expect(player).toEqual(null);
+		});
+
+		it('can return sub-binding', function() {
+			this.helper.save(this.ctx.getBinding());
+
+			var player = this.helper.getPlayer(2, this.ctx.getBinding().sub('players'));
+			expect(player.get('name')).toEqual('b');
 		});
 	});
 

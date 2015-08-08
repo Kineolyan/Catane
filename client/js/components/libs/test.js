@@ -1,9 +1,11 @@
 import jsdom from 'jsdom';
-import Morearty from 'morearty';
 import React from 'react';
 
-import Globals from 'client/js/components/libs/globals';
+import * as Contexts from 'client/js/components/libs/context';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
+import { MockSocketIO } from 'libs/mocks/sockets';
+import Socket from 'client/js/components/libs/socket';
+import listener from 'client/js/components/listener/listener';
 
 export class TestWrapper extends MoreartyComponent {
 	get binding() {
@@ -15,11 +17,16 @@ export class TestWrapper extends MoreartyComponent {
 	}
 }
 
-var tests = {
+const tests = {
 	jsdom: jsdom,
-	ctx: null,
-	getRenderedElements(inst, type) { // get react sub elements as an array for non-DOM elements - ie react art elements
-
+	ctx: null, // TODO can it be removed
+	/**
+	 * Gets react sub elements as an array for non-DOM elements - ie react art elements
+	 * @param  {Object} inst root element
+	 * @param  {Class} type class to look for
+	 * @return {Array} all elements found
+	 */
+	getRenderedElements: function(inst, type) {
 		if (!inst) {
 			return [];
 		}
@@ -42,44 +49,31 @@ var tests = {
 
 		return ret;
 	},
-	getCtx(init = '') {
-		var defaultInitState = {
-			start: {
-				games: [],
-				gameChosen: {}
-			},
+	getCtx: function(initialState) {
+		if (initialState === undefined) {
+			var initialState = Contexts.getDefaultContext({ id: 1, name: 'Bob' });
+			initialState.message = 'Hello';
+			initialState.server = { id: 1, sid: 2 };
+		}
 
-			game: {
-				board: {},
-				dice: {
-					enabled: false,
-					rolling: false,
-					values: [1, 1]
-				},
-				message: 'Hello'
-			},
-
-			me: {
-				id: 1,
-				resources: []
-			},
-			players: [
-				{ id: 1, name: 'Bob', me: true }
-			],
-			step: Globals.step.init,
-			server: { id: 1, sid: 2 }
-		};
-
-		this.ctx = Morearty.createContext({
-			initialState: init || defaultInitState
-		});
-
+		this.ctx = Contexts.createContext(initialState);
 		return this.ctx;
 	},
 	Wrapper: TestWrapper,
 	bootstrap: function(ctx, rootComp) {
 		var Bootstrap = ctx.bootstrap(rootComp);
 		return React.addons.TestUtils.renderIntoDocument(<Bootstrap />);
+	},
+	/**
+	 * Creates a mock server with socket simulation.
+	 * This initializes the listener.
+	 * @return {MockSocket} mock of a socket
+	 */
+	createServer: function(ctx) {
+		var socket = new MockSocketIO();
+		listener.startListen(new Socket(socket), ctx);
+
+		return socket;
 	}
 };
 

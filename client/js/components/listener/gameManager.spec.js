@@ -4,6 +4,8 @@ import Globals from 'client/js/components/libs/globals';
 import { Step } from 'client/js/components/libs/globals';
 import { BoardBinding } from 'client/js/components/common/map';
 import { PlayersBinding } from 'client/js/components/common/players';
+import { MockSocketIO } from 'libs/mocks/sockets';
+import { Socket, Channel } from 'client/js/components/libs/socket';
 
 describe('GameManager', function() {
 	beforeEach(function() {
@@ -14,12 +16,54 @@ describe('GameManager', function() {
 		playerBinding.setPlayer(2, 'Mickael');
 		playerBinding.save(this.binding);
 
-		this.game = new GameManager(ctx);
+		this.socket = new MockSocketIO();
+		this.game = new GameManager(new Socket(this.socket), ctx);
 		this.initBoard = function(board) {
 			var helper = BoardBinding.from(this.binding);
 			helper.buildBoard(board);
 			helper.save(this.binding);
 		};
+	});
+
+	describe('#reconnect', function() {
+		beforeEach(function() {
+			this.game.reconnect(1432);
+		});
+
+		it('sends a message on channel ' + Channel.reconnect, function() {
+			expect(this.socket.messages(Channel.reconnect)).toHaveLength(1);
+		});
+
+		it('sends the id of the previous session', function() {
+			var message = this.socket.lastMessage(Channel.reconnect);
+			expect(message).toEqual(1432);
+		});
+	});
+
+	describe('#selectCity', function() {
+		beforeEach(function() {
+			this.game.selectCity({ x: 1, y: 2 });
+		});
+
+		it('sends the coordinate of the colony', function() {
+			expect(this.socket.messages(Channel.playPickColony)).toHaveLength(1);
+
+			var message = this.socket.lastMessage(Channel.playPickColony);
+			expect(message).toEqual({ colony: { x: 1, y: 2 } });
+		});
+	});
+
+	describe('#selectPath', function() {
+		beforeEach(function() {
+			this.game.selectPath({ from: { x: 1, y: 2 }, to: { x: 3, y: 4 } });
+		});
+
+		it('sends the coordinate of the path', function() {
+			expect(this.socket.messages(Channel.playPickPath)).toHaveLength(1);
+
+			var message = this.socket.lastMessage(Channel.playPickPath);
+			expect(message).toEqual({ path: { from: { x: 1, y: 2 }, to: { x: 3, y: 4 } } });
+		});
 	});
 
 	describe('picking element for a player', function() {

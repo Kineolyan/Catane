@@ -46,7 +46,7 @@ export default class Tile extends MapElement {
 
 		var diceValue;
 		if (tile.get('diceValue')) {
-			diceValue =	(<Group>
+			diceValue =	(<Group key="diceValue">
 					<Circle radius={circleRadius} fill="white" stroke="black"/>
 					<Text ref="value" y={-circleRadius / 2} fill="black" alignment="center"
 					      font={{ 'font-size': circleRadius + 'px' }}>
@@ -56,7 +56,7 @@ export default class Tile extends MapElement {
 		}
 
 		return [
-			<Shape d={path} fill={this.color} stroke='#FFFFFF' />,
+			<Shape key="shape" d={path} fill={this.color} stroke='#FFFFFF' />,
 			diceValue
 		];
 	}

@@ -3,8 +3,7 @@
 /*
  Edge of one tile
  */
-import Socket from 'client/js/components/libs/socket';
-import Globals from 'client/js/components/libs/globals';
+import { gameManager } from 'client/js/components/listener/listener';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { Path, Shape } from 'react-art';
@@ -25,9 +24,10 @@ export default class PathR extends MapElement {
 
 	doRender() {
 		var path = this.getDefaultBinding();
+		var player = this.getBinding('player');
 		var p = new Path();
 		var thickness = this.props.thickness;
-		var color = path.get('player.color') || 'black';
+		var color = player !== undefined && player.get('color') || 'black';
 
 		/* The idea is to draw a rectangle in any direction using path */
 		// get the direction of the path
@@ -62,7 +62,8 @@ export default class PathR extends MapElement {
 	}
 
 	handleClick() {
-		Socket.emit(Globals.socket.playPickPath, { path: this.props.key });
+		var path = this.getDefaultBinding();
+		gameManager().selectPath(path.get('key').toJS());
 	}
 }
 

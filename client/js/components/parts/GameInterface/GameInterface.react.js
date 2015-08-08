@@ -15,7 +15,7 @@ import PlayersInfo from 'client/js/components/parts/GameInterface/PlayersInfo/Pl
 import Message from 'client/js/components/parts/GameInterface/Message.react';
 import EndTurn from 'client/js/components/parts/GameInterface/EndTurn.react';
 
-import Globals from 'client/js/components/libs/globals';
+import { Step } from 'client/js/components/libs/globals';
 
 export default class GameInterface extends MoreartyComponent {
 
@@ -58,7 +58,7 @@ export default class GameInterface extends MoreartyComponent {
 								 ref="dice"	/>
 
 			<MapReact ref="map"
-								binding={binding.sub('game.board')}
+								binding={{ default: binding.sub('game.board'), players: binding.sub('players') }}
 								x={120} y={0}
 								width={width - 120} height={height}
 								margin={50}	/>
@@ -79,7 +79,7 @@ export default class GameInterface extends MoreartyComponent {
 		var binding = this.getDefaultBinding();
 
 		return binding.get('me.id') === binding.get('game.currentPlayerId') // it player's turn
-			&& binding.get('step') === Globals.step.started;
+			&& binding.get('step') === Step.started;
 	}
 }
 

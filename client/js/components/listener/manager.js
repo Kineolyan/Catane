@@ -2,7 +2,9 @@ import Socket from 'client/js/components/libs/socket';
 
 export default class Manager {
 
-  constructor(context) {
+  constructor(socket, context) {
+    this._socket = socket;
+
     /**
      * All the events
      * @type {Set}
@@ -28,7 +30,7 @@ export default class Manager {
    * @param  {Function} callback Callback to be fired
    */
   listenToSocket(event, callback) {
-    Socket.on(event, callback);
+    this._socket.on(event, callback);
     this._events.add(event);
   }
 
@@ -36,7 +38,7 @@ export default class Manager {
    * Stop the listener
    */
   stopListen() {
-    this._events.forEach(value => Socket.removeAllListeners(value));
+    this._events.forEach(value => this._socket.removeAllListeners(value));
     this._events.clear();
   }
 

@@ -9,25 +9,26 @@ import EditablePlayer from 'client/js/components/parts/StartInterface/EditablePl
 
 var utils = React.addons.TestUtils;
 
-describe('The start interface', function() {
-
+describe('<StartInterface>', function() {
 	beforeEach(function() {
-		this._ctx = tests.getCtx();
-		this.start = tests.bootstrap(this._ctx, StartInterface);
+		this.ctx = tests.getCtx();
+		this.socket = tests.createServer(this.ctx);
+
+		this.start = tests.bootstrap(this.ctx, StartInterface);
 	});
 
 	it('should render the player', function() {
-		expect(utils.scryRenderedComponentsWithType(this.start, EditablePlayer).length).toEqual(1);
+		expect(utils.scryRenderedComponentsWithType(this.start, EditablePlayer)).toHaveLength(1);
 	});
 
 	it('should render the lobby when no game are chosen', function() {
-		expect(utils.scryRenderedComponentsWithType(this.start, Lobby).length).toEqual(1);
+		expect(utils.scryRenderedComponentsWithType(this.start, Lobby)).toHaveLength(1);
 	});
 
 	it('should render the room when a game is chosen', function(done) {
-		this._ctx.getBinding().set('start.gameChosen.id', 1);
+		this.ctx.getBinding().set('start.gameChosen.id', 1);
 		setTimeout(() => {
-			expect(utils.scryRenderedComponentsWithType(this.start, Room).length).toEqual(1);
+			expect(utils.scryRenderedComponentsWithType(this.start, Room)).toHaveLength(1);
 			done();
 		}, 200);
 

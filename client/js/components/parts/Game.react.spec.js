@@ -15,6 +15,7 @@ describe('<Game>', function() {
 
   beforeEach(function() {
     this.ctx = tests.getCtx();
+    this.socket = tests.createServer(this.ctx);
     this.game = tests.bootstrap(this.ctx, Game);
   });
 

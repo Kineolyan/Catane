@@ -1,5 +1,7 @@
 'use strict';
 
+import { Channel } from 'client/js/components/libs/socket';
+
 var GLOBALS = {};
 
 // Step const for the game
@@ -14,27 +16,7 @@ export const Step = {
 
 GLOBALS.step = Step;
 
-// Step event for the game
-export const Channel = {
-	init: 'init',
-	gameCreate: 'game:create',
-	gameList: 'game:list',
-	gameJoin: 'game:join',
-	gamePlayers: 'game:players',
-	gameStart: 'game:start',
-	gameQuit: 'game:quit',
-	playerNickname: 'player:nickname',
-	mapDice: 'play:roll-dice',
-	turnNew: 'turn:new',
-	gamePrepare: 'game:prepare',
-	gamePlay: 'game:play',
-	playTurnNew: 'play:turn:new',
-	playPickColony: 'play:pick:colony',
-	playPickPath: 'play:pick:path',
-	playTurnEnd: 'play:turn:end',
-	reconnect: 'reconnect'
-};
-
+// TODO Rebinding to remove
 GLOBALS.socket = Channel;
 
 // resource

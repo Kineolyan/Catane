@@ -2,6 +2,8 @@ import tests from 'client/js/components/libs/test';
 import StartManager from 'client/js/components/listener/startManager';
 import Globals from 'client/js/components/libs/globals';
 import { PlayersBinding } from 'client/js/components/common/players';
+import { MockSocketIO } from 'libs/mocks/sockets';
+import { Socket, Channel } from 'client/js/components/libs/socket';
 
 import Immutable from 'immutable';
 
@@ -10,7 +12,83 @@ describe('StartManager', function() {
 		var ctx = tests.getCtx();
 		this.binding = ctx.getBinding();
 
-		this.mgr = new StartManager(ctx);
+		this.socket = new MockSocketIO();
+		this.mgr = new StartManager(new Socket(this.socket), ctx);
+	});
+
+	describe('#setName', function() {
+		beforeEach(function() {
+			this.mgr.setName('Oliv');
+		});
+
+		it('sends a message on channel ' + Channel.playerNickname, function() {
+			expect(this.socket.messages(Channel.playerNickname)).toHaveLength(1);
+		});
+
+		it('sends the new name for the player', function() {
+			var message = this.socket.lastMessage(Channel.playerNickname);
+			expect(message).toEqual('Oliv');
+		});
+	});
+
+	describe('#createGame', function() {
+		beforeEach(function() {
+			this.mgr.createGame();
+		});
+
+		it('sends an emtpy message on channel ' + Channel.gameCreate, function() {
+			expect(this.socket.messages(Channel.gameCreate)).toHaveLength(1);
+		});
+	});
+
+	describe('#askGameList', function() {
+		beforeEach(function() {
+			this.mgr.askGameList();
+		});
+
+		it('sends an emtpy message on channel ' + Channel.gameList, function() {
+			expect(this.socket.messages(Channel.gameList)).toHaveLength(1);
+		});
+	});
+
+	describe('#joinGame', function() {
+		beforeEach(function() {
+			this.mgr.joinGame(4213);
+		});
+
+		it('sends a message on channel ' + Channel.gameJoin, function() {
+			expect(this.socket.messages(Channel.gameJoin)).toHaveLength(1);
+		});
+
+		it('sends the id of the game to join', function() {
+			var message = this.socket.lastMessage(Channel.gameJoin);
+			expect(message).toEqual(4213);
+		});
+	});
+
+	describe('#startGame', function() {
+		beforeEach(function() {
+			this.mgr.startGame(1342);
+		});
+
+		it('sends a message on channel ' + Channel.gameStart, function() {
+			expect(this.socket.messages(Channel.gameStart)).toHaveLength(1);
+		});
+
+		it('sends the id of the game to start', function() {
+			var message = this.socket.lastMessage(Channel.gameStart);
+			expect(message).toEqual(1342);
+		});
+	});
+
+	describe('#quitGame', function() {
+		beforeEach(function() {
+			this.mgr.quitGame();
+		});
+
+		it('sends a message on channel ' + Channel.gameQuit, function() {
+			expect(this.socket.messages(Channel.gameQuit)).toHaveLength(1);
+		});
 	});
 
 	describe('update player list', function() {
@@ -52,7 +130,7 @@ describe('StartManager', function() {
 			] });
 
 			// start the game
-			this.mgr.startGame({
+			this.mgr.onGameStart({
 				board: {
 					tiles: [
 						{ x: 0, y: 0, resource: 'tuile', diceValue: 1 }
@@ -91,7 +169,7 @@ describe('StartManager', function() {
 		it('removes all others players', function() {
 			this.binding.set('start.gameChosen', Immutable.fromJS({ id: 1 }));
 			this.mgr.updatePlayerList({ players: [{ id: 1, name: 'bob' }, { id: 2, name: 'tom' }] });
-			this.mgr.quitGame();
+			this.mgr.onGameQuit();
 
 			expect(this.binding.get('players')).toHaveSize(1);
 		});

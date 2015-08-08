@@ -1,5 +1,5 @@
-import Socket from 'client/js/components/libs/socket.js';
 import Globals from 'client/js/components/libs/globals';
+import { gameManager } from 'client/js/components/listener/listener';
 
 import React from 'react';
 import reactBootstrap from 'react-bootstrap';
@@ -48,7 +48,7 @@ export default class Reconnect extends React.Component {
 	}
 
 	reconnect() {
-		Socket.emit(Globals.socket.reconnect, this.previousSession.sid);
+		gameManager().reconnect(this.previousSession.sid);
 		this.setState({ display: false });
 	}
 }
