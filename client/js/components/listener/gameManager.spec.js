@@ -1,11 +1,12 @@
 import tests from 'client/js/components/libs/test';
 import GameManager from 'client/js/components/listener/gameManager';
 import Globals from 'client/js/components/libs/globals';
-import { Step } from 'client/js/components/libs/globals';
+import { Step, Interface } from 'client/js/components/libs/globals';
 import { BoardBinding } from 'client/js/components/common/map';
-import { PlayersBinding } from 'client/js/components/common/players';
+import { PlayersBinding, MyBinding } from 'client/js/components/common/players';
 import { MockSocketIO } from 'libs/mocks/sockets';
 import { Socket, Channel } from 'client/js/components/libs/socket';
+import LocalStorage from 'client/js/components/libs/localStorage';
 
 describe('GameManager', function() {
 	beforeEach(function() {
@@ -37,6 +38,75 @@ describe('GameManager', function() {
 		it('sends the id of the previous session', function() {
 			var message = this.socket.lastMessage(Channel.reconnect);
 			expect(message).toEqual(1432);
+		});
+	});
+
+	describe('#onReconnection', function() {
+		beforeEach(function() {
+			this.game.onReconnection({ player: { id: 123, name: 'Tom' } });
+		});
+
+		it('stores the restored id of the player', function() {
+			expect(this.binding.get('me.id')).toEqual(123);
+		});
+
+		it('asks for the game reload', function() {
+			expect(this.socket.messages(Channel.gameReload)).toHaveLength(1);
+		});
+
+		it('save the new server info in local storage', function() {
+			var localStorage = new LocalStorage();
+			expect(localStorage.get('server')).toEqual(this.binding.get('server').toJS());
+		});
+	});
+
+	describe('#reloadGame', function() {
+		beforeEach(function() {
+			this.game.reloadGame();
+		});
+
+		it('sends a message on channel ' + Channel.gameReload, function() {
+			expect(this.socket.messages(Channel.gameReload)).toHaveLength(1);
+		});
+	});
+
+	describe('#onGameReload', function() {
+		beforeEach(function() {
+			this.game.onGameReload({
+				board: {
+					tiles: [{ x: 0, y: 0 }],
+					cities: [{ x: 1, y: 0 }, { x: 0, y: 1 }],
+					paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }]
+				}, players: [
+					{ id: 7, name: 'Marcus' },
+					{ id: 3, name: 'Tom' }
+				], currentPlayer: 3,
+				me: { resources: { bois: 2, mouton: 3 } }
+			});
+		});
+
+		it('has the generated board', function() {
+			expect(this.binding.get('game.board.tiles')).toHaveSize(1);
+			expect(this.binding.get('game.board.cities')).toHaveSize(2);
+			expect(this.binding.get('game.board.paths')).toHaveSize(1);
+		});
+
+		it('has all players in correct order', function() {
+			var ids = this.binding.get('players').map(player => player.get('id')).toJS();
+			expect(ids).toEqual([7, 3]);
+		});
+
+		it('has given colors to players', function() {
+			var colors = this.binding.get('players').map(player => player.get('color')).toJS();
+			expect(colors).toEqual([
+				Interface.player.colors[0],
+				Interface.player.colors[1]
+			]);
+		});
+
+		it('sets correctly the resources', function() {
+			var myBinding = MyBinding.from(this.binding);
+			expect(myBinding.resourceMap).toEqual({ bois: 2, mouton: 3 });
 		});
 	});
 
@@ -91,7 +161,7 @@ describe('GameManager', function() {
 
 			it('marks the colony as picked', function() {
 				var city = this.boardBinding.getElement('cities', { x: 0, y: 0 });
-				expect(city.get('player')).toEqual(1);
+				expect(city.get('owner')).toEqual(1);
 			});
 
 			it('makes paths selectable', function() {
@@ -109,7 +179,7 @@ describe('GameManager', function() {
 
 			it('assigns the path to the player', function() {
 				var path = this.boardBinding.getElement('paths', { from: { x: 0, y: 0 }, to: { x: 1, y: 1 } });
-				expect(path.get('player')).toEqual(1);
+				expect(path.get('owner')).toEqual(1);
 			});
 
 			it('unsets paths selectable', function() {

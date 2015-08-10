@@ -5,6 +5,9 @@ import { Channel } from 'client/js/components/libs/socket';
 import Manager from 'client/js/components/listener/manager';
 import { BoardBinding } from 'client/js/components/common/map';
 import { PlayersBinding } from 'client/js/components/common/players';
+import LocalStorage from 'client/js/components/libs/localStorage';
+
+var localStorage = new LocalStorage();
 
 /**
  * Manager for the starting part
@@ -94,7 +97,10 @@ export default class StartManager extends Manager {
 			.set('step', Step.prepare)
 			.set('game.board', boardBinding.binding)
 			.commit();
-}
+
+		// Save the game in local storage to be able to reload it
+		localStorage.set('server', this._binding.get('server').toJS());
+	}
 
 	/**
 	 * Leave the current game

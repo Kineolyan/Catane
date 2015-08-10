@@ -4,15 +4,12 @@
  React component containing the lobby to choose the same
  */
 
-import Socket from 'client/js/components/libs/socket';
-import Globals from 'client/js/components/libs/globals';
 import reactBootstrap from 'react-bootstrap';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 import { startManager } from 'client/js/components/listener/listener';
-import Listener from 'client/js/components/listener/listener';
 
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;

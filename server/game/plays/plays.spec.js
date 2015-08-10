@@ -1,6 +1,7 @@
 import Plays from './plays';
 
-import { MockSocket } from '../../com/mocks';
+import { MockSocket } from 'server/com/mocks';
+import User from 'server/com/user';
 import Player from 'server/game/players/player';
 
 describe('Plays', function() {
@@ -12,7 +13,7 @@ describe('Plays', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
 			this.player = new Player(this.client.toSocket(), 0);
-			this.plays.register(this.player);
+			this.plays.register(new User(this.player.socket, this.player));
 		});
 
 		// Channels listened

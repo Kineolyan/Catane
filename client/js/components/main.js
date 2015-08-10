@@ -9,7 +9,6 @@ import 'babel/register';
 // declare socket first
 
 import { Socket, Channel } from 'client/js/components/libs/socket';
-import Globals from 'client/js/components/libs/globals';
 import Listener from 'client/js/components/listener/listener';
 
 import React from 'react';

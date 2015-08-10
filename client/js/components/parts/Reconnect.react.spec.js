@@ -1,4 +1,5 @@
-import 'client/js/components/libs/test';
+import tests from 'client/js/components/libs/test';
+import { Channel } from 'client/js/components/libs/socket';
 
 import React from 'react/addons';
 import reactBootstrap from 'react-bootstrap';
@@ -11,7 +12,7 @@ var utils = React.addons.TestUtils;
 describe('<Reconnect>', function() {
   function render(obj) {
     var data = { id: 1, sid: 2 };
-    obj.reconnect = utils.renderIntoDocument(<Reconnect init={data}/>);
+    obj.reconnect = utils.renderIntoDocument(<Reconnect server={data}/>);
   }
 
   beforeEach(function() {
@@ -27,6 +28,9 @@ describe('<Reconnect>', function() {
       this.localStorage.server = JSON.stringify({
         id: 1, sid: 1
       });
+      var ctx = tests.getCtx();
+      this.socket = tests.createServer(ctx);
+
       render(this);
     });
 
@@ -34,12 +38,12 @@ describe('<Reconnect>', function() {
       expect(this.reconnect.hasPreviousSession()).toBe(true);
     });
 
-    it('renders a container with id "reconnect"', function() {
+    xit('renders a container with id "reconnect"', function() {
       // TODO check the existence of the div
     });
 
     it('renders a button', function() {
-      expect(utils.scryRenderedComponentsWithType(this.reconnect, Button).length).toBe(1);
+      expect(utils.scryRenderedComponentsWithType(this.reconnect, Button)).toHaveLength(1);
     });
 
     describe('on click', function() {
@@ -48,7 +52,11 @@ describe('<Reconnect>', function() {
       });
 
       it('disappears', function() {
-        expect(utils.scryRenderedComponentsWithType(this.reconnect, Button).length).toBe(0);
+        expect(utils.scryRenderedComponentsWithType(this.reconnect, Button)).toHaveLength(0);
+      });
+
+      it('asks for reconnection', function() {
+        expect(this.socket.messages(Channel.reconnect)).toHaveLength(1);
       });
     });
   });
@@ -67,7 +75,7 @@ describe('<Reconnect>', function() {
 
     it('renders am empty container with id "reconnect"', function() {
       // TODO check the existence of the div
-      expect(utils.scryRenderedComponentsWithType(this.reconnect, Button).length).toBe(0);
+      expect(utils.scryRenderedComponentsWithType(this.reconnect, Button)).toHaveLength(0);
     });
   });
 
@@ -82,7 +90,7 @@ describe('<Reconnect>', function() {
 
     it('renders am empty container with id "reconnect"', function() {
       // TODO check the existence of the div
-      expect(utils.scryRenderedComponentsWithType(this.reconnect, Button).length).toBe(0);
+      expect(utils.scryRenderedComponentsWithType(this.reconnect, Button)).toHaveLength(0);
     });
   });
 

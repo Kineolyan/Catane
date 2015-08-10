@@ -1,5 +1,3 @@
-import Socket from 'client/js/components/libs/socket';
-
 export default class Manager {
 
   constructor(socket, context) {

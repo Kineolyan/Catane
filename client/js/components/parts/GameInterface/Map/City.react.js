@@ -13,7 +13,6 @@ import MapElement from 'client/js/components/parts/GameInterface/Map/Element.rea
 export default class City extends MapElement {
 
 	doRender() {
-		var city = this.getDefaultBinding();
 		var player = this.getBinding('player');
 		var color =  player !== undefined && player.get('color') || 'black';
 

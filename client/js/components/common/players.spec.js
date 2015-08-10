@@ -177,17 +177,33 @@ describe('MyBinding', function() {
 		});
 	});
 
+	describe('@id', function() {
+		it('gets my id', function() {
+			expect(this.helper.id).toEqual(1);
+		});
+	});
+
+	describe('@resourceMap', function() {
+		it('gives the resources as a map', function() {
+			expect(this.helper.resourceMap).toEqual({ bois: 1, ble: 1 });
+		});
+	});
+
+	describe('@resourceList', function() {
+		it('gives the resources as an ordered list', function() {
+			expect(this.helper.resourceList).toEqual(['ble', 'bois']);
+		});
+	});
+
 	describe('#setCards', function() {
 		beforeEach(function() {
 			this.helper.setCards({ mouton: 3, ble: 2, caillou: 4, bois: 1 });
-			this.count = function(resource) {
-				return this.helper.binding.get('resources').filter(res => res === resource).size;
-			};
 		});
 
 		for (let [resource, count] of maps.entries({ mouton: 3, bois: 1, ble: 2, caillou: 4 })) {
 			it(`counts ${count} ${resource} to the resources`, function() {
-				expect(this.count(resource)).toEqual(count);
+				var resources = this.helper.resourceMap;
+				expect(resources[resource]).toEqual(count);
 			});
 		}
 

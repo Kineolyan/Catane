@@ -1,11 +1,9 @@
 'use strict';
 
 /*
-  React component containing the whole game interface
-*/
+ * React component containing the whole game interface
+ */
 
-import Globals from 'client/js/components/libs/globals';
-import Socket from 'client/js/components/libs/socket';
 import reactBootstrap from 'react-bootstrap';
 
 import React from 'react'; // eslint-disable-line no-unused-vars

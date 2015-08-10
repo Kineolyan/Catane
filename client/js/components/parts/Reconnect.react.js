@@ -1,5 +1,5 @@
-import Globals from 'client/js/components/libs/globals';
 import { gameManager } from 'client/js/components/listener/listener';
+import LocalStorage from 'client/js/components/libs/localStorage';
 
 import React from 'react';
 import reactBootstrap from 'react-bootstrap';
@@ -10,30 +10,21 @@ var Glyphicon = reactBootstrap.Glyphicon;
 export default class Reconnect extends React.Component {
 	constructor() {
 		super(...arguments);
-		this.localStorage = window.localStorage;
+		this.localStorage = new LocalStorage();
 		this.loadPreviousSession();
-		this.storeSession();
 		this.state = { display: this.hasPreviousSession() };
 	}
 
 	hasPreviousSession() {
-		return this.previousSession.id === this.props.init.id;
+		return this.previousSession.id === this.props.server.id;
 	}
 
 	loadPreviousSession() {
-		this.previousSession = JSON.parse(this.localStorage.server || '{}');
-	}
-
-	storeSession() {
-		this.localStorage.server = JSON.stringify({
-			id: this.props.init.id,
-			sid: this.props.init.sid
-		});
+		this.previousSession = this.localStorage.get('server') || {};
 	}
 
 	render() {
 		var reconnectBtn;
-
 		if (this.state.display) {
 			reconnectBtn = (
 					<Button onClick={this.reconnect.bind(this)}>

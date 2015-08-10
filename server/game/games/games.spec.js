@@ -1,7 +1,12 @@
-import { MockSocket } from '../../com/mocks';
+import { MockSocket } from 'server/com/mocks';
 
 import Games from './games';
+import User from 'server/com/user';
 import Player from 'server/game/players/player';
+
+function asUser(player) {
+	return new User(player.socket, player);
+}
 
 describe('Games', function() {
 	beforeEach(function() {
@@ -18,7 +23,7 @@ describe('Games', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
 			this.player = new Player(this.client.toSocket(), 0);
-			this.games.register(this.player);
+			this.games.register(asUser(this.player));
 		});
 
 		// Channels listened
@@ -47,7 +52,7 @@ describe('Games', function() {
 		beforeEach(function() {
 			this.client = new MockSocket();
 			this.player = new Player(this.client.toSocket(), 1);
-			this.games.register(this.player);
+			this.games.register(asUser(this.player));
 
 			let lastGame;
 			for (let i = 0; i < 3; i += 1) {
@@ -60,7 +65,7 @@ describe('Games', function() {
 			beforeEach(function() {
 				this.anotherClient = new MockSocket();
 				this.anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
-				this.games.register(this.anotherPlayer);
+				this.games.register(asUser(this.anotherPlayer));
 
 				this.client.receive('game:create', null);
 			});
@@ -112,7 +117,7 @@ describe('Games', function() {
 					beforeEach(function() {
 						this.anotherClient = new MockSocket();
 						this.anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
-						this.games.register(this.anotherPlayer);
+						this.games.register(asUser(this.anotherPlayer));
 
 						this.anotherClient.receive('game:join', this.lastGameId);
 					});
@@ -138,14 +143,14 @@ describe('Games', function() {
 					beforeEach(function() {
 						this.leavedClient = new MockSocket();
 						var leavedPlayer = new Player(this.leavedClient.toSocket(), 2);
-						this.games.register(leavedPlayer);
+						this.games.register(asUser(leavedPlayer));
 						this.leavedClient.receive('game:join', this.lastGameId);
 
 						var firstGameId = this.games.list()[0].id;
 
 						this.joinedClient = new MockSocket();
 						var joinedPlayer = new Player(this.joinedClient.toSocket(), 3);
-						this.games.register(joinedPlayer);
+						this.games.register(asUser(joinedPlayer));
 						this.joinedClient.receive('game:join', firstGameId);
 
 						// Already in this.lastGameId, join the new game
@@ -187,7 +192,7 @@ describe('Games', function() {
 
 				this.anotherClient = new MockSocket();
 				var anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
-				this.games.register(anotherPlayer);
+				this.games.register(asUser(anotherPlayer));
 				this.anotherClient.receive('game:join', this.lastGameId);
 
 				// Quit the game
@@ -222,7 +227,7 @@ describe('Games', function() {
 					this.anotherClient = new MockSocket();
 					this.anotherPlayer = new Player(this.anotherClient.toSocket(), 2);
 
-					this.games.register(this.anotherPlayer);
+					this.games.register(asUser(this.anotherPlayer));
 					this.anotherClient.receive('game:join', this.lastGameId);
 
 					this.client.receive('game:start', this.lastGameId);
@@ -361,7 +366,6 @@ describe('Games', function() {
 				});
 			});
 		});
-
 	});
 
 });

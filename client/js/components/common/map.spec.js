@@ -244,7 +244,7 @@ describe('BoardBinding', function() {
 			this.helper.giveElement('cities', location, this.player);
 
 			var city = this.helper.getElement('cities', location);
-			expect(city.get('player')).toEqual(1);
+			expect(city.get('owner')).toEqual(1);
 		});
 
 		it('assigns paths', function() {
@@ -252,7 +252,7 @@ describe('BoardBinding', function() {
 			this.helper.giveElement('paths', location, this.player);
 
 			var city = this.helper.getElement('paths', location);
-			expect(city.get('player')).toEqual(1);
+			expect(city.get('owner')).toEqual(1);
 		});
 
 		it('throws for assignment of unknown type', function() {

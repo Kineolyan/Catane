@@ -152,15 +152,6 @@ export default class Player {
 	}
 
 	/**
-	 * Binds to the inner client #on.
-	 * @param  {String}   channel  event name to listen to
-	 * @param  {Function} callback action to perform on event
-	 */
-	on(channel, callback) {
-		this._socket.on(channel, callback);
-	}
-
-	/**
 	 * Binds to the inner client #emit.
 	 * @param  {String}   channel event name to listen to
 	 * @param  {Object} 	message content to send

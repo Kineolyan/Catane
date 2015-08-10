@@ -3,22 +3,26 @@
 // Step event for the game
 export const Channel = {
 	init: 'init',
+	// Server channels
+	reconnect: 'server:reconnect',
+	// Player channel
+	playerNickname: 'player:nickname',
+	// Game channels
 	gameCreate: 'game:create',
 	gameList: 'game:list',
 	gameJoin: 'game:join',
 	gamePlayers: 'game:players',
 	gameStart: 'game:start',
 	gameQuit: 'game:quit',
-	playerNickname: 'player:nickname',
-	mapDice: 'play:roll-dice',
-	turnNew: 'turn:new',
 	gamePrepare: 'game:prepare',
 	gamePlay: 'game:play',
+	gameReload: 'game:reload',
+	// Play channels
 	playTurnNew: 'play:turn:new',
 	playPickColony: 'play:pick:colony',
 	playPickPath: 'play:pick:path',
-	playTurnEnd: 'play:turn:end',
-	reconnect: 'reconnect'
+	mapDice: 'play:roll-dice',
+	playTurnEnd: 'play:turn:end'
 };
 
 export class Socket {

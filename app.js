@@ -12,7 +12,7 @@ exports.appServer = function() {
 
 	// Create environment
 	var logging = require('libs/log/logger');
-	global.logger = logging.createLogger();
+	global.logger = logging.createLogger(logging.Level.ALL);
 	global.TIME_TO_RECONNECT = 15 /* min */ * 60 /* sec */ * 1000;
 
 	// Create application
@@ -44,10 +44,6 @@ exports.appServer = function() {
 		var sid = socketId();
 		var socket = new Socket(sid, s, io.sockets);
 		catane.connect(socket);
-
-		socket.on('disconnect', function() {
-			catane.disconnect(socket);
-		});
 	});
 
 	return server;

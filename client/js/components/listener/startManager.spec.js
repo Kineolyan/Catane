@@ -4,6 +4,7 @@ import Globals from 'client/js/components/libs/globals';
 import { PlayersBinding } from 'client/js/components/common/players';
 import { MockSocketIO } from 'libs/mocks/sockets';
 import { Socket, Channel } from 'client/js/components/libs/socket';
+import LocalStorage from 'client/js/components/libs/localStorage';
 
 import Immutable from 'immutable';
 
@@ -162,6 +163,11 @@ describe('StartManager', function() {
 
 		it('moves to prepare phase', function() {
 			expect(this.binding.get('step')).toEqual(Globals.step.prepare);
+		});
+
+		it('saves server info in local storage', function() {
+			var localStorage = new LocalStorage();
+			expect(localStorage.get('server')).toEqual(this.binding.get('server').toJS());
 		});
 	});
 

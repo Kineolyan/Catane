@@ -1,4 +1,5 @@
 import Player from 'server/game/players/player';
+import User from 'server/com/user';
 import Games from 'server/game/games/games';
 import Plays from 'server/game/plays/plays';
 import { idGenerator } from './game/util';
@@ -9,7 +10,7 @@ const TIME_TO_RECONNECT = global.TIME_TO_RECONNECT;
 export default class Server {
 	constructor(id = Date.now()) {
 		this._id = id;
-		this._players = {};
+		this._users = new Map();
 		this._nextPlayerId = idGenerator();
 
 		this._resources = [
@@ -22,8 +23,8 @@ export default class Server {
 		return this._id;
 	}
 
-	get players() {
-		return this._players;
+	get users() {
+		return this._users;
 	}
 
   /**
@@ -32,30 +33,37 @@ export default class Server {
    */
 	connect(socket) {
 		var player = new Player(socket, this._nextPlayerId().toString());
-		this.players[socket.id] = player;
+		var user = new User(socket, player);
+		this._users.set(socket.id, user);
 		logger.log(`[Server] ${player.name} is connected`);
+
+		for (let resource of this._resources) {
+			resource.register(user);
+		}
+
 		socket.emit('init', {
 			message: 'welcome',
 			server: { id: this.id, sid: socket.id },
-			player: { name: player.name, id: player.id }
+			player: player.toJson()
 		});
 
-		for (let resource of this._resources) {
-			resource.register(player);
-		}
+		socket.on('disconnect', () => this.disconnect(socket));
 
-		socket.on('reconnect', (sid) => {
+		socket.on('server:reconnect', (sid) => {
 			this.reconnect(socket, sid);
-			return true;
+			var reconnectedUser = this._users.get(socket.id);
+			return { player: reconnectedUser.player.toJson() };
 		});
 	}
 
 	disconnect(socket) {
-		var player = this.players[socket.id];
-		if (player.game && player.game.isStarted()) {
+		var user = this._users.get(socket.id);
+		var game = user.player.game;
+		if (game && game.isStarted()) {
 			// Keep the player if he/she is playing
 			setTimeout(() => {
-				if (player !== undefined && player.socket.id === socket.id) {
+				// Remove the user if it still exists
+				if (this._users.has(socket.id)) {
 					// No reconnection in the ellapsed time
 					this.doDisconnect(socket);
 				}
@@ -66,27 +74,44 @@ export default class Server {
 	}
 
 	doDisconnect(socket) {
-		var player = this.players[socket.id];
-		if (player) {
-			for (let resource of this._resources) {
-				resource.unregister(player);
-			}
-		} else {
-			player = { name: 'Unknown' };
-		}
+		var user = this._users.get(socket.id);
+		if (user) {
+			this.unregister(user);
 
-		logger.log(`[Server] ${player.name} is disconnected`);
-		delete this._players[socket.id];
+			logger.log(`[Server] ${user.player.name} is disconnected`);
+			this._users.delete(socket.id);
+		} else {
+			logger.error(`[Server] Unknown user ${user.toString()} disconnected`);
+		}
 	}
 
+	/**
+	 * Reconnects a player to its previous state.
+	 * @param  {Socket} socket the current player socket
+	 * @param  {Number} sid the previous socket id
+	 */
 	reconnect(socket, sid) {
-		var player = this.players[sid];
+		var previousUser = this._users.get(sid);
+		if (previousUser !== undefined) {
+			var currentUser = this._users.get(socket.id);
 
-		// Rebind the socket to the wanted player
-		this.players[socket.id] = player;
-		player.socket = socket;
-		delete this.players[sid];
+			// Rebind the socket to the previous
+			currentUser.player = previousUser.player;
+			previousUser.player = null;
 
-		logger.log(`[Server] ${player.name} is reconnected`);
+			// Unregister the previous user
+			this.unregister(previousUser);
+			this._users.delete(sid);
+
+			logger.log(`[Server] ${currentUser.player.name} is reconnected`);
+		} else {
+			throw new Error(`Socket ${sid} does not exist (anymore)`);
+		}
+	}
+
+	unregister(user) {
+		for (let resource of this._resources) {
+			resource.unregister(user);
+		}
 	}
 }

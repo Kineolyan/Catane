@@ -26,24 +26,27 @@ export class Plays {
 		this._exchangeIds = idGenerator();
 	}
 
-	register(player) {
-		player.on('play:pick:colony', (request) => {
+	register(user) {
+		user.on('play:pick:colony', (request) => {
 			var location = getColonyLocation(request);
-			var colony = player.game.pickColony(player, location);
+			var player = user.player;
+			var game = player.game;
+			var colony = game.pickColony(player, location);
 
 			var message = {
 				player: player.id,
 				colony: colony.location.toJson()
 			};
-			player.game.emit(player, 'play:pick:colony', message);
+			game.emit(player, 'play:pick:colony', message);
 
 			// Add the resources for the player
 			message.resources = player.resources;
 			return message;
 		});
 
-		player.on('play:pick:path', (request) => {
+		user.on('play:pick:path', (request) => {
 			var askedPath = getPath(request);
+			var player = user.player;
 			var pickedPath = player.game.pickPath(player, askedPath);
 
 			player.game.emit('play:pick:path', {
@@ -54,25 +57,29 @@ export class Plays {
 			return undefined;
 		});
 
-		player.on('play:roll-dice', () => {
-			var diceValues = player.game.rollDice(player);
+		user.on('play:roll-dice', () => {
+			var player = user.player;
+			var game = player.game;
+			var diceValues = game.rollDice(player);
 
-			for (let p of player.game.players) {
+			for (let p of game.players) {
 				if (p.id !== player.id) { p.emit('play:roll-dice', { dice: diceValues, resources: p.resources }); }
 			}
 
 			return { dice: diceValues, resources: player.resources };
 		});
 
-		player.on('play:move:thieves', (request) => {
+		user.on('play:move:thieves', (request) => {
 			var tileLocation = getTileLocation(request);
+			var player = user.player;
 			player.game.moveThieves(player, tileLocation);
 			player.game.emit('play:move:thieves', { tile: tileLocation.toJson() });
 			return undefined;
 		});
 
-		player.on('play:add:colony', (request) => {
+		user.on('play:add:colony', (request) => {
 			var location = getColonyLocation(request);
+			var player = user.player;
 			var addedColony = player.game.settleColony(player, location);
 
 			var message = { player: player.id, colony: addedColony.location.toJson() };
@@ -83,8 +90,9 @@ export class Plays {
 			return message;
 		});
 
-		player.on('play:add:road', (request) => {
+		user.on('play:add:road', (request) => {
 			var path = getPath(request);
+			var player = user.player;
 			var builtRoad = player.game.buildRoad(player, path);
 
 			var message = { player: player.id, path: builtRoad.toJson() };
@@ -95,8 +103,9 @@ export class Plays {
 			return message;
 		});
 
-		player.on('play:evolve:city', (request) => {
+		user.on('play:evolve:city', (request) => {
 			var location = getCityLocation(request);
+			var player = user.player;
 			var builtCity = player.game.buildCity(player, location);
 
 			var message = { player: player.id, colony: builtCity.location.toJson() };
@@ -107,21 +116,24 @@ export class Plays {
 			return message;
 		});
 
-		player.on('play:resources:drop', request => {
+		user.on('play:resources:drop', request => {
 			var resources = request.resources;
+			var player = user.player;
 			var remaining = player.game.dropResources(player, resources);
 
 			return { resources: player.resources, remaining: remaining };
 		});
 
-		player.on('play:resources:convert', ({ from: from, to: to })=> {
+		user.on('play:resources:convert', ({ from: from, to: to })=> {
+			var player = user.player;
 			player.game.convertResources(player, from, to);
 
 			return { resources: player.resources };
 		});
 
-		player.on('play:resources:offer', ({ to: other, give: givenResources, receive: gottenResources }) => {
+		user.on('play:resources:offer', ({ to: other, give: givenResources, receive: gottenResources }) => {
 			var id = this._exchangeIds();
+			var player = user.player;
 			this._exchanges.set(id, { from: player.id, to: other, give: givenResources, receive: gottenResources });
 
 			// Send the request to the other player
@@ -140,11 +152,13 @@ export class Plays {
 			return { exchange: { id: id } };
 		});
 
-		player.on('play:resources:exchange', ({ id: exchangeId, status: status }) => {
+		user.on('play:resources:exchange', ({ id: exchangeId, status: status }) => {
 			var exchange = this._exchanges.get(exchangeId);
 			if (exchange === undefined) {
 				throw new Error(`Unexisting exchange ${exchangeId}`);
 			}
+
+			var player = user.player;
 			if (exchange.to !== player.id) {
 				throw new Error(`Wrong receiver (${player.id}). This exchange is from ${exchange.from} to ${exchange.to}`);
 			}
@@ -180,7 +194,8 @@ export class Plays {
 			}
 		});
 
-		player.on('play:turn:end', () => {
+		user.on('play:turn:end', () => {
+			var player = user.player;
 			var nextPlayer = player.game.endTurn(player);
 			player.game.emit('play:turn:new', { player: nextPlayer.id });
 

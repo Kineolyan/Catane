@@ -51,7 +51,7 @@ const tests = {
 	},
 	getCtx: function(initialState) {
 		if (initialState === undefined) {
-			var initialState = Contexts.getDefaultContext({ id: 1, name: 'Bob' });
+			initialState = Contexts.getDefaultContext({ id: 1, name: 'Bob' });
 			initialState.message = 'Hello';
 			initialState.server = { id: 1, sid: 2 };
 		}
@@ -67,6 +67,7 @@ const tests = {
 	/**
 	 * Creates a mock server with socket simulation.
 	 * This initializes the listener.
+	 * @param {Context} ctx context to use for server
 	 * @return {MockSocket} mock of a socket
 	 */
 	createServer: function(ctx) {

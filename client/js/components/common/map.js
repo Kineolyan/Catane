@@ -160,12 +160,12 @@ export class BoardBinding {
 	 * Give a map element to a player
 	 * @param  {String} type   The element's type (tiles, cities, paths)
 	 * @param  {Object} key    The key of the element (generaly a json of x and y coordinates)
-	 * @param  {Binding} player player binding
+	 * @param  {Binding} player binding to the player owning the element
 	 * @return {MapHelpher} this
 	 */
 	giveElement(type, key, player) {
 		if (/cities|paths/.test(type)) {
-			this.updateElement(type, key, element => element.set('player', player.get('id')));
+			this.updateElement(type, key, element => element.set('owner', player.get('id')));
 		} else {
 			throw new Error('Cannot give ' + type);
 		}

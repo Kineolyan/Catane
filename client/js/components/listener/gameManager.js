@@ -1,11 +1,14 @@
 import Immutable from 'immutable';
 
 import Globals from 'client/js/components/libs/globals';
-import { Step } from 'client/js/components/libs/globals';
+import { Step, Interface } from 'client/js/components/libs/globals';
 import Manager from 'client/js/components/listener/manager';
 import { Channel } from 'client/js/components/libs/socket';
 import { PlayersBinding, MyBinding } from 'client/js/components/common/players';
 import { BoardBinding } from 'client/js/components/common/map';
+import LocalStorage from 'client/js/components/libs/localStorage';
+
+const localStorage = new LocalStorage();
 
 export default class GameManager extends Manager {
 
@@ -16,14 +19,65 @@ export default class GameManager extends Manager {
 		this.listenToSocket(Channel.mapDice, this.rollDice.bind(this));
 		this.listenToSocket(Channel.playPickColony, this.playPickElement.bind(this));
 		this.listenToSocket(Channel.playPickPath, this.playPickElement.bind(this));
+		this.listenToSocket(Channel.reconnect, this.onReconnection.bind(this));
+		this.listenToSocket(Channel.gameReload, this.onGameReload.bind(this));
 	}
 
 	/**
 	 * Reconnects a player to an existing session.
-	 * @param  {Number} sessionId session id
+	 * @param {Number} sessionId session id
 	 */
 	reconnect(sessionId) {
 		this._socket.emit(Channel.reconnect, sessionId);
+	}
+
+	onReconnection({ player: player }) {
+		/* Only update the player id. The rest will be updated by
+		 * game reloading */
+		this._binding.set('me.id', player.id);
+		// Save the current server info with the new socket id
+		localStorage.set('server', this._binding.get('server').toJS());
+		this.reloadGame();
+	}
+
+	/**
+	 * Asks for the game to be reloaded from the server.
+	 */
+	reloadGame() {
+		this._socket.emit(Channel.gameReload);
+	}
+
+	onGameReload({ board: board, players: players, currentPlayer: currentPlayer, me: myInfo }) {
+		var colors = Interface.player.colors;
+		var transaction = this._binding.atomically();
+
+		// Set my information
+		var myBinding = MyBinding.from(this._binding);
+		myBinding.setCards(myInfo.resources);
+		var myId = myBinding.id;
+		myBinding.save(transaction);
+
+		// Order players
+		var playersBinding = PlayersBinding.from(this._binding);
+		playersBinding.deleteAll();
+		players.forEach((player, i) => {
+			if (player.id === myId) {
+				playersBinding.setIPlayer(player.id, player.name, colors[i]);
+			} else {
+				playersBinding.setPlayer(player.id, player.name, colors[i]);
+			}
+		});
+		playersBinding.save(transaction);
+
+		// Create the board
+		var boardBinding = BoardBinding.from(this._binding);
+		boardBinding.buildBoard(board);
+		boardBinding.save(transaction);
+
+		transaction
+			.set('step', Step.started) // TODO which step it is ?
+			.set('game.currentPlayerId', currentPlayer)
+			.commit();
 	}
 
 	selectCity(city) {

@@ -55,7 +55,7 @@ export default class MapR extends MoreartyComponent {
 			var elementBinding = binding.sub(i);
 
 			// TODO this is not interesting for tiles. what to do ?
-			var playerId = element.get('player');
+			var playerId = element.get('owner');
 			// TODO have the player binding return a sub binding
 			var playerBinding = playerId !== undefined ? players.getPlayer(playerId, playersBinding) : undefined;
 

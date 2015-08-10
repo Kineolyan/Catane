@@ -19,7 +19,16 @@
     participant Serveur
     Note left of Game: Le client charge la page
     Game->Serveur: nouvelle socket
-    Serveur->Game: ws/init\n{ message: "welcome", player: { name: "default name", id: id }, server: { id: id } }
+    Serveur->Game: ws/init\n{ message: "welcome", player: { name: "default name", id: id }, server: { id: id, sid: session_id } }
+  </div>
+
+  <div class="diagram">
+    Title: Reconnexion au server
+    participant Joueur
+    participant Serveur
+    Note left of Game: Le client charge la page
+    Joueur->Serveur: ws/reconnect\nprevious_session_id
+    Serveur->Joueur: ws/init\n{ player: { name: current_name, id: id } }
   </div>
 
   <div class="diagram">

@@ -10,7 +10,7 @@ import React from 'react'; // eslint-disable-line no-unused-vars
 
 class MapWrapper extends tests.Wrapper {
 	render() {
-		return <MapReact binding={{ default: this.binding.sub('game.board'), players: this.binding.sub('players') }} />
+		return <MapReact binding={{ default: this.binding.sub('game.board'), players: this.binding.sub('players') }} />;
 	}
 }
 
