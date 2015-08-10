@@ -53,8 +53,7 @@ export default class EditablePlayer extends MoreartyComponent {
 	 */
 	triggerChangeName() {
 		var name = window.prompt('What\'s your name ?');
-		startManager.setName(name);
-		Socket.emit(Globals.socket.playerNickname, name);
+		startManager().setName(name);
 	}
 
 }

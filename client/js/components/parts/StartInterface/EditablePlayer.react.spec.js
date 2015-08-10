@@ -18,4 +18,6 @@ describe('<EditablePlayer>', function() {
     }, 100);
   });
 
+  // TODO check action on click
+
 });
