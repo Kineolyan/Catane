@@ -33,7 +33,7 @@ describe('<Game>', function() {
           { x: 0, y: 1 }
         ], paths: [
           { from: { x: 1, y: 0 }, to: { x: 0, y: 1 } }
-        ]
+        ], thieves: { x: 0, y: 0 }
       });
 
       this.ctx.getBinding().atomically()

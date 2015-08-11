@@ -26,6 +26,72 @@ describe('GameManager', function() {
 		};
 	});
 
+	describe('#startListen', function() {
+		beforeEach(function() {
+			this.game.startListen();
+		});
+
+		[
+			Channel.gameStart, Channel.gamePrepare, Channel.gamePlay, Channel.gameReload,
+			Channel.playTurnNew, Channel.mapDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves,
+			Channel.reconnect
+		].forEach(function(channel) {
+			it('listens to channel ' + channel, function() {
+				expect(this.socket.isListening(channel)).toBe(true);
+			});
+		});
+	});
+
+	describe('#onGameStart', function() {
+		beforeEach(function() {
+			var playersBinding = PlayersBinding.from(this.binding);
+			playersBinding.deleteAll();
+			playersBinding.setIPlayer(1, 'Oliv');
+			playersBinding.setIPlayer(2, 'Pierrick');
+			playersBinding.setIPlayer(3, 'Tom');
+			playersBinding.save(this.binding);
+
+			// start the game
+			this.game.onGameStart({
+				board: {
+					tiles: [
+						{ x: 0, y: 0, resource: 'tuile', diceValue: 1 }
+					], cities: [
+						{ x: 0, y: 1 },
+						{ x: 1, y: 0 },
+						{ x: 1, y: -1 }
+					], paths: [
+						{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } },
+						{ from: { x: 1, y: -1 }, to: { x: 1, y: 0 } }
+					], thieves: { x: 0, y: 0 }
+				}, players: [2, 3, 1]
+			});
+		});
+
+		it('reorders players', function() {
+			var order = this.binding.get('players').map(player => player.get('id'));
+			expect(order.toJS()).toEqual([2, 3, 1]);
+		});
+
+		it('assigns a color to each player', function() {
+			var colors = this.binding.get('players').map(player => player.get('color'));
+			expect(colors.toJS()).toEqual(Globals.interface.player.colors.slice(0, 3));
+		});
+
+		it('creates the board from data', function() {
+			expect(this.binding.get('game.board').toJS()).toBeDefined();
+		});
+
+		it('moves to prepare phase', function() {
+			expect(this.binding.get('step')).toEqual(Globals.step.prepare);
+		});
+
+		it('saves server info in local storage', function() {
+			var localStorage = new LocalStorage();
+			expect(localStorage.get('server')).toEqual(this.binding.get('server').toJS());
+		});
+	});
+
 	describe('#reconnect', function() {
 		beforeEach(function() {
 			this.game.reconnect(1432);
@@ -76,7 +142,8 @@ describe('GameManager', function() {
 				board: {
 					tiles: [{ x: 0, y: 0 }],
 					cities: [{ x: 1, y: 0 }, { x: 0, y: 1 }],
-					paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }]
+					paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+					thieves: { x: 0, y: 0 }
 				}, players: [
 					{ id: 7, name: 'Marcus' },
 					{ id: 3, name: 'Tom' }
@@ -142,7 +209,8 @@ describe('GameManager', function() {
 			this.initBoard({
 				tiles: [{ x: 0, y: 0 }],
 				cities: [{ x: 0, y: 0 }],
-				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }]
+				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+				thieves: { x: 0, y: 0 }
 			});
 		});
 
@@ -220,7 +288,8 @@ describe('GameManager', function() {
 			this.initBoard({
 				tiles: [{ x: 0, y: 0 }],
 				cities: [{ x: 0, y: 0 }],
-				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }]
+				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+				thieves: { x: 0, y: 0 }
 			});
 		});
 
@@ -277,6 +346,55 @@ describe('GameManager', function() {
 					expect(enabled).toBe(true);
 				});
 			});
+		});
+	});
+
+	describe('#moveThieves', function() {
+		beforeEach(function() {
+			this.game.moveThieves({ x: 1, y: 2 });
+		});
+
+		it('sends a message on channel ' + Channel.playMoveThieves, function() {
+			expect(this.socket.messages(Channel.playMoveThieves)).toHaveLength(1);
+		});
+
+		it('sends the tile where to place the thieves', function() {
+			var message = this.socket.lastMessage(Channel.playMoveThieves);
+			expect(message).toEqual({ tile: { x: 1, y: 2 } });
+		});
+	});
+
+	describe('#onThievesMove', function() {
+		beforeEach(function() {
+			this.initBoard({
+				tiles: [
+					{ x: 0, y: 0 },
+					{ x: 1, y: 0 },
+					{ x: 0, y: 1 },
+				], cities: [{ x: 0, y: 0 }],
+				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+				thieves: { x: 0, y: 0 }
+			});
+
+			this.game.onThievesMove({ tile: { x: 1, y: 0 } });
+		});
+
+		it('removes thieves from the previous tile', function() {
+			var boardBinding = BoardBinding.from(this.binding);
+			var previousTile = boardBinding.getElement('tiles', { x: 0, y: 0 });
+			expect(previousTile.get('thieves')).toBeFalsy();
+		});
+
+		it('moves the thieves onto the designated tile', function() {
+			var boardBinding = BoardBinding.from(this.binding);
+			var newTile = boardBinding.getElement('tiles', { x: 1, y: 0 });
+			expect(newTile.get('thieves')).toEqual(true);
+		});
+
+		it('does not affect the other tiles', function() {
+			var boardBinding = BoardBinding.from(this.binding);
+			var tile = boardBinding.getElement('tiles', { x: 0, y: 1 });
+			expect(tile.get('thieves')).toBeFalsy();
 		});
 	});
 

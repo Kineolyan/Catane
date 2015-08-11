@@ -4,14 +4,15 @@ import { BoardBinding } from 'client/js/components/common/map';
 import { Board } from 'client/js/components/libs/globals';
 
 import { Text, Shape, Group } from 'react-art';
+import Circle from 'react-art/shapes/circle';
 
 import Tile from 'client/js/components/parts/GameInterface/Map/Tile.react';
 
 describe('<Tile>', function() {
 	beforeEach(function() {
 		var tile = BoardBinding.buildTile({ x: 10, y: 10, resource: 'tuile', diceValue: 1 });
-		var ctx = tests.getCtx(tile);
-		this.element = tests.bootstrap(ctx, Tile);
+		this.ctx = tests.getCtx(tile);
+		this.element = tests.bootstrap(this.ctx, Tile);
 	});
 
 	it('represents the value of the dice', function() {
@@ -34,6 +35,31 @@ describe('<Tile>', function() {
 		expect(coordinates).toEqual({ x: 900, y: 522 });
 	});
 
+	describe('with thieves', function() {
+		beforeEach(function(done) {
+			this.ctx.getBinding().atomically()
+				.set('thieves', true)
+				.set('selectable', true)
+				.commit();
+			setTimeout(done, 100);
+		});
+
+		it('cannot be selected', function() {
+			var group = tests.getRenderedElements(this.element, Group)[0];
+			expect(group.props).not.toHaveKey('onClick');
+		});
+
+		it('changes the color of dice background', function() {
+			var diceBg = tests.getRenderedElements(this.element, Circle)[0];
+			expect(diceBg.props.fill).toMatch(/#4a4a4a/i);
+		});
+
+		it('changes the color of the dice value', function() {
+			var diceValue = tests.getRenderedElements(this.element, Text)[0];
+			expect(diceValue.props.fill).toMatch(/#e0e0e0/i);
+		});
+	});
+
 	describe('for desert', function() {
 		beforeEach(function() {
 			var tile = BoardBinding.buildTile({ x: 10, y: 10, resource: 'desert' });
@@ -45,6 +71,24 @@ describe('<Tile>', function() {
 			var content = tests.getRenderedElements(this.desertTile, Text);
 			expect(content).toBeEmpty();
 		});
+
+		it('display a circle to indicate the thieves', function(done) {
+			this.ctx.getBinding().set('thieves', true);
+			setTimeout(() => {
+				var circles = tests.getRenderedElements(this.element, Circle);
+				expect(circles).toHaveLength(1);
+				done();
+			}, 100);
+		});
+	});
+
+	it('can be selected', function(done) {
+		this.ctx.getBinding().set('selectable', true);
+		setTimeout(() => {
+			var group = tests.getRenderedElements(this.element, Group)[0];
+			expect(group.props).toHaveKey('onClick');
+			done();
+		}, 100);
 	});
 
 });

@@ -29,7 +29,7 @@ describe('<Map>', function() {
 			], paths: [
 				{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } },
 				{ from: { x: 1, y: -1 }, to: { x: 1, y: 0 } }
-			]
+			], thieves: { x: 0, y: 0 }
 		};
 
 		var ctx = tests.getCtx();

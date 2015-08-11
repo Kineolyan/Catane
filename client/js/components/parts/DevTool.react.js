@@ -81,21 +81,11 @@ export default class DevTool extends MoreartyComponent {
 		} else {
 			// Hide and load
 			var content = this.refs.loadContent.getDOMNode().value.trim();
-			this.getDefaultBinding.set(Immutable.fromJS(content));
+			if (content) {
+				this.getDefaultBinding().set(Immutable.fromJS(JSON.parse(content)));
+				this.getBinding().set('export', content);
+			}
 			this.getBinding().set('open', false);
-
-			// Previous method
-			// var atomicUpdate = this.getDefaultBinding().atomically();
-
-			// var content = this.refs.loadContent.getDOMNode().value.trim();
-			// if (content) {
-			// 	let definition = JSON.parse(content);
-			// 	atomicUpdate = this.setContext(definition, atomicUpdate)
-			// 			.set('devTool.export', content);
-			// }
-
-			// atomicUpdate.set('devTool.open', false)
-			// 		.commit();
 		}
 	}
 
@@ -107,7 +97,6 @@ export default class DevTool extends MoreartyComponent {
 		var localDev = JSON.parse(this.localStorage['devTool.context']);
 		this.getDefaultBinding().set(Immutable.fromJS(localDev));
 		this.getBinding().set('open', false);
-		// this.setContext(localDev);
 	}
 
 	clear() {

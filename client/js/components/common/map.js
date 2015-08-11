@@ -81,6 +81,10 @@ export class BoardBinding {
 		var cities = BoardBinding.mapElements(definition.cities, BoardBinding.buildCity, this.hash.cities);
 		var paths = BoardBinding.mapElements(definition.paths, BoardBinding.buildPath, this.hash.paths);
 
+		// Set the thieves on the correct tile
+		var thieves = definition.thieves;
+		tiles[this.hash.tiles(thieves)].thieves = true;
+
 		this._binding = this._binding
 			.set('tiles', Immutable.fromJS(tiles))
 			.set('cities', Immutable.fromJS(cities))
@@ -190,6 +194,20 @@ export class BoardBinding {
 		} else {
 			throw new Error(`No elements of type ${type}`);
 		}
+
+		return this;
+	}
+
+	/**
+	 * Moves the thieves onto the given tile.
+	 * @param  {Object} tile the tile position of the thieves
+	 * @return {BoardBinding} this
+	 */
+	moveThieves(tile) {
+		var thievesHash = this.hash.tiles(tile);
+		this._binding = this._binding.update('tiles', (tiles) => {
+			return tiles.map((binding, hash) => binding.set('thieves', hash === thievesHash));
+		});
 
 		return this;
 	}

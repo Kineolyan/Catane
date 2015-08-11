@@ -29,7 +29,7 @@ describe('<GameInterface>', function() {
 				{ from: { x: 0, y: -1 }, to: { x: -1, y: 0 } },
 				{ from: { x: -1, y: 0 }, to: { x: -1, y: 1 } },
 				{ from: { x: -1, y: 1 }, to: { x: 0, y: 1 } }
-			]
+			], thieves: { x: 0, y: 0 }
 		};
 		var boardBinding = BoardBinding.from(this.binding);
 		boardBinding.buildBoard(this.board);

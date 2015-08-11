@@ -7,6 +7,10 @@ export class MockSocketIO {
 		this._channels = {};
 	}
 
+	get channels() {
+		return Object.keys(this._channels);
+	}
+
 	/**
 	 * Records all listened channels and their respectives actions.
 	 * @param  {String} channel channel to listen to

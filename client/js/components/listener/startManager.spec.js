@@ -122,55 +122,6 @@ describe('StartManager', function() {
 		}, 'Bob', 'tom');
 	});
 
-	describe('on game start', function() {
-		beforeEach(function() {
-			this.mgr.updatePlayerList({ players: [
-				{ id: 1, name: 'Oliv' },
-				{ id: 2, name: 'Pierrick' },
-				{ id: 3, name: 'Tom' }
-			] });
-
-			// start the game
-			this.mgr.onGameStart({
-				board: {
-					tiles: [
-						{ x: 0, y: 0, resource: 'tuile', diceValue: 1 }
-					], cities: [
-						{ x: 0, y: 1 },
-						{ x: 1, y: 0 },
-						{ x: 1, y: -1 }
-					], paths: [
-						{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } },
-						{ from: { x: 1, y: -1 }, to: { x: 1, y: 0 } }
-					]
-				}, players: [2, 3, 1]
-			});
-		});
-
-		it('reorders players', function() {
-			var order = this.binding.get('players').map(player => player.get('id'));
-			expect(order.toJS()).toEqual([2, 3, 1]);
-		});
-
-		it('assigns a color to each player', function() {
-			var colors = this.binding.get('players').map(player => player.get('color'));
-			expect(colors.toJS()).toEqual(Globals.interface.player.colors.slice(0, 3));
-		});
-
-		it('creates the board from data', function() {
-			expect(this.binding.get('game.board').toJS()).toBeDefined();
-		});
-
-		it('moves to prepare phase', function() {
-			expect(this.binding.get('step')).toEqual(Globals.step.prepare);
-		});
-
-		it('saves server info in local storage', function() {
-			var localStorage = new LocalStorage();
-			expect(localStorage.get('server')).toEqual(this.binding.get('server').toJS());
-		});
-	});
-
 	describe('when leaving the game', function() {
 		it('removes all others players', function() {
 			this.binding.set('start.gameChosen', Immutable.fromJS({ id: 1 }));

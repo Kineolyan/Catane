@@ -3,6 +3,11 @@
 (function() {
 var n_util = require('util');
 
+function asMap(array) {
+	var map = {};
+	array.forEach(function(value) { map[value] = (map[value] || 0) + 1; })
+}
+
 var arrayMatchers = {
 	toBeIn: function(util, equalityTesters) {
 		return {
@@ -70,11 +75,10 @@ var arrayMatchers = {
 	toHaveMembers: function(util, equalityTesters) {
 		return {
 			compare: function(actual, expected) {
-				var result = {
-					pass: actual.length === expected.length
-						&& actual.every(function(value) { return util.contains(expected, value, equalityTesters); })
-						&& expected.every(function(value) { return util.contains(actual, value, equalityTesters); })
-				};
+				var result = { pass: false }
+				if (actual.length === expected.length) {
+					result.pass = util.equals(asMap(actual), asMap(expected), equalityTesters);
+				}
 
 				result.message = 'Expecting ' + n_util.inspect(actual)
 					+ (result.pass === true ? ' not' : '')

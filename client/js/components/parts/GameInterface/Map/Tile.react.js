@@ -5,6 +5,7 @@
  */
 import { Board } from 'client/js/components/libs/globals';
 import { VERTICES } from 'client/js/components/common/map';
+import { gameManager } from 'client/js/components/listener/listener';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { Group, Shape, Text, Path } from 'react-art';
@@ -30,6 +31,24 @@ export default class Tile extends MapElement {
 		return Board.resources[this.resource] || 'white';
 	}
 
+	get hasThieves() {
+		return this.getDefaultBinding().get('thieves') === true;
+	}
+
+	isSelectable() {
+		return super.isSelectable()
+			&& !this.hasThieves;
+	}
+
+	get actions() {
+		var actions = super.actions;
+		if (this.isSelectable()) {
+			actions.onClick = this.handleClick.bind(this);
+		}
+
+		return actions;
+	}
+
 	doRender() {
 		var tile = this.getDefaultBinding();
 		var circleRadius = this.units(1 / 3);
@@ -44,21 +63,30 @@ export default class Tile extends MapElement {
 		});
 		path.close();
 
-		var diceValue;
-		if (tile.get('diceValue')) {
-			diceValue =	(<Group key="diceValue">
-					<Circle radius={circleRadius} fill="white" stroke="black"/>
-					<Text ref="value" y={-circleRadius / 2} fill="black" alignment="center"
+		var diceElement = null;
+		var hasThieves = this.hasThieves;
+		var diceValue = tile.get('diceValue');
+		if (diceValue || hasThieves) {
+			diceElement =	(<Group key="diceValue">
+					<Circle radius={circleRadius} fill={ hasThieves ? '#4a4a4a' : 'white'} stroke="black"/>
+					{ diceValue ?
+						<Text ref="value" y={-circleRadius / 2} fill={ hasThieves ? '#e0e0e0' : 'black'} alignment="center"
 					      font={{ 'font-size': circleRadius + 'px' }}>
-						{ tile.get('diceValue').toString() }
-					</Text>
+						{ diceValue.toString() }
+						</Text> :
+						null }
 				</Group>);
 		}
 
 		return [
 			<Shape key="shape" d={path} fill={this.color} stroke='#FFFFFF' />,
-			diceValue
+			diceElement
 		];
+	}
+
+	handleClick() {
+		var key = this.getDefaultBinding().get('key');
+		gameManager().selectCity(key.toJS());
 	}
 }
 

@@ -21,6 +21,7 @@ export const Channel = {
 	playTurnNew: 'play:turn:new',
 	playPickColony: 'play:pick:colony',
 	playPickPath: 'play:pick:path',
+	playMoveThieves: 'play:move:thieves',
 	mapDice: 'play:roll-dice',
 	playTurnEnd: 'play:turn:end'
 };

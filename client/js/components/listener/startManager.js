@@ -21,7 +21,6 @@ export default class StartManager extends Manager {
 	startListen() {
 		this.listenToSocket(Channel.gamePlayers, this.updatePlayerList.bind(this));
 		this.listenToSocket(Channel.playerNickname, this.updatePlayerNickname.bind(this));
-		this.listenToSocket(Channel.gameStart, this.onGameStart.bind(this));
 		this.listenToSocket(Channel.gameQuit, this.onGameQuit.bind(this));
 		this.listenToSocket(Channel.gameCreate, this.gameCreate.bind(this));
 		this.listenToSocket(Channel.gameList, this.updateGameList.bind(this));
@@ -71,35 +70,6 @@ export default class StartManager extends Manager {
 		players.updatePlayer(newPlayer.id, newPlayer);
 
 		this._binding.set('players', players.binding);
-	}
-
-	/**
-	 * Start the game with a board
-	 * @param {Object} board The original board
-	 * @param {Array} playerIds the ids of the players in play order
-	 */
-	onGameStart({ board: board, players: playerIds }) {
-		var colors = Interface.player.colors;
-
-		// Order players
-		var players = this._binding.get('players');
-		var orderMap = {};
-		playerIds.forEach((id, index) => orderMap[id] = index);
-		var sortedPlayers = players.sortBy((player) => orderMap[player.get('id')])
-			.map((player, i) => player.set('color', colors[i]));
-
-		// Create the board
-		var boardBinding = BoardBinding.from(this._binding);
-		boardBinding.buildBoard(board);
-
-		this._binding.atomically()
-			.set('players', sortedPlayers)
-			.set('step', Step.prepare)
-			.set('game.board', boardBinding.binding)
-			.commit();
-
-		// Save the game in local storage to be able to reload it
-		localStorage.set('server', this._binding.get('server').toJS());
 	}
 
 	/**

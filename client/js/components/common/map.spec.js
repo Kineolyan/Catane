@@ -116,7 +116,7 @@ describe('BoardBinding', function() {
 					{ x: 1, y: -1 }
 				], paths: [
 					{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } }
-				]
+				], thieves: { x: 1, y: 1 }
 			};
 
 			var ctx = tests.getCtx({ game: { board: {} } });
@@ -157,6 +157,11 @@ describe('BoardBinding', function() {
 
 			expect(values).toContain({ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } });
 		});
+
+		it('sets the thieves on the correct tile', function() {
+			var tile = this.helper.getElement('tiles', { x: 1, y: 1 });
+			expect(tile.get('thieves')).toBe(true);
+		});
 	});
 
 	describe('#getElement', function() {
@@ -171,7 +176,7 @@ describe('BoardBinding', function() {
 					{ x: 1, y: -1 }
 				], paths: [
 					{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } }
-				]
+				], thieves: { x: 1, y: 1 }
 			};
 
 			var ctx = tests.getCtx({ game: { board: {} } });
@@ -219,7 +224,7 @@ describe('BoardBinding', function() {
 					{ x: 1, y: -1 }
 				], paths: [
 					{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } }
-				]
+				], thieves: { x: 1, y: 1 }
 			};
 
 			var ctx = tests.getCtx({ game: { board: {} }, players: [] });
@@ -275,7 +280,7 @@ describe('BoardBinding', function() {
 				], paths: [
 					{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 }, player: 1 },
 					{ from: { x: 0, y: 1 }, to: { x: 1, y: 1 } }
-				]
+				], thieves: { x: 1, y: 1 }
 			};
 
 			var ctx = tests.getCtx({ game: { board: {} }, players: [] });
@@ -318,4 +323,36 @@ describe('BoardBinding', function() {
 		});
 	});
 
+	describe('#moveThieves', function() {
+		beforeEach(function() {
+			var ctx = tests.getCtx({ game: { board: {} }, players: [] });
+			this.helper = BoardBinding.from(ctx.getBinding());
+			this.helper.buildBoard({
+				tiles: [
+					{ x: 0, y: 0 },
+					{ x: 1, y: 0 },
+					{ x: 0, y: 1 },
+				], cities: [{ x: 0, y: 0 }],
+				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+				thieves: { x: 0, y: 0 }
+			});
+			this.helper.moveThieves({ x: 1, y: 0 });
+		});
+
+		it('removes thieves from the previous tile', function() {
+			var previousTile = this.helper.getElement('tiles', { x: 0, y: 0 });
+			expect(previousTile.get('thieves')).toBeFalsy();
+		});
+
+		it('moves the thieves onto the designated tile', function() {
+			var newTile = this.helper.getElement('tiles', { x: 1, y: 0 });
+			expect(newTile.get('thieves')).toEqual(true);
+		});
+
+		it('does not affect the other tiles', function() {
+			var tile = this.helper.getElement('tiles', { x: 0, y: 1 });
+			expect(tile.get('thieves')).toBeFalsy();
+		});
+
+	});
 });
