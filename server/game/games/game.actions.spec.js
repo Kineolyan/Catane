@@ -233,6 +233,11 @@ describe('Game actions', function() {
 			this.env.start();
 			this.env.randomPick();
 
+			this.remainingList = {};
+			for (let { player: player } of this.env.players) {
+				this.remainingList[player.id] = 5;
+			}
+
 			// Roll dices until it gets a 7
 			var total;
 			for (let i = 0; i < 100; i += 1) {
@@ -268,6 +273,21 @@ describe('Game actions', function() {
 			// Action play not received
 			for (let { client: client } of this.env.players) {
 				expect(client.lastMessage('game:action')).not.toEqual({ action: 'play' });
+			}
+		});
+
+		it('sends the list of remaining resources to drop after each drop', function() {
+			var firstPlayer = this.env.players[0].player;
+			this.env.game.dropResources(firstPlayer, { bois: 3, ble: 2 });
+
+			// Action play not received
+			delete this.remainingList[firstPlayer.id];
+			for (let { client: client } of this.env.players) {
+				var message = client.lastMessage('game:action');
+				expect(message).toEqual({
+					action: 'drop resources',
+					remaining: this.remainingList
+				});
 			}
 		});
 

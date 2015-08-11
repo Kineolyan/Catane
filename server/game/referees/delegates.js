@@ -13,7 +13,7 @@ export class DropResourcesDelegate {
 			let resCount = this.countResources(player.resources);
 			let resToDrop = resCount > 7 ? Math.floor(resCount / 2) : 0;
 
-			this._players.set(player.id, resToDrop);
+			if (resToDrop > 0) { this._players.set(player.id, resToDrop); }
 		}
 	}
 
@@ -43,7 +43,11 @@ export class DropResourcesDelegate {
 			if (resCount <= remaining) {
 				player.useResources(resources);
 				remaining -= resCount;
-				this._players.set(player.id, remaining);
+				if (remaining === 0) {
+					this._players.delete(player.id);
+				} else {
+					this._players.set(player.id, remaining);
+				}
 				return remaining;
 			} else {
 				throw new Error(`Player ${player.id} cannot drop too many resources`);
@@ -59,6 +63,11 @@ export class DropResourcesDelegate {
 		return resCount;
 	}
 
+	/**
+	 * Gets if all resources have been dropped by every player.
+	 * If false, use @remainingList to get the players with remaining resources to drop.
+	 * @return {boolean} true if all resources have been dropped
+	 */
 	allResourcesDropped() {
 		for (let count of this._players.values()) {
 			if (count !== 0) { return false; }

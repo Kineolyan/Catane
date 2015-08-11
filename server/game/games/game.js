@@ -162,6 +162,8 @@ export default class Game {
 			// Restore the initial referee from the delegate
 			this._referee = this._referee.referee;
 			this.emit('game:action', { action: 'play' });
+		} else {
+			this.emit('game:action', { action: 'drop resources', remaining: this._referee.remainingList });
 		}
 
 		return remaining;

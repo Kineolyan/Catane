@@ -64,6 +64,13 @@ describe('DropResourcesDelegate', function() {
 			expected[this.p2.id] = 4;
 			expect(this.delegate.remainingList).toEqual(expected);
 		});
+
+		it('excludes players without resources to drop', function() {
+			this.delegate.dropResources(this.p1, { ble: 5, bois: 1 });
+			var expected = {};
+			expected[this.p2.id] = 4;
+			expect(this.delegate.remainingList).toEqual(expected);
+		});
 	});
 
 	describe('#checkTurn', function() {
