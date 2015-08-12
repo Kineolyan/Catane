@@ -4,9 +4,6 @@
  React component containing the whole game interface
  */
 
-import Globals from 'client/js/components/libs/globals';
-import Socket from 'client/js/components/libs/socket';
-
 import React from 'react'; // eslint-disable-line no-unused-vars
 import reactBoostrap from 'react-bootstrap';
 

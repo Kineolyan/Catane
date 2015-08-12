@@ -2,8 +2,7 @@ import React from 'react';
 import { Group, Text } from 'react-art';
 import Rectangle from 'react-art/shapes/rectangle';
 
-import Socket from 'client/js/components/libs/socket';
-import Globals from 'client/js/components/libs/globals';
+import { gameManager } from 'client/js/components/listener/listener';
 
 export default class EndTurn extends React.Component {
 	render() {
@@ -23,7 +22,7 @@ export default class EndTurn extends React.Component {
 	 * Ends the turn.
 	 */
 	endTurn() {
-		Socket.emit(Globals.socket.playTurnEnd);
+		gameManager().endTurn();
 	}
 }
 

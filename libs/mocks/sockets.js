@@ -57,7 +57,9 @@ export class MockSocketIO {
 	 * @return {Boolean} true if listening, false otherwise
 	 */
 	isListening(channel) {
-		return channel in this._channels;
+		return channel !== undefined
+			&& channel !== null
+			&& (channel in this._channels);
 	}
 
 	/**

@@ -19,12 +19,14 @@ export default class GameManager extends Manager {
 		this.listenToSocket(Channel.gamePrepare, this.gamePrepare.bind(this));
 		this.listenToSocket(Channel.gamePlay, this.launchGame.bind(this));
 		this.listenToSocket(Channel.gameReload, this.onGameReload.bind(this));
+		this.listenToSocket(Channel.gameAction, this.onGameAction.bind(this));
 
 		this.listenToSocket(Channel.playTurnNew, this.playTurnNew.bind(this));
-		this.listenToSocket(Channel.mapDice, this.rollDice.bind(this));
+		this.listenToSocket(Channel.playRollDice, this.onRolledDice.bind(this));
 		this.listenToSocket(Channel.playPickColony, this.playPickElement.bind(this));
 		this.listenToSocket(Channel.playPickPath, this.playPickElement.bind(this));
 		this.listenToSocket(Channel.playMoveThieves, this.onThievesMove.bind(this));
+		this.listenToSocket(Channel.playResourcesDrop, this.onDroppedResources.bind(this));
 	}
 
 	/**
@@ -113,6 +115,24 @@ export default class GameManager extends Manager {
 			.commit();
 	}
 
+	onGameAction(payload) {
+		switch (payload.action) {
+		case 'drop resources':
+			this.displayDropStatus(payload);
+			break;
+		}
+	}
+
+	displayDropStatus({ remaining: remaining }) {
+		var myBinding = MyBinding.from(this._binding);
+		var resToDrop = remaining[myBinding.id];
+		if (resToDrop) {
+			this._binding.set('game.message', `Drop ${resToDrop} resource${ resToDrop > 1 ? 's' : ''}`);
+		} else {
+			this._binding.set('game.message', 'Waiting for other players to drop resources');
+		}
+	}
+
 	selectCity(city) {
 		this._socket.emit(Channel.playPickColony, { colony: city });
 	}
@@ -161,11 +181,15 @@ export default class GameManager extends Manager {
 		}
 	}
 
+	rollDice() {
+		this._socket.emit(Channel.playRollDice);
+	}
+
 	/**
 	 * Roll the dice
 	 * @param {Array} dice dice values picked
 	 */
-	rollDice({ dice: dice, resources: resources }) {
+	onRolledDice({ dice: dice, resources: resources }) {
 		this._binding.atomically()
 				.set('game.dice.values', Immutable.fromJS(dice))
 				.set('game.dice.rolling', true)
@@ -260,6 +284,10 @@ export default class GameManager extends Manager {
 		var boardBinding = BoardBinding.from(this._binding);
 		boardBinding.moveThieves(tile);
 		boardBinding.save(this._binding);
+	}
+
+	onDroppedResources() {
+
 	}
 
 }

@@ -17,12 +17,14 @@ export const Channel = {
 	gamePrepare: 'game:prepare',
 	gamePlay: 'game:play',
 	gameReload: 'game:reload',
+	gameAction: 'game:action',
 	// Play channels
 	playTurnNew: 'play:turn:new',
 	playPickColony: 'play:pick:colony',
 	playPickPath: 'play:pick:path',
 	playMoveThieves: 'play:move:thieves',
-	mapDice: 'play:roll-dice',
+	playRollDice: 'play:roll-dice',
+	playResourcesDrop: 'play:resources:drop',
 	playTurnEnd: 'play:turn:end'
 };
 

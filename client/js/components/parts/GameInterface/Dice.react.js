@@ -4,9 +4,7 @@
  The dices
  TODO: Make a x dice
  */
-import Globals from 'client/js/components/libs/globals';
-import Socket from 'client/js/components/libs/socket';
-import Listener from 'client/js/components/listener/listener';
+import { gameManager } from 'client/js/components/listener/listener';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { Group, Text } from 'react-art';
@@ -47,7 +45,7 @@ export default class Dice extends MoreartyComponent {
 					chg(parseInt(time, 10), initValues);
 				} else {
 					binding.set('rolling', false);
-          Listener.gameManager.setMyCards(binding.get('resources').toJS());
+          gameManager().setMyCards(binding.get('resources').toJS());
 				}
 
 			}, time);
@@ -64,7 +62,7 @@ export default class Dice extends MoreartyComponent {
 		var binding = this.getDefaultBinding();
 		if (!binding.get('rolling') && binding.get('enabled')) {
 			binding.set('enabled', false);
-			Socket.emit(Globals.socket.mapDice);
+			gameManager().rollDice();
 		}
 	}
 

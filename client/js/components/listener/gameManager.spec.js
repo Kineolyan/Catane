@@ -33,7 +33,7 @@ describe('GameManager', function() {
 
 		[
 			Channel.gameStart, Channel.gamePrepare, Channel.gamePlay, Channel.gameReload,
-			Channel.playTurnNew, Channel.mapDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves,
+			Channel.playTurnNew, Channel.playRollDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves,
 			Channel.reconnect
 		].forEach(function(channel) {
 			it('listens to channel ' + channel, function() {
@@ -177,6 +177,52 @@ describe('GameManager', function() {
 		});
 	});
 
+	describe('#displayDropStatus', function() {
+		describe('with resources to drop', function() {
+			beforeEach(function() {
+				this.remaining = {};
+				this.remaining[1] = 3;
+				this.remaining[2] = 4;
+				this.game.displayDropStatus({ remaining: this.remaining });
+			});
+
+			it('asks to drop the resources', function() {
+				expect(this.binding.get('game.message')).toEqual('Drop 3 resources');
+			});
+
+			it('handle plural correctly', function() {
+				this.remaining[1] = 1;
+				this.game.displayDropStatus({ remaining: this.remaining });
+				expect(this.binding.get('game.message')).toEqual('Drop 1 resource');
+			});
+		});
+
+		describe('waiting for others', function() {
+			beforeEach(function() {
+				var remaining = {};
+				remaining[3] = 3;
+				remaining[4] = 4;
+				this.game.displayDropStatus({ remaining: remaining });
+			});
+
+			it('tells to wait', function() {
+				expect(this.binding.get('game.message')).toEqual('Waiting for other players to drop resources');
+			});
+		});
+	});
+
+	describe('#onGameAction', function() {
+		describe('on "drop resources"', function() {
+			beforeEach(function() {
+				this.game.onGameAction({ action: 'drop resources', remaining: { 2: 3 }});
+			});
+
+			it('displays message to drop resources', function() {
+				expect(this.binding.get('game.message')).toMatch(/Waiting.*drop resources/i);
+			});
+		});
+	});
+
 	describe('#selectCity', function() {
 		beforeEach(function() {
 			this.game.selectCity({ x: 1, y: 2 });
@@ -256,9 +302,33 @@ describe('GameManager', function() {
 		});
 	});
 
-	it('rolls the dice', function() {
-		this.game.rollDice([1, 2]);
-		expect(this.binding.get('game.dice.rolling')).toBe(true);
+	describe('#rollDice', function() {
+		beforeEach(function() {
+			this.game.rollDice();
+		});
+
+		it('sends a message on channel ' + Channel.playRollDice, function() {
+			expect(this.socket.messages(Channel.playRollDice)).toHaveLength(1);
+		});
+	});
+
+	describe('#onRolledDice', function() {
+		beforeEach(function() {
+			this.game.onRolledDice({ dice: [1, 2], resources: { bois: 3, ble: 4} });
+		});
+
+		it('stores the gotten dice values', function() {
+			expect(this.binding.get('game.dice.values').toJS()).toEqual([1, 2]);
+		});
+
+		it('activates dice rolling flag', function() {
+			expect(this.binding.get('game.dice.rolling')).toBe(true);
+		});
+
+		it('stores the obtained resources', function() {
+			var resources = this.binding.get('game.dice.resources');
+			expect(resources.toJS()).toEqual({ bois: 3, ble: 4 });
+		});
 	});
 
 	describe('#launchGame', function() {
