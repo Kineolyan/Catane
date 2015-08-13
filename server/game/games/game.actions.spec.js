@@ -272,7 +272,7 @@ describe('Game actions', function() {
 
 			// Action play not received
 			for (let { client: client } of this.env.players) {
-				expect(client.lastMessage('game:action')).not.toEqual({ action: 'play' });
+				expect(client.lastMessage('game:action').action).toEqual('drop resources');
 			}
 		});
 
@@ -297,7 +297,7 @@ describe('Game actions', function() {
 			}
 
 			for (let { client: client } of this.env.players) {
-				expect(client.lastMessage('game:action')).toEqual({ action: 'play' });
+				expect(client.lastMessage('game:action')).toEqual({ action: 'move thieves' });
 			}
 		});
 	});

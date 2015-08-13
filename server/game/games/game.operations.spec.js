@@ -1,6 +1,9 @@
 import * as starter from 'server/game/games/game-spec.starter.js';
 
-describe('Placement turn management', function() {
+/**
+ * This contains tests that simulates scenari on the board.
+ */
+describe('Game operations', function() {
 	beforeEach(function() {
 		this.game = starter.createGame(2);
 		this.game.start();

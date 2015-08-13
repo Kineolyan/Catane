@@ -116,8 +116,7 @@ export class Plays {
 			return message;
 		});
 
-		user.on('play:resources:drop', request => {
-			var resources = request.resources;
+		user.on('play:resources:drop', resources => {
 			var player = user.player;
 			var remaining = player.game.dropResources(player, resources);
 
