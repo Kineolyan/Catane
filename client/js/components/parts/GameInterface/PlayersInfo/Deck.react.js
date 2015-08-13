@@ -58,7 +58,7 @@ export default class Deck extends MoreartyComponent {
 			}
 
 			const card = (
-				<Card key={index}
+				<Card key={index} index={index}
 						x={xCard} y={0}
 						width={widthOfACard} height={height}
 						type={cardBinding} isSelected={isSelected}	/>

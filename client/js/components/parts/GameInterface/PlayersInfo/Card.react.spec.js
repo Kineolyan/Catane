@@ -11,7 +11,7 @@ var utils = React.addons.TestUtils;
 
 describe('<Card>', function() {
 	beforeEach(function() {
-		this.card = utils.renderIntoDocument(<Card type={Board.resourceName.tuile} key={2}/>);
+		this.card = utils.renderIntoDocument(<Card type={Board.resourceName.tuile} index={2}/>);
 		this.root = function() { return tests.getRenderedElements(this.card, Group)[0]; };
 	});
 

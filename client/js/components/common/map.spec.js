@@ -331,7 +331,7 @@ describe('BoardBinding', function() {
 				tiles: [
 					{ x: 0, y: 0 },
 					{ x: 1, y: 0 },
-					{ x: 0, y: 1 },
+					{ x: 0, y: 1 }
 				], cities: [{ x: 0, y: 0 }],
 				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
 				thieves: { x: 0, y: 0 }

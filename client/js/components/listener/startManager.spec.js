@@ -1,10 +1,8 @@
 import tests from 'client/js/components/libs/test';
 import StartManager from 'client/js/components/listener/startManager';
-import Globals from 'client/js/components/libs/globals';
 import { PlayersBinding } from 'client/js/components/common/players';
 import { MockSocketIO } from 'libs/mocks/sockets';
 import { Socket, Channel } from 'client/js/components/libs/socket';
-import LocalStorage from 'client/js/components/libs/localStorage';
 
 import Immutable from 'immutable';
 

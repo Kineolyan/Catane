@@ -275,7 +275,7 @@ describe('GameManager', function() {
 	describe('#onGameAction', function() {
 		describe('on "drop resources"', function() {
 			beforeEach(function() {
-				this.game.onGameAction({ action: 'drop resources', remaining: { 2: 3 }});
+				this.game.onGameAction({ action: 'drop resources', remaining: { 2: 3 } });
 			});
 
 			it('displays message to drop resources', function() {
@@ -428,7 +428,7 @@ describe('GameManager', function() {
 
 	describe('#onRolledDice', function() {
 		beforeEach(function() {
-			this.game.onRolledDice({ dice: [1, 2], resources: { bois: 3, ble: 4} });
+			this.game.onRolledDice({ dice: [1, 2], resources: { bois: 3, ble: 4 } });
 		});
 
 		it('stores the gotten dice values', function() {
@@ -554,7 +554,7 @@ describe('GameManager', function() {
 				tiles: [
 					{ x: 0, y: 0 },
 					{ x: 1, y: 0 },
-					{ x: 0, y: 1 },
+					{ x: 0, y: 1 }
 				], cities: [{ x: 0, y: 0 }],
 				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
 				thieves: { x: 0, y: 0 }

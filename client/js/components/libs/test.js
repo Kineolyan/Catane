@@ -39,11 +39,11 @@ var testsObj = {
 
 		var ret = (internal._currentElement.type.displayName && internal._currentElement.type.displayName === type.displayName) ? [internal._currentElement] : [];
 		if (internal._renderedComponent) {
-			ret = ret.concat(tests.getRenderedElements(internal._renderedComponent, type));
+			ret = ret.concat(this.getRenderedElements(internal._renderedComponent, type));
 		} else if (internal._renderedChildren) {
 			for (var i in internal._renderedChildren) {
 				if (internal._renderedChildren.hasOwnProperty(i)) {
-					ret = ret.concat(tests.getRenderedElements(internal._renderedChildren[i], type));
+					ret = ret.concat(this.getRenderedElements(internal._renderedChildren[i], type));
 				}
 			}
 		}

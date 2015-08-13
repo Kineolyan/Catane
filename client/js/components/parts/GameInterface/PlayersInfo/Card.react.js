@@ -31,12 +31,13 @@ export default class Card extends React.Component {
 	}
 
 	selectCard() {
-		gameManager().selectCard(this.props.type, this.props.key);
+		gameManager().selectCard(this.props.type, this.props.index);
 	}
 }
 
 Card.propTypes = {
 	type: React.PropTypes.string.isRequired,
+	index: React.PropTypes.number.isRequired,
 	width: React.PropTypes.number,
 	height: React.PropTypes.number,
 	x: React.PropTypes.number,

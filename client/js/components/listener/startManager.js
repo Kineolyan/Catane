@@ -1,13 +1,8 @@
 import Immutable from 'immutable';
 
-import { Step, Interface } from 'client/js/components/libs/globals';
 import { Channel } from 'client/js/components/libs/socket';
 import Manager from 'client/js/components/listener/manager';
-import { BoardBinding } from 'client/js/components/common/map';
 import { PlayersBinding } from 'client/js/components/common/players';
-import LocalStorage from 'client/js/components/libs/localStorage';
-
-var localStorage = new LocalStorage();
 
 /**
  * Manager for the starting part

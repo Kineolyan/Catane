@@ -4,7 +4,7 @@ import Player from 'server/game/players/player';
 
 describe('User', function() {
 	beforeEach(function() {
-		this.socket = (new MockSocket()).toSocket()
+		this.socket = (new MockSocket()).toSocket();
 		this.player = new Player(this.socket, 1);
 		this.user = new User(this.socket, this.player);
 	});
