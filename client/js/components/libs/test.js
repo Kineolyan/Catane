@@ -6,6 +6,7 @@ import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.reac
 import { MockSocketIO } from 'libs/mocks/sockets';
 import Socket from 'client/js/components/libs/socket';
 import listener from 'client/js/components/listener/listener';
+import * as maps from 'libs/collections/maps';
 
 export class TestWrapper extends MoreartyComponent {
 	get binding() {
@@ -17,7 +18,7 @@ export class TestWrapper extends MoreartyComponent {
 	}
 }
 
-const tests = {
+var testsObj = {
 	jsdom: jsdom,
 	ctx: null, // TODO can it be removed
 	/**
@@ -78,4 +79,14 @@ const tests = {
 	}
 };
 
+const EVENTS = {
+	Click: 'onClick'
+};
+for (let [event, key] of maps.entries(EVENTS)) {
+	testsObj['simulate' + event] = function(element) {
+		element.props[key]();
+	};
+}
+
+const tests = testsObj;
 export default tests;

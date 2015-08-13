@@ -52,10 +52,10 @@ export default class GameInterface extends MoreartyComponent {
 		var height = this.state.height;
 
 		return (<Surface x={0} y={0} width={width} height={height}>
-			<DiceReact x={10} y={10}
-								 size={50}
-								 binding={binding.sub('game.dice')}
-								 ref="dice"	/>
+			<DiceReact x={10} y={10} size={50}
+				startTime={100}
+				binding={binding.sub('game.dice')}
+				ref="dice"	/>
 
 			<MapReact ref="map"
 								binding={{ default: binding.sub('game.board'), players: binding.sub('players') }}

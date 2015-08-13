@@ -14,7 +14,7 @@ import Reconnect from 'client/js/components/parts/Reconnect.react.js';
 import DevTool from 'client/js/components/parts/DevTool.react.js';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
-const DEBUG = true;
+const DEBUG = false;
 
 export default class Game extends MoreartyComponent {
 	/**

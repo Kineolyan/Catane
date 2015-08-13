@@ -8,6 +8,8 @@ import { MockSocketIO } from 'libs/mocks/sockets';
 import { Socket, Channel } from 'client/js/components/libs/socket';
 import LocalStorage from 'client/js/components/libs/localStorage';
 
+import Immutable from 'immutable';
+
 describe('GameManager', function() {
 	beforeEach(function() {
 		var ctx = tests.getCtx();
@@ -33,7 +35,7 @@ describe('GameManager', function() {
 
 		[
 			Channel.gameStart, Channel.gamePrepare, Channel.gamePlay, Channel.gameReload,
-			Channel.playTurnNew, Channel.playRollDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves,
+			Channel.playTurnNew, Channel.playRollDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves, Channel.playResourcesDrop,
 			Channel.reconnect
 		].forEach(function(channel) {
 			it('listens to channel ' + channel, function() {
@@ -211,6 +213,65 @@ describe('GameManager', function() {
 		});
 	});
 
+	describe('#askMoveThieves', function() {
+		beforeEach(function() {
+			this.initBoard({
+				tiles: [
+					{ x: 0, y: 0 },
+					{ x: 1, y: 0 },
+					{ x: 0, y: 1 }
+				],
+				cities: [{ x: 0, y: 0 }],
+				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+				thieves: { x: 0, y: 0 }
+			});
+		});
+
+		describe('regardless of the player', function() {
+			beforeEach(function() {
+				// Set any player as current player
+				this.binding.set('game.currentPlayerId', 1);
+				this.game.askMoveThieves();
+			});
+
+			it('activates the tiles without thieves', function() {
+				var boardBinding = BoardBinding.from(this.binding);
+				expect(boardBinding.getElement('tiles', { x: 0, y: 1 }).get('selectable')).toBe(true);
+				expect(boardBinding.getElement('tiles', { x: 1, y: 0 }).get('selectable')).toBe(true);
+			});
+
+			it('deactivates tile with thieves', function() {
+				var boardBinding = BoardBinding.from(this.binding);
+				expect(boardBinding.getElement('tiles', { x: 0, y: 0 }).get('selectable')).toBe(false);
+			});
+		});
+
+		describe('for me to move', function() {
+			beforeEach(function() {
+				this.binding.set('game.currentPlayerId', 1);
+				this.game.askMoveThieves();
+			});
+
+			it('says I must move the thieves', function() {
+				var message = this.binding.get('game.message');
+				expect(message).toEqual('Move thieves');
+			});
+		});
+
+		describe('for someone to move', function() {
+			beforeEach(function() {
+				this.binding.set('game.currentPlayerId', 2);
+				this.game.askMoveThieves();
+			});
+
+			it('says which player is moving thieves', function() {
+				var message = this.binding.get('game.message');
+				expect(message).toEqual('Mickael moving thieves');
+			});
+
+		});
+	});
+
 	describe('#onGameAction', function() {
 		describe('on "drop resources"', function() {
 			beforeEach(function() {
@@ -220,6 +281,40 @@ describe('GameManager', function() {
 			it('displays message to drop resources', function() {
 				expect(this.binding.get('game.message')).toMatch(/Waiting.*drop resources/i);
 			});
+		});
+
+		describe('on "move thieves"', function() {
+			beforeEach(function() {
+				this.initBoard({
+					tiles: [
+						{ x: 0, y: 0 },
+						{ x: 1, y: 0 },
+						{ x: 0, y: 1 }
+					],
+					cities: [{ x: 0, y: 0 }],
+					paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+					thieves: { x: 0, y: 0 }
+				});
+				this.binding.set('game.currentPlayerId', 1);
+				this.game.onGameAction({ action: 'move thieves' });
+			});
+
+			it('tells to move the players', function() {
+				expect(this.binding.get('game.message')).toMatch(/mov.* thieves/i);
+			});
+		});
+	});
+
+	describe('#selectTile', function() {
+		beforeEach(function() {
+			this.game.selectTile({ x: 1, y: 2 });
+		});
+
+		it('sends the coordinate of the tile', function() {
+			expect(this.socket.messages(Channel.playMoveThieves)).toHaveLength(1);
+
+			var message = this.socket.lastMessage(Channel.playMoveThieves);
+			expect(message).toEqual({ tile: { x: 1, y: 2 } });
 		});
 	});
 
@@ -246,6 +341,25 @@ describe('GameManager', function() {
 
 			var message = this.socket.lastMessage(Channel.playPickPath);
 			expect(message).toEqual({ path: { from: { x: 1, y: 2 }, to: { x: 3, y: 4 } } });
+		});
+	});
+
+	describe('#selectCard', function() {
+		describe('to drop resources', function() {
+			beforeEach(function() {
+				this.binding.set('me.resources', Immutable.fromJS(['bois', 'ble', 'bois']));
+				this.game.selectCard('ble', 1);
+			});
+
+			it('sends an order to drop resource', function() {
+				var message = this.socket.lastMessage(Channel.playResourcesDrop);
+				expect(message).toEqual({ ble: 1 });
+			});
+
+			it('removes the resource', function() {
+				var resources = this.binding.get('me.resources');
+				expect(resources.toJS()).toEqual(['bois', 'bois']);
+			});
 		});
 	});
 

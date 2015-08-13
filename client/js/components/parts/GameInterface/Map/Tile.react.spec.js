@@ -2,6 +2,7 @@ import tests from 'client/js/components/libs/test';
 
 import { BoardBinding } from 'client/js/components/common/map';
 import { Board } from 'client/js/components/libs/globals';
+import { Channel } from 'client/js/components/libs/socket';
 
 import { Text, Shape, Group } from 'react-art';
 import Circle from 'react-art/shapes/circle';
@@ -13,6 +14,9 @@ describe('<Tile>', function() {
 		var tile = BoardBinding.buildTile({ x: 10, y: 10, resource: 'tuile', diceValue: 1 });
 		this.ctx = tests.getCtx(tile);
 		this.element = tests.bootstrap(this.ctx, Tile);
+		this.root = function() {
+			return tests.getRenderedElements(this.element, Group)[0];
+		};
 	});
 
 	it('represents the value of the dice', function() {
@@ -29,7 +33,7 @@ describe('<Tile>', function() {
 	});
 
 	it('places the city correctly', function() {
-		var group = tests.getRenderedElements(this.element, Group)[0];
+		var group = this.root();
 		var coordinates = { x: group.props.x, y: group.props.y };
 		// city (15, 8.7) * 60
 		expect(coordinates).toEqual({ x: 900, y: 522 });
@@ -45,7 +49,7 @@ describe('<Tile>', function() {
 		});
 
 		it('cannot be selected', function() {
-			var group = tests.getRenderedElements(this.element, Group)[0];
+			var group = this.root();
 			expect(group.props).not.toHaveKey('onClick');
 		});
 
@@ -85,10 +89,24 @@ describe('<Tile>', function() {
 	it('can be selected', function(done) {
 		this.ctx.getBinding().set('selectable', true);
 		setTimeout(() => {
-			var group = tests.getRenderedElements(this.element, Group)[0];
+			var group = this.root();
 			expect(group.props).toHaveKey('onClick');
 			done();
 		}, 100);
+	});
+
+	describe('when selectable', function() {
+		beforeEach(function(done) {
+			this.ctx.getBinding().set('selectable', true);
+			setTimeout(done, 100);
+			this.socket = tests.createServer(this.ctx);
+		});
+
+		it('calls #selectTile', function() {
+			tests.simulateClick(this.root());
+			var message = this.socket.lastMessage(Channel.playMoveThieves);
+			expect(message).toEqual({ tile: { x: 10, y: 10 } });
+		});
 	});
 
 });

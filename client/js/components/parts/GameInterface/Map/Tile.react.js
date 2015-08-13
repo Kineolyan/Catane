@@ -86,7 +86,7 @@ export default class Tile extends MapElement {
 
 	handleClick() {
 		var key = this.getDefaultBinding().get('key');
-		gameManager().selectCity(key.toJS());
+		gameManager().selectTile(key.toJS());
 	}
 }
 
