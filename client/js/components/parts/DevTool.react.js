@@ -50,6 +50,9 @@ export default class DevTool extends MoreartyComponent {
 				<Button onClick={this.persist.bind(this)}>
 					<Glyphicon glyph={"floppy-disk"}/>
 				</Button>
+				<Button onClick={this.export.bind(this)}>
+					<Glyphicon glyph={"floppy-save"} title="Export current context"/>
+				</Button>
 				{ opened ?
 						<Button onClick={this.clear.bind(this)}>
 							<Glyphicon glyph={"floppy-remove"}/>
@@ -77,17 +80,12 @@ export default class DevTool extends MoreartyComponent {
 			binding.set('open', true);
 		} else {
 			// Hide and load
-			var atomicUpdate = this.getDefaultBinding().atomically();
-
 			var content = this.refs.loadContent.getDOMNode().value.trim();
 			if (content) {
-				let definition = JSON.parse(content);
-				atomicUpdate = this.setContext(definition, atomicUpdate)
-						.set('devTool.export', content);
+				this.getDefaultBinding().set(Immutable.fromJS(JSON.parse(content)));
+				this.getBinding().set('export', content);
 			}
-
-			atomicUpdate.set('devTool.open', false)
-					.commit();
+			this.getBinding().set('open', false);
 		}
 	}
 
@@ -97,7 +95,8 @@ export default class DevTool extends MoreartyComponent {
 
 	restore() {
 		var localDev = JSON.parse(this.localStorage['devTool.context']);
-		this.setContext(localDev);
+		this.getDefaultBinding().set(Immutable.fromJS(localDev));
+		this.getBinding().set('open', false);
 	}
 
 	clear() {
@@ -107,6 +106,15 @@ export default class DevTool extends MoreartyComponent {
 				.set('open', false)
 				.set('export', undefined)
 				.commit();
+	}
+
+	export() {
+		var content = JSON.stringify(this.getDefaultBinding().get().toJS());
+
+		this.getBinding().atomically()
+			.set('open', true)
+			.set('export', content)
+			.commit();
 	}
 
 	setContext({ board: board, players: players, me: myInfo, message: message }, ctx) {

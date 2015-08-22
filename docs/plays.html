@@ -12,7 +12,7 @@
 		participant All
 		Joueur->Serveur: ws/game:start\ngame_id
 		Note right of All: Notifie les joueurs\nSee play documentation\n
-		Serveur->All: ws/game:start\n{ board:\n{ tiles: [{x: x, y: y, resource: r, diceValue: d}, ..],\n   cities: [{x: x, y: y}, ..],\n   paths: [{from: {x: x, y: y}, to: {x: x, y: y}}, ..]\n}, players: [ id1, id2, ... ] }
+		Serveur->All: ws/game:start\n{ board:\n{ tiles: [{x: x, y: y, resource: r, diceValue: d}, ..],\n   cities: [{x: x, y: y}, ..],\n   paths: [{from: {x: x, y: y}, to: {x: x, y: y}}, ..]\n    thieves: { x: x, y: y }\n}, players: [ id1, id2, ... ] }
 		Note left of All: Resources: desert, caillou, bois, mouton, ble, tuile
 		Note left of All: Dice values: from 2 to 12, null for desert
 		Note right of Serveur: Phase de placement
@@ -60,12 +60,16 @@
 		participant Joueur
 		participant Serveur
 		participant All
+		Note left of All: Représente chacun des joueurs\nLe serveur parle individuellement à All
 		Joueur->Serveur: ws/play:roll-dice
 		Serveur->All: ws/play:roll-dice\n{ dice: [ d1, d2 ], resources: { bois: 1, tuile: 3, ... } }
 		Note right of Serveur: Si on tire un 7
 		Note right of Serveur: Si certains joueurs ont trop de ressources
-		Serveur->All: ws/game:action\n{ action: 'drop resources' }
+		Serveur->All: ws/game:action\n{ action: 'drop resources',\nremaining: { p(x): n(x), ... } }
+		Note left of All: p(x) est l'id du joueur\nn(x) est le nombre de resources à jeter (> 0)\nLes joueurs sans resource à jeter ne sont pas mentionnés
 		All->Serveur: ws/play:resources:drop\n{ r1: 1, r2: 4, ... }
+		Serveur->All: ws/play:resources:drop\nnb de resources restantes à jeter
+		Serveur->All: ws/game:action\n{ action: 'drop resources',\nremaining: { p(x): n(x), ... } }
 		Note right of Serveur: Quand tous les joueurs ont jeté leurs ressources\nou qu'il n'y a pas de ressources en trop
 		Serveur->All: ws/game:action\n{ action: 'move thieves' }
 		Joueur->Serveur: ws/play:move:thieves\n{...}

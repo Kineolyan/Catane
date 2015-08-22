@@ -5,8 +5,8 @@ import * as maps from 'libs/collections/maps';
 
 describe('PlayersBinding', function() {
 	beforeEach(function() {
-		var ctx = tests.getCtx({ players: [] });
-		this.binding = ctx.getBinding().get('players');
+		this.ctx = tests.getCtx({ players: [] });
+		this.binding = this.ctx.getBinding().get('players');
 		this.helper = new PlayersBinding(this.binding);
 	});
 
@@ -31,6 +31,13 @@ describe('PlayersBinding', function() {
 		it('gets null on unexisting item', function() {
 			var player = this.helper.getPlayer(10);
 			expect(player).toEqual(null);
+		});
+
+		it('can return sub-binding', function() {
+			this.helper.save(this.ctx.getBinding());
+
+			var player = this.helper.getPlayer(2, this.ctx.getBinding().sub('players'));
+			expect(player.get('name')).toEqual('b');
 		});
 	});
 
@@ -170,17 +177,33 @@ describe('MyBinding', function() {
 		});
 	});
 
+	describe('@id', function() {
+		it('gets my id', function() {
+			expect(this.helper.id).toEqual(1);
+		});
+	});
+
+	describe('@resourceMap', function() {
+		it('gives the resources as a map', function() {
+			expect(this.helper.resourceMap).toEqual({ bois: 1, ble: 1 });
+		});
+	});
+
+	describe('@resourceList', function() {
+		it('gives the resources as an ordered list', function() {
+			expect(this.helper.resourceList).toEqual(['ble', 'bois']);
+		});
+	});
+
 	describe('#setCards', function() {
 		beforeEach(function() {
 			this.helper.setCards({ mouton: 3, ble: 2, caillou: 4, bois: 1 });
-			this.count = function(resource) {
-				return this.helper.binding.get('resources').filter(res => res === resource).size;
-			};
 		});
 
 		for (let [resource, count] of maps.entries({ mouton: 3, bois: 1, ble: 2, caillou: 4 })) {
 			it(`counts ${count} ${resource} to the resources`, function() {
-				expect(this.count(resource)).toEqual(count);
+				var resources = this.helper.resourceMap;
+				expect(resources[resource]).toEqual(count);
 			});
 		}
 

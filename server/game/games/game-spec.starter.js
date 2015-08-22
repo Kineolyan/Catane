@@ -1,11 +1,12 @@
-import { MockSocket } from '../../com/mocks';
+import { MockSocket } from 'server/com/mocks';
 
-import Server from '../../server';
+import Server from 'server/server';
 import Location from 'server/elements/geo/location.js';
-import { idGenerator } from '../util.js';
+import { idGenerator } from 'server/game/util.js';
+import User from 'server/com/user';
 import Player from 'server/game/players/player.js';
 // Managers
-import Games from './games.js';
+import Games from 'server/game/games/games.js';
 import Plays from 'server/game/plays/plays.js';
 import * as maps from 'libs/collections/maps.js';
 
@@ -36,9 +37,10 @@ var server = new Server();
 export function createPlayer(name) {
 	var client = new MockSocket();
 	server.connect(client.toSocket());
-	var id = client.lastMessage('init').player.id;
+	var message = client.lastMessage('init');
+	var id = message.player.id;
 
-	var info = { client: client, id: id };
+	var info = { client: client, id: id, server: message.server };
 	if (name !== undefined) {
 		client.receive('player:nickname', name);
 		info.name = name;
@@ -164,8 +166,9 @@ const plays = new Plays();
 export function createLocalPlayer(name) {
 	var client = new MockSocket();
 	var player = new Player(client.toSocket(), playerId());
-	games.register(player);
-	plays.register(player);
+	var user = new User(player.socket, player);
+	games.register(user);
+	plays.register(user);
 	if (name !== undefined) {
 		player.name = name;
 	}

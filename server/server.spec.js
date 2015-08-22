@@ -44,7 +44,7 @@ describe('Server', function() {
 		});
 
 		it('adds the client to its players list', function() {
-			expect(this.server.players).toHaveKey(this.socket.id);
+			expect(this.server.users).toHaveKey(this.socket.id);
 		});
 	});
 
@@ -58,7 +58,7 @@ describe('Server', function() {
 		});
 
 		it('removes client from the list', function() {
-			expect(this.server.players).not.toHaveKey(this.socket.id);
+			expect(this.server.users).not.toHaveKey(this.socket.id);
 		});
 	});
 
@@ -71,41 +71,41 @@ describe('Server', function() {
 
 		it('removes the player if it does not belong to a game', function() {
 			this.server.disconnect(this.socket);
-			expect(this.server.players).not.toHaveKey(this.socket.id);
+			expect(this.server.users).not.toHaveKey(this.socket.id);
 		});
 
 		it('removes the player if it joined an unstarted game', function() {
-			var player = this.server.players[this.socket.id];
-			player.game = {
+			var user = this.server.users.get(this.socket.id);
+			user.player.game = {
 				isStarted: function() { return false; },
 				remove: function() {}
 			};
 
 			this.server.disconnect(this.socket);
-			expect(this.server.players).not.toHaveKey(this.socket.id);
+			expect(this.server.users).not.toHaveKey(this.socket.id);
 		});
 
 		it('keeps the player if the game has started', function() {
-			var player = this.server.players[this.socket.id];
-			player.game = {
+			var user = this.server.users.get(this.socket.id);
+			user.player.game = {
 				isStarted: function() { return true; },
 				remove: function() {}
 			};
 
 			this.server.disconnect(this.socket);
-			expect(this.server.players).toHaveKey(this.socket.id);
+			expect(this.server.users).toHaveKey(this.socket.id);
 		});
 
 		it('removes the player after the timeout', function(done) {
-			var player = this.server.players[this.socket.id];
-			player.game = {
+			var user = this.server.users.get(this.socket.id);
+			user.player.game = {
 				isStarted: function() { return true; },
 				remove: function() {}
 			};
 
 			this.server.disconnect(this.socket);
 			setTimeout(() => {
-				expect(this.server.players).not.toHaveKey(this.socket.id);
+				expect(this.server.users).not.toHaveKey(this.socket.id);
 				done();
 			}, global.TIME_TO_RECONNECT * 1.5);
 		});
@@ -119,7 +119,7 @@ describe('Server', function() {
 			this.server.connect(this.socket);
 
 			// Simulate a game start
-			this.player = this.server.players[this.socket.id];
+			this.player = this.server.users.get(this.socket.id).player;
 			this.player.game = {
 				isStarted: function() { return true; },
 				remove: function() {}
@@ -128,22 +128,28 @@ describe('Server', function() {
 			// Reconnect
 			this.newClient = new MockSocket();
 			this.newSocket = this.newClient.toSocket();
+			this.server.connect(this.newSocket);
 			this.server.reconnect(this.newSocket, this.socket.id);
 		});
 
 		it('connects player to the new socket id', function() {
-			var newPlayer = this.server.players[this.newSocket.id];
-			expect(newPlayer.id).toEqual(this.player.id);
+			var user = this.server.users.get(this.newSocket.id);
+			expect(user.player.id).toEqual(this.player.id);
 		});
 
 		it('removes player from the old connection', function() {
-			var players = this.server.players;
-			expect(players).not.toHaveKey(this.socket.id);
+			expect(this.server.users).not.toHaveKey(this.socket.id);
 		});
 
 		it('sets the new socket for the player comm', function() {
-			var player = this.server.players[this.newSocket.id];
+			var player = this.server.users.get(this.newSocket.id);
 			expect(player.socket.id).toEqual(this.newSocket.id);
+		});
+
+		it('throws if the socket does not exist', function() {
+			expect(() => {
+				this.server.reconnect(this.newSocket, -1234567);
+			}).toThrowError(/does not exist/i);
 		});
 	});
 
@@ -159,11 +165,11 @@ describe('Server', function() {
 		});
 
 		it('contains first socket', function() {
-			expect(this.server.players).toHaveKey(this.socket.id);
+			expect(this.server.users).toHaveKey(this.socket.id);
 		});
 
 		it('contains second socket', function() {
-			expect(this.server.players).toHaveKey(this.anotherSocket.id);
+			expect(this.server.users).toHaveKey(this.anotherSocket.id);
 		});
 
 		describe('after first disconnects', function() {
@@ -172,7 +178,7 @@ describe('Server', function() {
 			});
 
 			it('does not contains first anymore', function() {
-				expect(this.server.players).not.toHaveKey(this.socket.id);
+				expect(this.server.users).not.toHaveKey(this.socket.id);
 			});
 
 			describe('after second disconnects', function() {
@@ -181,9 +187,41 @@ describe('Server', function() {
 				});
 
 				it('does not contains first anymore', function() {
-					expect(this.server.players).not.toHaveKey(this.anotherSocket.id);
+					expect(this.server.users).not.toHaveKey(this.anotherSocket.id);
 				});
 			});
+		});
+	});
+
+	describe('->server:reconnect', function() {
+		beforeEach(function() {
+			// Connect for the first time
+			this.client = new MockSocket();
+			this.socket = this.client.toSocket();
+			this.server.connect(this.socket);
+
+			// Simulate a game start
+			this.player = this.server.users.get(this.socket.id).player;
+			this.player.game = {
+				isStarted: function() { return true; },
+				remove: function() {}
+			};
+
+			// Reconnect
+			this.newClient = new MockSocket();
+			this.newSocket = this.newClient.toSocket();
+			this.server.connect(this.newSocket);
+			this.newClient.receive('server:reconnect', this.socket.id);
+		});
+
+		it('performs the reconnection', function() {
+			var newPlayer = this.server.users.get(this.newSocket.id).player;
+			expect(newPlayer.id).toEqual(this.player.id);
+		});
+
+		it('sends back the previous player info', function() {
+			var response = this.newClient.lastMessage('server:reconnect');
+			expect(response.player).toEqual({ id: this.player.id, name: this.player.name });
 		});
 	});
 

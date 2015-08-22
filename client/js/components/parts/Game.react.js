@@ -28,7 +28,7 @@ export default class Game extends MoreartyComponent {
 		return (
 				<div>
 					{ DEBUG ? <DevTool binding={binding}/> : null }
-					{ initialStep ? <Reconnect init={binding.get('server').toJS()}/> : null }
+					{ initialStep ? <Reconnect server={binding.get('server').toJS()}/> : null }
 					{this.renderStart()}
 				</div>
 		);

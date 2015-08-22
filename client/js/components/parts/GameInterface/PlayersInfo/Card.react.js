@@ -3,7 +3,8 @@
 /*
  React component containing the card
  */
-import Globals from 'client/js/components/libs/globals';
+import { Board } from 'client/js/components/libs/globals';
+import { gameManager } from 'client/js/components/listener/listener';
 
 import React from 'react';
 import { Group, Text } from 'react-art';
@@ -18,22 +19,25 @@ export default class Card extends React.Component {
 	render() {
 		const y = this.props.isSelected ? this.props.y - 10 : this.props.y;
 		return (
-				<Group x={this.props.x} y={y} width={this.props.width} height={this.props.height}>
+				<Group x={this.props.x} y={y} width={this.props.width} height={this.props.height}
+					onClick={this.selectCard.bind(this)}>
 					<Rectangle
-							width={this.props.width}
-							height={this.props.height}
-							stroke='black'
-							fill={Globals.map.resources[this.props.type]}
-							/>
+							width={this.props.width} height={this.props.height}
+							stroke="black" fill={Board.resources[this.props.type]} />
 					<Text fill="black" y={6} x={this.props.width / 2} alignment="center"
 					      font={{ 'font-size': '12px' }}>{this.props.type}</Text>
 				</Group>
 		);
 	}
+
+	selectCard() {
+		gameManager().selectCard(this.props.type, this.props.index);
+	}
 }
 
 Card.propTypes = {
 	type: React.PropTypes.string.isRequired,
+	index: React.PropTypes.number.isRequired,
 	width: React.PropTypes.number,
 	height: React.PropTypes.number,
 	x: React.PropTypes.number,

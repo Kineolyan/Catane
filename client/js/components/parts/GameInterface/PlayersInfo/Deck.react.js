@@ -18,9 +18,9 @@ export default class Deck extends MoreartyComponent {
 		this.state = { mouseIn: false, mousePos: { x: 0, y: 0 } };
 	}
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return this.state !== nextState || super.shouldComponentUpdate(nextProps, nextState); // New definition to accept a local state
-  }
+	shouldComponentUpdate(nextProps, nextState) {
+		return this.state !== nextState || super.shouldComponentUpdate(nextProps, nextState); // New definition to accept a local state
+	}
 
 	/**
 	 * The goal is to draw something like this:
@@ -57,13 +57,12 @@ export default class Deck extends MoreartyComponent {
 				isSelected = true;
 			}
 
-			const card = (<Card type={cardBinding}
-			                    x={xCard}
-			                    y={0}
-			                    width={widthOfACard}
-			                    height={height}
-			                    isSelected={isSelected}
-			                    key={index}/>);
+			const card = (
+				<Card key={index} index={index}
+						x={xCard} y={0}
+						width={widthOfACard} height={height}
+						type={cardBinding} isSelected={isSelected}	/>
+			);
 
 			if (isSelected) {
 				selectedElement = card;
@@ -79,12 +78,12 @@ export default class Deck extends MoreartyComponent {
 
 		return (
 				<Group x={this.props.x}
-				       y={y}
-				       width={width}
-				       height={height}
-				       onMouseOver={this.mouseEnter.bind(this)}
-				       onMouseOut={this.mouseLeave.bind(this)}
-				       onMouseMove={this.mouseMove.bind(this)}>
+							 y={y}
+							 width={width}
+							 height={height}
+							 onMouseOver={this.mouseEnter.bind(this)}
+							 onMouseOut={this.mouseLeave.bind(this)}
+							 onMouseMove={this.mouseMove.bind(this)}>
 					{cards}
 				</Group>
 		);

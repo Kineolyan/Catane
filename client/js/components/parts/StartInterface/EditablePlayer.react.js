@@ -4,15 +4,13 @@
  React component containing the whole game interface
  */
 
-import Globals from 'client/js/components/libs/globals';
-import Socket from 'client/js/components/libs/socket';
-
 import React from 'react'; // eslint-disable-line no-unused-vars
 import reactBoostrap from 'react-bootstrap';
 
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
 import { PlayersBinding } from 'client/js/components/common/players';
+import { startManager } from 'client/js/components/listener/listener';
 
 var Button = reactBoostrap.Button;
 var Glyphicon = reactBoostrap.Glyphicon;
@@ -52,8 +50,7 @@ export default class EditablePlayer extends MoreartyComponent {
 	 */
 	triggerChangeName() {
 		var name = window.prompt('What\'s your name ?');
-
-		Socket.emit(Globals.socket.playerNickname, name);
+		startManager().setName(name);
 	}
 
 }

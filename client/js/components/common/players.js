@@ -1,6 +1,7 @@
 import Immutable from 'immutable';
 
 import * as maps from 'libs/collections/maps';
+import { Board } from 'client/js/components/libs/globals';
 
 /**
  * Helper wrapping a binding of the personal information.
@@ -22,6 +23,27 @@ export class MyBinding {
 
 	get binding() {
 		return this._binding;
+	}
+
+	get id() {
+		return this._binding.get('id');
+	}
+
+	get resourceMap() {
+		var resources = this._binding.get('resources');
+		var map = {};
+		for (let resource of Object.keys(Board.resources)) {
+			var count = resources.filter(res => res === resource).size;
+			if (count > 0) {
+				map[resource] = count;
+			}
+		}
+
+		return map;
+	}
+
+	get resourceList() {
+		return this._binding.get('resources').toJS();
 	}
 
 	/**
@@ -56,6 +78,10 @@ export class MyBinding {
  */
 export class PlayersBinding {
 
+	/**
+	 * Constructor
+	 * @param  {List} binding value of the binding
+	 */
 	constructor(binding) {
 		this._binding = binding;
 	}
@@ -132,9 +158,15 @@ export class PlayersBinding {
 		}
 	}
 
-	getPlayer(id) {
-		var result = this._binding.filter(player => player.get('id') === id);
-		return !result.isEmpty() ? result.first() : null;
+	getPlayer(id, binding) {
+		var predicate = player => player.get('id') === id;
+		if (binding === undefined) {
+			var result = this._binding.filter(predicate);
+			return !result.isEmpty() ? result.first() : null;
+		} else {
+			var index = this._binding.findIndex(predicate);
+			return index >= 0 ? binding.sub(index) : null;
+		}
 	}
 
 	getMe() {

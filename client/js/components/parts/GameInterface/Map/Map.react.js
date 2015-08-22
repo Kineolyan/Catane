@@ -4,55 +4,99 @@
  React component containing the map interface
  */
 
+import React from 'react'; // eslint-disable-line no-unused-vars
 import { Group } from 'react-art';
 
-import React from 'react'; // eslint-disable-line no-unused-vars
 import Tile from 'client/js/components/parts/GameInterface/Map/Tile.react';
 import City from 'client/js/components/parts/GameInterface/Map/City.react';
 import Path from 'client/js/components/parts/GameInterface/Map/Path.react';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
+import { PlayersBinding } from 'client/js/components/common/players';
+
 export default class MapR extends MoreartyComponent {
+
+	constructor() {
+		super(...arguments);
+		this.unit = 10;
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		return this.props !== nextProps // default logic
+			|| super.shouldComponentUpdate(nextProps, nextState); // Morearty logic
+	}
 
 	/**
 	 * Render the whole map of the game
 	 * @return {Object} the rendered element
 	 */
 	render() {
-		var board = this.getDefaultBinding().get().toJS().getBoard(),
-				elements = [];
-
-		for (let type of ['tiles', 'paths', 'cities']) { // keep the order of display, tiles under paths under cities
-			var Elem;
-			switch (type) {
-				case 'tiles':
-					Elem = Tile;
-					break;
-
-				case 'paths':
-					Elem = Path;
-					break;
-
-				case 'cities':
-					Elem = City;
-					break;
-			}
-
-			if (!Elem) {
-				continue;
-			}
-
-			board.elements.get(type).forEach((elem) => elements.push(<Elem key={elem.index} value={elem}/>));
-		}
+		this.unit = MapR.computeUnit(this.getDefaultBinding().get('cities'), this.props.width, this.props.height, this.props.margin);
+		var tiles = this.mapElements('tiles', Tile);
+		var paths = this.mapElements('paths', Path);
+		var cities = this.mapElements('cities', City);
 
 		return (
-				<Group x={this.props.width / 2} y={this.props.height / 2}>
-					{elements}
+				<Group x={this.props.x + this.props.width / 2} y={this.props.y + this.props.height / 2}>
+					{tiles.toArray()}
+					{paths.toArray()}
+					{cities.toArray()}
 				</Group>
 		);
 	}
 
+	mapElements(type, Element) {
+		var playersBinding = this.getBinding('players');
+		var players = new PlayersBinding(playersBinding.get());
 
+		var elements = this.getDefaultBinding().get(type);
+		var binding = this.getDefaultBinding().sub(type);
+		return elements.map((element, i) => {
+			var elementBinding = binding.sub(i);
+
+			// TODO this is not interesting for tiles. what to do ?
+			var playerId = element.get('owner');
+			// TODO have the player binding return a sub binding
+			var playerBinding = playerId !== undefined ? players.getPlayer(playerId, playersBinding) : undefined;
+
+			return <Element key={i} binding={{ default: elementBinding, player: playerBinding }} unit={this.unit}/>;
+		});
+	}
+
+	/**
+	 * Get the unit of the board in pixels
+	 * @param {Binding} cities cities of the board
+	 * @param {Number} width width of the map
+	 * @param {Number} height height of the map
+	 * @param {Number} margin top and bottom margin of the map
+	 * @return {Number} the size of the grid
+	 */
+	static computeUnit(cities, width, height, margin) {
+		var min = {	x: 0,	y: 0 };
+		var max = { x: 0, y: 0 };
+		cities.forEach(city => {
+			for (let axis of ['x', 'y']) {
+				let value = city.get(axis);
+				if (value > 0 && value > max[axis]) {
+					max[axis] = value;
+				}
+
+				if (value < 0 && value < min[axis]) {
+					min[axis] = value;
+				}
+			}
+		});
+
+		var xUnit = parseInt((width - margin) / (max.x - min.x), 10);
+		var yUnit = parseInt((height - margin) / (max.y - min.y), 10);
+		return Math.min(xUnit, yUnit);
+	}
 }
 
 MapR.displayName = 'Map';
+
+MapR.defaultProps = {
+	x: 0,
+	y: 0,
+	margin: 10
+};

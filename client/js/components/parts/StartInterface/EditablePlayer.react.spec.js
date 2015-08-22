@@ -4,7 +4,7 @@ import React from 'react/addons';
 
 import EditablePlayer from 'client/js/components/parts/StartInterface/EditablePlayer.react';
 
-describe('A player', function() {
+describe('<EditablePlayer>', function() {
 
   beforeEach(function() {
     this._ctx = tests.getCtx();
@@ -17,5 +17,7 @@ describe('A player', function() {
       done();
     }, 100);
   });
+
+  // TODO check action on click
 
 });

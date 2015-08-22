@@ -7,7 +7,7 @@ import { PlayersBinding } from 'client/js/components/common/players';
 
 var utils = React.addons.TestUtils;
 
-describe('A room', function() {
+describe('<Room>', function() {
 
 	beforeEach(function() {
 		this._ctx = tests.getCtx();

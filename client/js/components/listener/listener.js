@@ -8,9 +8,9 @@ class Listener {
     this._gameManager = null;
   }
 
-  startListen(context) {
-    this._startManager = new StartManager(context);
-    this._gameManager = new GameManager(context);
+  startListen(socket, context) {
+    this._startManager = new StartManager(socket, context);
+    this._gameManager = new GameManager(socket, context);
     this._startManager.startListen();
     this._gameManager.startListen();
   }
@@ -24,5 +24,14 @@ class Listener {
   }
 }
 
+export const listener = new Listener();
 
-export default new Listener();
+export function startManager() {
+  return listener.startManager;
+}
+
+export function gameManager() {
+  return listener.gameManager;
+}
+
+export default listener;

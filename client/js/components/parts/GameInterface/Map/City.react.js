@@ -1,43 +1,43 @@
 'use strict';
 
-
 /*
-  One city of the game
+	One city of the game
 */
-import Socket from 'client/js/components/libs/socket';
-import Globals from 'client/js/components/libs/globals';
+import { gameManager } from 'client/js/components/listener/listener';
 
-import React from 'react';
+import React from 'react'; // eslint-disable-line no-unused-vars
 import Circle from 'react-art/shapes/circle';
 
-import Element from 'client/js/components/parts/GameInterface/Map/Element.react';
+import MapElement from 'client/js/components/parts/GameInterface/Map/Element.react';
 
-export default class City extends React.Component {
+export default class City extends MapElement {
 
-  render() {
-    var city = this.props.value,
-        color = 'black';
+	doRender() {
+		var player = this.getBinding('player');
+		var color =  player !== undefined && player.get('color') || 'black';
 
-    if(city.player) {
-      color = city.player.color;
-    }
+		return (
+			<Circle radius={this.props.radius} fill={color}/>
+		);
+	}
 
-    return (
-      <Element x={city.ortho.x} y={city.ortho.y} {...this.props} onClick={this.handleClick.bind(this)}>
-        <Circle radius={this.props.radius} fill={color}/>
-      </Element>
-    );
-  }
+	get actions() {
+		var actions = super.actions;
+		if(this.isSelectable()) {
+			actions.onClick = this.handleClick.bind(this);
+		}
 
-  handleClick() {
-    if(this.props.value.selectable) {
-      Socket.emit(Globals.socket.playPickColony, { colony: this.props.value.key });
-    }
-  }
+		return actions;
+	}
+
+	handleClick() {
+		var city = this.getDefaultBinding();
+		gameManager().selectCity(city.get('key').toJS());
+	}
 }
 
 City.defaultProps = {
-  radius: 10
+	radius: 10
 };
 
 City.displayName = 'City';

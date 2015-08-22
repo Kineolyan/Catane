@@ -10,27 +10,27 @@ export default class Games {
 	}
 
 	/**
-	 * Registers a new player to the games manager
-	 * @param  {Player} player player to register
+	 * Registers a new user to the games manager
+	 * @param {User} user user to register
 	 */
-	register(player) {
-		player.on('game:create', () => {
+	register(user) {
+		user.on('game:create', () => {
 			var game = this.create();
-			game.add(player);
+			game.add(user.player);
 
-			player.broadcast('game:list', {
+			user.broadcast('game:list', {
 				_success: true,
 				games: this.list()
 			});
 			return { game: { id: game.id } };
 		});
 
-		player.on('game:list', () => ({ games: this.list() }) );
+		user.on('game:list', () => ({ games: this.list() }) );
 
-		player.on('game:join', gameId => {
+		user.on('game:join', gameId => {
 			var game = this._games.get(gameId);
 			if (game) {
-				this.join(game, player);
+				this.join(game, user.player);
 
 				Games.broadcastPlayers(game);
 				return { id: gameId };
@@ -39,7 +39,8 @@ export default class Games {
 			}
 		});
 
-		player.on('game:quit', () => {
+		user.on('game:quit', () => {
+			var player = user.player;
 			var game = player.game;
 			if (game) {
 				return this.quit(game, player);
@@ -48,7 +49,7 @@ export default class Games {
 			}
 		});
 
-		player.on('game:start', (gameId) => {
+		user.on('game:start', (gameId) => {
 			var game = this._games.get(gameId);
 			if (game) {
 				game.start();
@@ -60,7 +61,8 @@ export default class Games {
 			}
 		});
 
-		player.on('game:reload', () => {
+		user.on('game:reload', () => {
+			var player = user.player;
 			var game = player.game;
 			if (game !== undefined && game.isStarted()) {
 				var description = game.reload();
@@ -80,11 +82,12 @@ export default class Games {
 	}
 
 	/**
-	 * Unregisters a player from the games manager
-	 * @param  {Player} player player to unregister
+	 * Unregisters an user from the game manager
+	 * @param  {User} user user to unregister
 	 */
-	unregister(player) {
-		if (player.game) {
+	unregister(user) {
+		var player = user.player;
+		if (player && player.game) {
 			this.quit(player.game, player);
 		}
 	}

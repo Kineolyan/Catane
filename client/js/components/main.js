@@ -8,64 +8,28 @@
 import 'babel/register';
 // declare socket first
 
-import Socket from 'client/js/components/libs/socket';
-import Globals from 'client/js/components/libs/globals';
+import { Socket, Channel } from 'client/js/components/libs/socket';
 import Listener from 'client/js/components/listener/listener';
 
 import React from 'react';
-import Morearty from 'morearty';
+import * as Contexts from 'client/js/components/libs/context';
 
 import GameReact from 'client/js/components/parts/Game.react';
 
-Socket.on(Globals.socket.init, ({ player: player, server: server, message: message }) => {
+import socketIO from 'socket.io-client';
+var socket = new Socket(socketIO());
+
+socket.on(Channel.init, ({ player: player, server: server, message: message }) => {
 	console.log('game start !');
 
-	var myId = player.id;
-	var players = [
-		{ id: myId, name: player.name, me: true }
-	];
-
-	var ctx = Morearty.createContext({
-		initialState: {
-			// state for the start
-			start: {
-				games: [], // all the available games [{id: 3, id: 6}]
-				gameChosen: {} // the game chosen  {id: 2}
-			},
-
-			game: {
-				currentPlayerId: null, // Id of the current player
-				board: {}, // the board for the game, see common/map.js
-				dice: { // dice
-					enabled: false, // can throw
-					rolling: false,  // is rolling
-					values: [1, 1], // values on the dice
-					resources: {} // resources given by the dice
-				},
-				message: message, // message displayed for the current status
-				width: window.innerWidth,
-				height: window.innerHeight // message displayed for the current status
-			},
-
-			// 'I', the first player
-			me: {
-				id: myId,
-				resources: [] // The resources in my deck
-			},
-
-			// Other players
-			players: players, // all player in the game, see common/player.js
-
-			step: Globals.step.init, // current step of the game. See lib/global.js
-			server: server // info send by the server for the reconnect
-		}
-	});
-
-
-	var Bootstrap = ctx.bootstrap(GameReact);
+	var context = Contexts.getDefaultContext(player);
+	context.game.message = message;
+	context.server = server;
+	var ctx = Contexts.createContext(context);
 
 	// activate the listener
-	Listener.startListen(ctx);
+	Listener.startListen(socket, ctx);
 
+	var Bootstrap = ctx.bootstrap(GameReact);
 	React.render(<Bootstrap/>, document.getElementById('content'));
 });

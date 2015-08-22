@@ -1,15 +1,15 @@
 'use strict';
 
 /*
-  React component containing the whole game interface
-*/
+ * React component containing the whole game interface
+ */
 
-import Globals from 'client/js/components/libs/globals';
-import Socket from 'client/js/components/libs/socket';
 import reactBootstrap from 'react-bootstrap';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
+
+import { startManager } from 'client/js/components/listener/listener';
 
 var Button = reactBootstrap.Button;
 var Glyphicon = reactBootstrap.Glyphicon;
@@ -63,14 +63,14 @@ export default class Room extends MoreartyComponent {
    */
   start() {
     var binding = this.getDefaultBinding();
-    Socket.emit(Globals.socket.gameStart, binding.get('start.gameChosen.id'));
+    startManager().startGame(binding.get('start.gameChosen.id'));
   }
 
   /**
    * Leave button
    */
   leave() {
-    Socket.emit(Globals.socket.gameQuit);
+    startManager().quitGame();
   }
 
 }
