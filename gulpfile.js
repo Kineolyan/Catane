@@ -43,6 +43,7 @@ PATHS.client = pathItem('client');
 PATHS.client.scssLib = pathItem('scss_lib');
 PATHS.client.scss = pathItem('scss');
 PATHS.client.js = pathItem('js');
+PATHS.client.res = pathItem('res');
 
 PATHS.build = pathItem('build');
 PATHS.build.libs = pathItem('libs');
@@ -168,7 +169,21 @@ gulp.task('build:browserify', ['build:js:client', 'build:dependencies'], functio
 			.pipe(gulp.dest(PATHS.build.client('js'))); // the output directory
 });
 
-gulp.task('build', ['build:js', 'build:sass', 'build:browserify']);
+gulp.task('install:css', function() {
+	return gulp.src([
+		PATHS.client.res('bootstrap-3.3.4/*.css')
+	]).pipe(gulp.dest(PATHS.build.client('css')));
+});
+
+gulp.task('install:fonts', function() {
+	return gulp.src([
+		PATHS.client.res('bootstrap-3.3.4/fonts/**/*')
+	]).pipe(gulp.dest(PATHS.build.client('fonts')));
+});
+
+gulp.task('install:assets', ['install:css', 'install:fonts']);
+
+gulp.task('build', ['build:js', 'build:sass', 'build:browserify', 'install:assets']);
 
 /* -- Test task -- */
 
@@ -262,11 +277,16 @@ gulp.task('clean', ['clean:output', 'clean:cache']);
 gulp.task('develop', function() {
 	var nodemon = require('nodemon');
 	var browserSync = require('browser-sync');
-
 	var bs;
 
 	gulp.watch(PATHS.client('**/*.js'), function() {
 		runSequence('build:browserify', function() {
+			bs.reload();
+		});
+	});
+
+	gulp.watch(PATHS.server('**/*.js'), function() {
+		runSequence('build:js:server', function() {
 			nodemon.emit('restart'); //restart the nodemon server
 		});
 	});
