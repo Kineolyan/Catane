@@ -39,11 +39,11 @@ export default class PlayersInfo extends MoreartyComponent {
 		return (
 				<Group x={this.props.x} y={this.props.y}>
 					{renderedPlayers.toArray()}
+
 					<Deck binding={meBinding.sub('resources')}
 					      width={widthDeck} height={heightDeck}
 					      y={this.props.height - this.props.y - heightDeck}
-					      x={(this.props.width  - widthDeck) / 2 - this.props.x}
-					      xParent={this.props.x}/>
+					      x={(this.props.width  - widthDeck) / 2 - this.props.x} />
 				</Group>
 		);
 	}

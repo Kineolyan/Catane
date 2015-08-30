@@ -15,7 +15,7 @@ export default class Deck extends MoreartyComponent {
 	constructor() {
 		super(...arguments);
 
-		this.state = { mouseIn: false, mousePos: { x: 0, y: 0 } };
+		this.state = { mouseIn: false, selectedCard: -1 };
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -48,23 +48,18 @@ export default class Deck extends MoreartyComponent {
 
 		var cards = deck.map((cardBinding, index) => {
 			const xCard = center - totalSize / 2 + space * index;
-			const xCardAbsolute = xCard + this.props.x + this.props.xParent;
 
-			let isSelected = false;
-
-			if (this.state.mousePos.x > xCardAbsolute
-					&& this.state.mousePos.x < (index === deckLength - 1 ? xCardAbsolute + widthOfACard : xCardAbsolute + space)) {
-				isSelected = true;
-			}
-
-			const card = (
-				<Card key={index} index={index}
-						x={xCard} y={0}
-						width={widthOfACard} height={height}
-						type={cardBinding} isSelected={isSelected}	/>
+			const card = (<Card key={index}
+													index={index}
+													x={xCard}
+													y={0}
+													width={widthOfACard}
+													height={height}
+													type={cardBinding}
+													onHovered={this.selectCard.bind(this)} />
 			);
 
-			if (isSelected) {
+			if (index === this.state.selectedCard) {
 				selectedElement = card;
 			}
 
@@ -82,8 +77,7 @@ export default class Deck extends MoreartyComponent {
 							 width={width}
 							 height={height}
 							 onMouseOver={this.mouseEnter.bind(this)}
-							 onMouseOut={this.mouseLeave.bind(this)}
-							 onMouseMove={this.mouseMove.bind(this)}>
+							 onMouseOut={this.mouseLeave.bind(this)} >
 					{cards}
 				</Group>
 		);
@@ -97,11 +91,11 @@ export default class Deck extends MoreartyComponent {
 
 	mouseLeave() {
 		window.document.body.style.cursor = 'auto';
-		this.setState({ mouseIn: false, mousePos: { x: 0, y: 0 } });
+		this.setState({ mouseIn: false, selectedCard: -1 });
 	}
 
-	mouseMove(e) {
-		this.setState({ mousePos: { x: e.x, y: e.y } });
+	selectCard(index = 0) {
+		this.setState({ selectedCard: index });
 	}
 }
 
