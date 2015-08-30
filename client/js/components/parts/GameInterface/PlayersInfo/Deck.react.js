@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { Group } from 'react-art';
+import { Spring } from 'react-motion';
 
 import Card from 'client/js/components/parts/GameInterface/PlayersInfo/Card.react';
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
@@ -15,7 +16,7 @@ export default class Deck extends MoreartyComponent {
 	constructor() {
 		super(...arguments);
 
-		this.state = { mouseIn: false, selectedCard: -1 };
+		this.state = { hoveredCard: -1, mouseIn: false };
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -36,7 +37,7 @@ export default class Deck extends MoreartyComponent {
 		const deckLength = deck.size;
 		const width = this.props.width;
 		const height = this.props.height;
-		const y = this.props.y + (!this.state.mouseIn ? height * 3 / 4 : 0);
+		const y = this.props.y;
 		let selectedElement = null;
 
 		// generate cards
@@ -56,10 +57,10 @@ export default class Deck extends MoreartyComponent {
 													width={widthOfACard}
 													height={height}
 													type={cardBinding}
-													onHovered={this.selectCard.bind(this)} />
+													onHovered={this.hoverCard.bind(this)} />
 			);
 
-			if (index === this.state.selectedCard) {
+			if (index === this.state.hoveredCard) {
 				selectedElement = card;
 			}
 
@@ -72,14 +73,18 @@ export default class Deck extends MoreartyComponent {
 		}
 
 		return (
-				<Group x={this.props.x}
-							 y={y}
-							 width={width}
-							 height={height}
-							 onMouseOver={this.mouseEnter.bind(this)}
-							 onMouseOut={this.mouseLeave.bind(this)} >
-					{cards}
-				</Group>
+				<Spring endValue={this.state.mouseIn ? 0 : height * 3 / 4 }>
+					{val => <Group x={this.props.x}
+													y={y + val}
+													width={width}
+													height={height}
+													onMouseOver={this.mouseEnter.bind(this)}
+													onMouseOut={this.mouseLeave.bind(this)} >
+													{cards}
+									</Group>
+
+					}
+				</Spring>
 		);
 	}
 
@@ -91,11 +96,12 @@ export default class Deck extends MoreartyComponent {
 
 	mouseLeave() {
 		window.document.body.style.cursor = 'auto';
-		this.setState({ mouseIn: false, selectedCard: -1 });
+		this.setState({ hoveredCard: -1, mouseIn: false });
 	}
 
-	selectCard(index = 0) {
-		this.setState({ selectedCard: index });
+	hoverCard(index = 0) {
+		console.log('selected');
+		this.setState({ hoveredCard: index });
 	}
 }
 
