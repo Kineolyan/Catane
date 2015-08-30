@@ -100,7 +100,6 @@ export default class Deck extends MoreartyComponent {
 	}
 
 	hoverCard(index = 0) {
-		console.log('selected');
 		this.setState({ hoveredCard: index });
 	}
 }
