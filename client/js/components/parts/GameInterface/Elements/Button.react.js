@@ -7,22 +7,29 @@ import Text from 'client/js/components/parts/GameInterface/Elements/Text.react';
 
 export default class Button extends React.Component {
 
-  // TODO: Calc size auto
+
   render() {
-    return (<Group x={this.props.x}
-                  y={this.props.y}
-                  onClick={this.props.onClick}
+    const { x, y, onClick, minWidth, height, border, color, label, fontSize, margin } = this.props;
+    let ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = `${fontSize}px`;
+
+    const width = Math.max(ctx.measureText(label).width, minWidth) + margin * 2;
+
+    return (<Group x={x}
+                  y={y}
+                  onClick={onClick}
                   onMouseOver={this.mouseOver.bind(this)}
                   onMouseOut={this.mouseOut.bind(this)}>
 
-                <Rectangle  width={this.props.width}
-                            height={this.props.height}
-                            stroke={this.props.border}
-                            fill={this.props.color} />
+                <Rectangle  width={width}
+                            height={height}
+                            stroke={border}
+                            fill={color} />
 
-                <Text text={this.props.label}
-                      x={this.props.width / 2}
-                      y={this.props.height / 2} />
+                <Text text={label}
+                      x={width / 2}
+                      y={height / 2}
+                      fontSize={fontSize} />
             </Group>);
   }
 
@@ -38,23 +45,27 @@ export default class Button extends React.Component {
 
 Button.propTypes = {
   onClick: React.PropTypes.func,
-  width: React.PropTypes.number,
+  minWidth: React.PropTypes.number,
   height: React.PropTypes.number,
   x: React.PropTypes.number,
   y: React.PropTypes.number,
   color: React.PropTypes.string,
   border: React.PropTypes.string,
-  label: React.PropTypes.string
+  label: React.PropTypes.string,
+  fontSize: React.PropTypes.number,
+  margin: React.PropTypes.number
 };
 
 Button.defaultProps = {
   x: 0,
   y: 0,
-  width: 100,
+  minWidth: 40,
   height: 40,
   color: '#ABC4ED',
   border: 'black',
-  label: 'Click'
+  label: 'Click',
+  fontSize: 12,
+  margin: 10
 };
 
 Button.displayName = 'Button';
