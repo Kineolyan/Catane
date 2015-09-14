@@ -14,7 +14,6 @@ export default class Button extends React.Component {
     ctx.font = `${fontSize}px`;
 
     const width = Math.max(ctx.measureText(label).width, minWidth) + margin * 2;
-
     return (<Group x={x}
                   y={y}
                   onClick={onClick}

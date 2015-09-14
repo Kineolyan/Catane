@@ -16,6 +16,8 @@ import Message from 'client/js/components/parts/GameInterface/Message.react';
 import EndTurn from 'client/js/components/parts/GameInterface/EndTurn.react';
 
 import { Step } from 'client/js/components/libs/globals';
+import Popup from 'client/js/components/parts/GameInterface/Elements/Popup.react';
+import Rectangle from 'react-art/shapes/rectangle';
 
 export default class GameInterface extends MoreartyComponent {
 
@@ -48,31 +50,31 @@ export default class GameInterface extends MoreartyComponent {
 	 */
 	render() {
 		var binding = this.getDefaultBinding();
-		var width = this.state.width;
-		var height = this.state.height;
+		const { width, height } = this.state;
 
 		return (<Surface x={0} y={0} width={width} height={height}>
-			<DiceReact x={10} y={10} size={50}
-				startTime={100}
-				binding={binding.sub('game.dice')}
-				ref="dice"	/>
 
-			<MapReact ref="map"
-								binding={{ default: binding.sub('game.board'), players: binding.sub('players') }}
-								x={120} y={0}
-								width={width - 120} height={height}
-								margin={50}	/>
+							<DiceReact x={10} y={10} size={50}
+								startTime={100}
+								binding={binding.sub('game.dice')}
+								ref="dice"	/>
 
-			<Message y={90} x={20}
-							 binding={binding.sub('game.message')} />
+							<MapReact ref="map"
+												binding={{ default: binding.sub('game.board'), players: binding.sub('players') }}
+												x={120} y={0}
+												width={width - 120} height={height}
+												margin={50}	/>
 
-			<PlayersInfo ref="player"
-									 binding={{ default: binding.sub('players'), me: binding.sub('me') }}
-									 y={120} x={20}
-									 height={height} width={width} />
+							<Message y={90} x={20}
+											 binding={binding.sub('game.message')} />
 
-			{ this.displayEndTurn() ? <EndTurn x={width - 75} y={10} height={30} width={60} /> : null }
-		</Surface>);
+							<PlayersInfo ref="player"
+													 binding={{ default: binding.sub('players'), me: binding.sub('me') }}
+													 y={120} x={20}
+													 height={height} width={width} />
+
+							{ this.displayEndTurn() ? <EndTurn x={width - 75} y={10} height={30} width={60} /> : null }
+						</Surface>);
 	}
 
 	displayEndTurn() {
