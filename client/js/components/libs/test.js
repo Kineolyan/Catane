@@ -1,4 +1,3 @@
-import jsdom from 'jsdom';
 import React from 'react';
 
 import * as Contexts from 'client/js/components/libs/context';
@@ -19,7 +18,6 @@ export class TestWrapper extends MoreartyComponent {
 }
 
 var testsObj = {
-	jsdom: jsdom,
 	ctx: null, // TODO can it be removed
 	/**
 	 * Gets react sub elements as an array for non-DOM elements - ie react art elements

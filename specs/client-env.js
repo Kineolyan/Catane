@@ -1,10 +1,10 @@
-var jsdom = require('jsdom');
+var jsdom = require('jsdom-no-contextify');
 
 jasmine.getEnv().defaultTimeoutInterval = 1000;
 if (typeof global.window === 'undefined') {
-	global.window = jsdom.jsdom('<html><body></body></html>').defaultView;// jshint ignore:line
-	global.document = global.window.document;// jshint ignore:line
-	global.navigator = global.window.navigator;// jshint ignore:line
+	global.window = jsdom.jsdom('<html><body></body></html>').defaultView;
+	global.document = global.window.document;
+	global.navigator = global.window.navigator;
 	global.location = { protocol: 'http:', host: 'localhost:3000', port: 3000 };
 }
 

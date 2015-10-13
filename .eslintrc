@@ -25,6 +25,7 @@
     "React": true,
     "io": true
   },
+  "parser": "babel-eslint",
   "plugins": [ "react" ],
   "rules": {
     // Potential errors
@@ -148,7 +149,7 @@
     "no-underscore-dangle": 0, // disallow dangling underscores in identifiers
     "no-unneeded-ternary": 2, // disallow the use of Boolean literals in conditional expressions (off by default)
     "object-curly-spacing": [1, "always"], // require or disallow padding inside curly braces (off by default)
-    "one-var": 2, // allow or disallow one variable declaration per function (off by default)
+    "one-var": [0, "never"], // allow or disallow one variable declaration per function (off by default)
     // "operator-assignment": 2, // require assignment operator shorthand where possible or prohibit it entirely (off by default)
     // "operator-linebreak": 2, // enforce operators to be placed before or after line breaks (off by default)
     // "padded-blocks": 2, // enforce padding within blocks (off by default)

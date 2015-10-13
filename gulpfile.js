@@ -6,13 +6,10 @@ process.env.NODE_PATH = path.join(__dirname, 'build');
 // Resets the module paths
 require('module').Module._initPaths();
 
-var fs = require('fs');
 var gulp = require('gulp');
-var sass = require('gulp-sass');
 var del = require('del');
 var cached = require('gulp-cached');
 var jas = require('gulp-jasmine');
-var eslint = require('gulp-eslint');
 var babel = require('gulp-babel');
 var browserify = require('browserify');
 var notify = require('gulp-notify');
@@ -141,6 +138,8 @@ gulp.task('build:js:libs', buildLibs);
 gulp.task('build:js:server', ['build:js:libs'], buildServer);
 
 gulp.task('build:sass', function() {
+	var sass = require('gulp-sass');
+
 	return gulp.src([
 		PATHS.client.scss('*.scss'),
 		PATHS.client.scssLib('**/*.scss')
@@ -196,6 +195,8 @@ gulp.task('test:js:client', ['build:js:client'], testJsClient);
 gulp.task('test:js', ['test:js:libs', 'test:js:server', 'test:js:client']);
 
 gulp.task('test:lint', function() {
+	var eslint = require('gulp-eslint');
+
 	return gulp.src([
 		PATHS.bin('*.js'),
 		PATHS.libs('**/*.js'),
@@ -251,6 +252,7 @@ gulp.task('watch', ['watch:js', 'watch:sass']);
 
 gulp.task('docs:install', function() {
 	var request = require('request');
+	var fs = require('fs');
 
 	// Fetch the master version of mermaid for documentation
 	return request('https://raw.githubusercontent.com/knsv/mermaid/master/dist/mermaid.full.min.js')
@@ -265,7 +267,6 @@ gulp.task('docs', ['docs:install', 'docs:serve']);
 
 //default gulp
 gulp.task('default', ['build', 'test', 'docs']);
-
 
 gulp.task('clean:cache', cleanCache);
 
