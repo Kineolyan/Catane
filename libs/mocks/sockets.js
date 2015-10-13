@@ -17,7 +17,11 @@ export class MockSocketIO {
 	 * @param  {Function} cbk action to perform
 	 */
 	on(channel, cbk) {
-		this._channels[channel] = cbk;
+		if (channel in this._channels) {
+			this._channels[channel].push(cbk);
+		} else {
+			this._channels[channel] = [cbk];
+		}
 	}
 
 	/**
@@ -41,13 +45,28 @@ export class MockSocketIO {
 	 * @return {Object} last message received on the channel
 	 */
 	receive(channel, message) {
-		var cbk = this._channels[channel];
-		if (cbk) {
-			cbk(message);
+		var cbks = this._channels[channel];
+		if (cbks !== undefined) {
+			cbks.forEach(function(cbk) { cbk(message); });
 
 			return this.lastMessage(channel);
 		} else {
-			throw 'No listener for channel ' + channel;
+			throw new Error('No listener for channel ' + channel);
+		}
+	}
+
+	/**
+	 * Removes a listener from the list for a given channel.
+	 * @param {String} channel channel name
+	 * @param {Function} cbk listener to remove
+	 */
+	removeListener(channel, cbk) {
+		var cbks = this._channels[channel];
+		var idx = cbks.indexOf(cbk);
+		if (idx >= 0) {
+			cbks.splice(idx, 1);
+		} else {
+			throw new Error(`${cbk} not registered for ${channel}`);
 		}
 	}
 
@@ -57,9 +76,12 @@ export class MockSocketIO {
 	 * @return {Boolean} true if listening, false otherwise
 	 */
 	isListening(channel) {
-		return channel !== undefined
-			&& channel !== null
-			&& (channel in this._channels);
+		if (channel !== undefined && channel !== null) {
+			var cbks = this._channels[channel];
+			return cbks !== undefined && cbks.length > 0;
+		} else {
+			return false;
+		}
 	}
 
 	/**

@@ -2,7 +2,7 @@ import tests from 'client/js/components/libs/test';
 
 import { BoardBinding } from 'client/js/components/common/map';
 import { Board } from 'client/js/components/libs/globals';
-import { Channel } from 'client/js/components/libs/socket';
+import { gameManager } from 'client/js/components/listener/listener';
 
 import { Text, Shape, Group } from 'react-art';
 import Circle from 'react-art/shapes/circle';
@@ -100,12 +100,13 @@ describe('<Tile>', function() {
 			this.ctx.getBinding().set('selectable', true);
 			setTimeout(done, 100);
 			this.socket = tests.createServer(this.ctx);
+			this.mgr = gameManager();
+			spyOn(this.mgr, 'selectTile');
 		});
 
 		it('calls #selectTile', function() {
 			tests.simulateClick(this.root());
-			var message = this.socket.lastMessage(Channel.playMoveThieves);
-			expect(message).toEqual({ tile: { x: 10, y: 10 } });
+			expect(this.mgr.selectTile).toHaveBeenCalledWith({ x: 10, y: 10 });
 		});
 	});
 

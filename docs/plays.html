@@ -68,7 +68,7 @@
 		Serveur->All: ws/game:action\n{ action: 'drop resources',\nremaining: { p(x): n(x), ... } }
 		Note left of All: p(x) est l'id du joueur\nn(x) est le nombre de resources à jeter (> 0)\nLes joueurs sans resource à jeter ne sont pas mentionnés
 		All->Serveur: ws/play:resources:drop\n{ r1: 1, r2: 4, ... }
-		Serveur->All: ws/play:resources:drop\nnb de resources restantes à jeter
+		Serveur->All: ws/play:resources:drop\n{ resources: { r1: n1, .. }, remaining: restant à jeter }
 		Serveur->All: ws/game:action\n{ action: 'drop resources',\nremaining: { p(x): n(x), ... } }
 		Note right of Serveur: Quand tous les joueurs ont jeté leurs ressources\nou qu'il n'y a pas de ressources en trop
 		Serveur->All: ws/game:action\n{ action: 'move thieves' }

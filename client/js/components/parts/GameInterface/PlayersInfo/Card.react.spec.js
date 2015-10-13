@@ -1,13 +1,13 @@
 import tests from 'client/js/components/libs/test';
 import { Board } from 'client/js/components/libs/globals';
-import { Channel } from 'client/js/components/libs/socket';
+import { gameManager } from 'client/js/components/listener/listener';
 
 import React from 'react/addons';
 import { Group, Text } from 'react-art';
 
 import Card from 'client/js/components/parts/GameInterface/PlayersInfo/Card.react';
 
-var utils = React.addons.TestUtils;
+var utils = React.addons.TestUtils
 
 describe('<Card>', function() {
 	beforeEach(function() {
@@ -30,15 +30,13 @@ describe('<Card>', function() {
 			var ctx = tests.getCtx();
 			this.socket = tests.createServer(ctx);
 
+			this.mgr = gameManager();
+			spyOn(this.mgr, 'selectCard');
 			tests.simulateClick(this.root());
 		});
 
 		it('drops the card', function() {
-			var message = this.socket.lastMessage(Channel.playResourcesDrop);
-
-			var drop = {};
-			drop[Board.resourceName.tuile] = 1;
-			expect(message).toEqual(drop);
+			expect(this.mgr.selectCard).toHaveBeenCalledWith('tuile', 2);
 		});
 	});
 

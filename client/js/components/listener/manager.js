@@ -1,4 +1,51 @@
-export default class Manager {
+export class SubListener {
+  constructor(socket) {
+    this._socket = socket;
+    this._callbacks = new Map();
+  }
+
+  emit(channel, message) {
+    this._socket.emit(channel, message);
+  }
+
+  /**
+   * Listens on a given channel.
+   * If a listener was already set, it is removed from listening.
+   * @param {String} channel the channel to listen
+   * @param {Function} callback the action on new event
+   */
+  on(channel, callback) {
+    var previousCallback = this._callbacks.get(channel);
+    if (previousCallback !== undefined) { this._socket.off(channel, previousCallback); }
+
+    this._callbacks.set(channel, callback);
+    this._socket.on(channel, callback);
+  }
+
+  /**
+   * Removes a callback from a given channel.
+   * If no channel is provided, it removes all callbacks from all channels.
+   * @param {String?} channel the channel name
+   */
+  off(channel) {
+    if (channel !== undefined) {
+      var cbk = this._callbacks.get(channel);
+      if (cbk) {
+        this._socket.off(channel, cbk);
+        this._callbacks.delete(channel);
+      } else {
+        throw new Error(`No callback registered for ${channel}`);
+      }
+    } else {
+      for (let [channel, cbk] of this._callbacks.entries()) {
+        this._socket.off(channel, cbk);
+      }
+      this._callbacks.clear();
+    }
+  }
+}
+
+export class Manager {
 
   constructor(socket, context) {
     this._socket = socket;
@@ -33,6 +80,16 @@ export default class Manager {
   }
 
   /**
+   * Creates a sub-context for listening sockets.
+   * This allows to create a dedicated space for socket listening. It is easier
+   * to clean that manipulating the global scope.
+   * @return {SubListener} a new context
+   */
+  createSubListener() {
+    return new SubListener(this._socket);
+  }
+
+  /**
    * Stop the listener
    */
   stopListen() {
@@ -44,3 +101,5 @@ export default class Manager {
     return this._context;
   }
 }
+
+export default Manager;

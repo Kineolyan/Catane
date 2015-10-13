@@ -7,10 +7,16 @@ import { Channel } from 'client/js/components/libs/socket';
 import { PlayersBinding, MyBinding } from 'client/js/components/common/players';
 import { BoardBinding } from 'client/js/components/common/map';
 import LocalStorage from 'client/js/components/libs/localStorage';
+import PlacementDelegate from 'client/js/components/listener/delegates/placement';
+import ThievesDelegate from 'client/js/components/listener/delegates/thieves';
 
 const localStorage = new LocalStorage();
 
 export default class GameManager extends Manager {
+	constructor() {
+		super(...arguments);
+		this._delegate = null;
+	}
 
 	startListen() {
 		this.listenToSocket(Channel.reconnect, this.onReconnection.bind(this));
@@ -48,6 +54,8 @@ export default class GameManager extends Manager {
 		var boardBinding = BoardBinding.from(this._binding);
 		boardBinding.buildBoard(board);
 
+		var myBinding = MyBinding.from(this._binding);
+		this._delegate = new PlacementDelegate(this, myBinding.id);
 		this._binding.atomically()
 			.set('players', sortedPlayers)
 			.set('step', Step.prepare)
@@ -120,54 +128,66 @@ export default class GameManager extends Manager {
 		case 'drop resources':
 			this.displayDropStatus(payload);
 			break;
+			// FIXME may move thieves directly, skipping drop-resources phase
 		case 'move thieves':
 			this.askMoveThieves();
 			break;
 		}
 	}
 
-	displayDropStatus({ remaining: remaining }) {
-		var myBinding = MyBinding.from(this._binding);
-		var resToDrop = remaining[myBinding.id];
-		if (resToDrop) {
-			this._binding.set('game.message', `Drop ${resToDrop} resource${ resToDrop > 1 ? 's' : ''}`);
-		} else {
-			this._binding.set('game.message', 'Waiting for other players to drop resources');
+	// TODO maybe rename that method
+	displayDropStatus({ remaining }) {
+		// Start the delegate if not done yet
+		if (this._delegate === null) {
+			var myBinding = MyBinding.from(this._binding);
+			var resToDrop = remaining[myBinding.id];
+			this._delegate = ThievesDelegate.fromDrop(this, resToDrop || 0, this.isMyTurn());
 		}
 	}
 
 	askMoveThieves() {
+		if (this._delegate === null) {
+			this._delegate = ThievesDelegate.fromMove(this, this.isMyTurn());
+		}
+	}
+
+	/**
+	 * Gets the current player.
+	 * @return {Object} the player
+	 */
+	getCurrentPlayer() {
+		var playersBinding = PlayersBinding.from(this._binding);
+		return playersBinding.getPlayer(this._binding.get('game.currentPlayerId'));
+	}
+
+	/**
+	 * Gets if it is the turn of the player.
+	 * @return {Boolean} true if it is the player turn.
+	 */
+	isMyTurn() {
 		var playersBinding = PlayersBinding.from(this._binding);
 		var currentPlayer = playersBinding.getPlayer(this._binding.get('game.currentPlayerId'));
-		var message = PlayersBinding.isMe(currentPlayer) ?
-			'Move thieves' : `${currentPlayer.get('name')} moving thieves`;
-
-		var transaction = this._binding.atomically()
-			.set('game.message', message);
-		var boardBinding = BoardBinding.from(this._binding);
-		boardBinding.setSelectable('tiles', true, tile => tile.get('thieves') !== true);
-		boardBinding.save(transaction);
-		transaction.commit();
+		return PlayersBinding.isMe(currentPlayer);
 	}
 
 	selectTile(tile) {
-		this._socket.emit(Channel.playMoveThieves, { tile: tile });
+		this._delegate.selectTile(tile);
 	}
 
 	selectCity(city) {
-		this._socket.emit(Channel.playPickColony, { colony: city });
+		this._delegate.selectCity(city);
 	}
 
 	selectPath(path) {
-		this._socket.emit(Channel.playPickPath, { path: path });
+		this._delegate.selectPath(path);
 	}
 
 	selectCard(type, index) {
-		// TODO Be more dependant of the step for the action
-		var drop = {};
-		drop[type] = 1;
-		this._socket.emit(Channel.playResourcesDrop, drop);
-		this._binding.update('me.resources', resources => resources.delete(index));
+		this._delegate.selectCard(type, index);
+	}
+
+	notifyDelegateCompletion() {
+		this._delegate = null;
 	}
 
 	/**
@@ -244,7 +264,10 @@ export default class GameManager extends Manager {
 	 * Launch the game
 	 * @param {Object} resources the resources at the beginning of the game
 	 */
-	launchGame({ resources: resources }) {
+	launchGame({ resources }) {
+		this._delegate.complete();
+		this._delegate = null;
+
 		var myBinding = MyBinding.from(this._binding);
 		myBinding.setCards(resources);
 
@@ -299,14 +322,6 @@ export default class GameManager extends Manager {
 		boardBinding.save(transaction);
 
 		transaction.commit();
-	}
-
-	/**
-	 * Asks to move the thieves onto the given tile.
-	 * @param {Object} tile the tile position of the thieves
-	 */
-	moveThieves(tile) {
-		this._socket.emit(Channel.playMoveThieves, { tile: tile });
 	}
 
 	onThievesMove({ tile: tile }) {

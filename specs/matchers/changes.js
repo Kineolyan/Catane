@@ -39,7 +39,14 @@
 		testChange: function(previousValue, newValue) {
 			return !this.equal(previousValue, newValue);
 		},
-		defaultMessage: function(fromValue, toValue, pass, previousValue, newValue) {
+		generateMessage: function(pass, fromValue, toValue) {
+			if (pass === true) {
+				return 'Expecting value not to change. Actual: '+ fromValue +' -> ' + toValue;
+			} else {
+			return 'Expecting value to change. Actual: '+ fromValue;
+			}
+		},
+		completeMessage: function(fromValue, toValue, pass, previousValue, newValue) {
 			return 'Expecting value'
 					+ (pass === true ? ' not' : '' )
 					+ ' to change from ' + fromValue
@@ -51,7 +58,7 @@
 				return this.equal(previousValue + increment, newValue);
 			};
 			this.generateMessage = function(pass, previousValue, newValue) {
-				return this.defaultMessage(previousValue, previousValue + increment, pass, previousValue, newValue);
+				return this.completeMessage(previousValue, previousValue + increment, pass, previousValue, newValue);
 			}
 		},
 		from: function(fromValue) {
@@ -65,13 +72,21 @@
 					matcher.testChange = function(previousValue, newValue) {
 						return this.equal(previousValue, fromValue) && this.equal(newValue, toValue);
 					};
-					matcher.generateMessage = matcher.defaultMessage.bind(matcher, fromValue, toValue);
+					matcher.generateMessage = matcher.completeMessage.bind(matcher, fromValue, toValue);
 				}
 			}
 		}
 	};
 
 	var changeMatchers = {
+		toChange: function(util, equalityTesters) {
+			var matcher = new ChangeTester(util, equalityTesters);
+			return {
+				compare: function(actual, expected, byValue) {
+					return matcher.compare(actual, expected);
+				}
+			};
+		},
 		toChangeBy: function(util, equalityTesters) {
 			var matcher = new ChangeTester(util, equalityTesters);
 			return {
