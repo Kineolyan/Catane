@@ -151,7 +151,7 @@ export class PlayersBinding {
 			}
 		});
 
-		if (pIdx != null) {
+		if (pIdx !== null) {
 			this._binding = this._binding.set(pIdx, Immutable.fromJS(player));
 		} else {
 			this._binding = this._binding.push(Immutable.fromJS(player));

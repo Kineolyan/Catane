@@ -44,7 +44,7 @@ export class Socket {
 			if(response && response._success === false) {
 				window.alert('Error :' + response.message);
 			} else {
-					callback(response);
+				throw new Error(`Unknown callback for event ${event}`);
 			}
 		});
 	}
