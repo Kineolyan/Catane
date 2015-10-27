@@ -1,6 +1,5 @@
 import DefaultDelegate from 'client/js/components/listener/delegates/default';
 import { Channel } from 'client/js/components/libs/socket';
-import { BoardBinding } from 'client/js/components/common/map';
 
 const Step = {
 	DROP_CARDS: 'Drop cards',
@@ -30,7 +29,7 @@ export class ThievesDelegate extends DefaultDelegate {
 			this._step = resourcesToDrop > 0 ? Step.DROP_CARDS : Step.WAIT_OTHERS;
 
 			// Set up the board
-			this._manager._binding.set('game.message', ThievesDelegate.getDropMessages(resourcesToDrop));
+			this._manager.setMessage(ThievesDelegate.getDropMessages(resourcesToDrop));
 		} else {
 			this.enableThievesMove();
 		}
@@ -59,20 +58,14 @@ export class ThievesDelegate extends DefaultDelegate {
 	 */
 	enableThievesMove() {
 		this._step = this._moveThieves ? Step.PICK_TILE : Step.WAIT_THIEVES;
-		var message;
 		if (this._manager.isMyTurn()) {
-			message = 'Move thieves';
+			this._manager.setMessage('Move thieves');
 		} else {
 			var currentPlayer = this._manager.getCurrentPlayer();
-			message = `${currentPlayer.get('name')} moving thieves`;
+			this._manager.setMessage(`${currentPlayer.get('name')} moving thieves`);
 		}
 
-		var transaction = this._manager._binding.atomically()
-			.set('game.message', message);
-		var boardBinding = BoardBinding.from(this._manager._binding);
-		boardBinding.setSelectable('tiles', true, tile => tile.get('thieves') !== true);
-		boardBinding.save(transaction);
-		transaction.commit();
+		this._manager.activate('tiles', tile => tile.get('thieves') !== true);
 	}
 
 	selectCard(type, index) {
@@ -80,6 +73,7 @@ export class ThievesDelegate extends DefaultDelegate {
 			var drop = {};
 			drop[type] = 1;
 			this._listener.emit(Channel.playResourcesDrop, drop);
+			// TODO do more here to manipulate resources
 			this._manager._binding.update('me.resources', resources => resources.delete(index));
 		} else {
 			throw new Error(`Cannot drop a card at that step ${this._step}`);
@@ -87,11 +81,11 @@ export class ThievesDelegate extends DefaultDelegate {
 	}
 
 	onDroppedResources({ remaining }) {
-			// Unset until it goes to the step 'move thieves'
+		// Unset until it goes to the step 'move thieves'
 		if (remaining === 0 && this._step === Step.DROP_CARDS) {
 			this._step = Step.WAIT_OTHERS;
 		}
-		this._manager._binding.set('game.message', ThievesDelegate.getDropMessages(remaining));
+		this._manager.setMessage(ThievesDelegate.getDropMessages(remaining));
 	}
 
 	selectTile(tile) {

@@ -288,10 +288,22 @@ describe('BoardBinding', function() {
 			this.helper.buildBoard(this.definition);
 		});
 
-		it('sets selectable according to the cbk', function() {
-			this.helper.setSelectable('cities', true, () => true);
+		describe('with callback', function() {
+			it('sets selectable according to the cbk', function() {
+				this.helper.setSelectable('cities', true, city => city.x === 1);
 
-			expect(this.helper.binding.get('cities').every(city => city.get('selectable') === true)).toBe(true);
+				expect(this.helper.binding.get('cities').every(city => city.get('selectable') === (city.x === 1))).toBe(true);
+			});
+		});
+
+		describe('without callback', function() {
+			[true, false].forEach(function(test) {
+				it(`sets selectable to the new value (${test})`, function() {
+					this.helper.setSelectable('cities', test);
+
+					expect(this.helper.binding.get('cities').every(city => city.get('selectable') === test)).toBe(true);
+				});
+			});
 		});
 
 		it('sets selectable to empty cities', function() {
