@@ -94,6 +94,37 @@ describe('GameManager', function() {
 		});
 	});
 
+	describe('#getCurrentPlayer', function() {
+		beforeEach(function() {
+			this.binding.set('game.currentPlayerId', 2);
+		});
+
+		it('gets the binding of the current player', function() {
+			const player = this.game.getCurrentPlayer();
+			expect(player.get('id')).toEqual(2);
+			expect(player.get('name')).toEqual('Mickael');
+		});
+	});
+
+	describe('#isMyTurn', function() {
+		it('returns true on my turn', function() {
+			this.binding.set('game.currentPlayerId', 1);
+			expect(this.game.isMyTurn()).toEqual(true);
+		});
+
+		it('returns false on someone else turn', function() {
+			this.binding.set('game.currentPlayerId', 2);
+			expect(this.game.isMyTurn()).toEqual(false);
+		});
+	});
+
+	describe('#setMyTurn', function() {
+		it('sets the message in the binding', function() {
+			this.game.setMessage('hello world');
+			expect(this.binding.get('game.message')).toEqual('hello world');
+		});
+	});
+
 	describe('#reconnect', function() {
 		beforeEach(function() {
 			this.game.reconnect(1432);

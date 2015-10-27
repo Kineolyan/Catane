@@ -1,6 +1,7 @@
 import DefaultDelegate from 'client/js/components/listener/delegates/default';
 import { Channel } from 'client/js/components/libs/socket';
 import * as _ from 'lodash';
+import { Conditions } from 'client/js/components/listener/gameManager.js';
 
 const Step = {
 	INIT: 'Init',
@@ -29,6 +30,8 @@ export class PlacementDelegate extends DefaultDelegate {
 	onTurnStart({ player }) {
 		if (player === this._player) {
 			this._step = Step.INIT;
+			this._manager.setMessage('Choose a new colony')
+				.activate('tiles', Conditions.emptyElement);
 		}
 	}
 
@@ -45,6 +48,7 @@ export class PlacementDelegate extends DefaultDelegate {
 		if (player === this._player && _.eq(colony, this._selection)) {
 			this._selection = null;
 			this._step = Step.HAS_SPOT;
+			this._manager.setMessage('Choose a path');
 		}
 	}
 

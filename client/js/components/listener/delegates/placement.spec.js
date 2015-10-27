@@ -3,12 +3,27 @@ import PlacementDelegate from 'client/js/components/listener/delegates/placement
 import { MockSocketIO } from 'libs/mocks/sockets';
 import tests from 'client/js/components/libs/test';
 import GameManager from 'client/js/components/listener/gameManager';
+import { BoardBinding } from 'client/js/components/common/map';
 import { Socket, Channel } from 'client/js/components/libs/socket';
 
 describe('PlacementDelegate', function() {
 	beforeEach(function() {
 		this.socket = new MockSocketIO();
-		this.manager = new GameManager(new Socket(this.socket), tests.getCtx());
+		var ctx = tests.getCtx();
+		this.binding = ctx.getBinding();
+		var helper = BoardBinding.from(this.binding);
+		helper.buildBoard({
+			tiles: [
+				{ x: 0, y: 0 },
+				{ x: 1, y: 0 },
+				{ x: 0, y: 1 }
+			],
+			cities: [{ x: 0, y: 0 }],
+			paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+			thieves: { x: 0, y: 0 }
+		});
+		helper.save(this.binding);
+		this.manager = new GameManager(new Socket(this.socket), ctx);
 		this.delegate = new PlacementDelegate(this.manager, 13);
 	});
 

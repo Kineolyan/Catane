@@ -186,9 +186,20 @@ export class BoardBinding {
 	 */
 	setSelectable(type, state, cbk) {
 		if (this._binding.has(type)) {
+			let updater;
+			if (cbk instanceof Function) {
+				updater = state ?
+					function(element, current) { return current || cbk(element); } :
+					function(element, current) { return current && !cbk(element); };
+			} else if (cbk === undefined) {
+				updater = function() { return state; };
+			} else {
+				throw new Error(`Invalid callback argument: ${cbk}`);
+			}
+
 			this._binding = this.binding.update(type, typeBinding => {
 				return typeBinding.map(element => {
-					return element.set('selectable', state && (cbk !== undefined) && cbk(element));
+					return element.update('selectable', updater.bind(null, element));
 				});
 			});
 		} else {

@@ -12,6 +12,10 @@ import ThievesDelegate from 'client/js/components/listener/delegates/thieves';
 
 const localStorage = new LocalStorage();
 
+export const Conditions = {
+	emptyElement: BoardBinding.emptyElement
+};
+
 export default class GameManager extends Manager {
 	constructor() {
 		super(...arguments);
@@ -33,6 +37,63 @@ export default class GameManager extends Manager {
 		this.listenToSocket(Channel.playPickPath, this.playPickElement.bind(this));
 		this.listenToSocket(Channel.playMoveThieves, this.onThievesMove.bind(this));
 		this.listenToSocket(Channel.playResourcesDrop, this.onDroppedResources.bind(this));
+	}
+
+	/**
+	 * Gets the current player.
+	 * @return {Object} the player
+	 */
+	getCurrentPlayer() {
+		var playersBinding = PlayersBinding.from(this._binding);
+		return playersBinding.getPlayer(this._binding.get('game.currentPlayerId'));
+	}
+
+	/**
+	 * Gets if it is the turn of the player.
+	 * @return {Boolean} true if it is the player turn.
+	 */
+	isMyTurn() {
+		var playersBinding = PlayersBinding.from(this._binding);
+		var currentPlayer = playersBinding.getPlayer(this._binding.get('game.currentPlayerId'));
+		return PlayersBinding.isMe(currentPlayer);
+	}
+
+	/**
+	 * Sets a new message for player.
+	 * @param {String} message the message to display
+	 * @return {GameManager} this
+	 */
+	setMessage(message) {
+		this._binding.set('game.message', message);
+		return this;
+	}
+
+	/**
+	 * Activates an element of a given type
+	 * @param {String} element name of the element
+	 * @param {Function?} condition condition for activation
+	 * @return {GameManager} this
+	 */
+	activate(element, condition) {
+		var boardBinding = BoardBinding.from(this._binding);
+		boardBinding.setSelectable(element, true, condition);
+		boardBinding.save(this._binding);
+
+		return this;
+	}
+
+	/**
+	 * Deactivates an element of a given type.
+	 * @param {String} element name of the element
+	 * @param {Function?} condition condition for deactivation
+	 * @return {GameManager} this
+	 */
+	deactivate(element, condition) {
+		var boardBinding = BoardBinding.from(this._binding);
+		boardBinding.setSelectable(element, false, condition);
+		boardBinding.save(this._binding);
+
+		return this;
 	}
 
 	/**
@@ -149,25 +210,6 @@ export default class GameManager extends Manager {
 		if (this._delegate === null) {
 			this._delegate = ThievesDelegate.fromMove(this, this.isMyTurn());
 		}
-	}
-
-	/**
-	 * Gets the current player.
-	 * @return {Object} the player
-	 */
-	getCurrentPlayer() {
-		var playersBinding = PlayersBinding.from(this._binding);
-		return playersBinding.getPlayer(this._binding.get('game.currentPlayerId'));
-	}
-
-	/**
-	 * Gets if it is the turn of the player.
-	 * @return {Boolean} true if it is the player turn.
-	 */
-	isMyTurn() {
-		var playersBinding = PlayersBinding.from(this._binding);
-		var currentPlayer = playersBinding.getPlayer(this._binding.get('game.currentPlayerId'));
-		return PlayersBinding.isMe(currentPlayer);
 	}
 
 	selectTile(tile) {
@@ -305,7 +347,6 @@ export default class GameManager extends Manager {
 		var boardBinding = BoardBinding.from(this._binding);
 		if (PlayersBinding.isMe(currentPlayer)) {
 			if (this._binding.get('step') === Step.prepare) { // choose a colony at start
-				transaction.set('game.message', 'Choose a colony then a path');
 				boardBinding.setSelectable('cities', true, BoardBinding.emptyElement);
 			} else { // Roll the dice
 				transaction.set('game.message', 'Roll the dice');
