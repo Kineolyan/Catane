@@ -249,13 +249,10 @@ export default class GameManager extends Manager {
 			if (res.colony) {
 				type = 'cities';
 				payload = res.colony;
-				boardBinding.setSelectable('paths', true, BoardBinding.emptyElement);
 			} else if (res.path) {
 				type = 'paths';
 				payload = res.path;
-				boardBinding.setSelectable('paths', false);
 			}
-
 			// give an element to a player
 			boardBinding.giveElement(type, payload, player);
 
@@ -346,15 +343,13 @@ export default class GameManager extends Manager {
 		// Prepare the actions
 		var boardBinding = BoardBinding.from(this._binding);
 		if (PlayersBinding.isMe(currentPlayer)) {
-			if (this._binding.get('step') === Step.prepare) { // choose a colony at start
-				boardBinding.setSelectable('cities', true, BoardBinding.emptyElement);
-			} else { // Roll the dice
+			if (this._binding.get('step') !== Step.prepare) {
 				transaction.set('game.message', 'Roll the dice');
 				transaction.set('game.dice.enabled', true);
 			}
 		} else { // passive turn
 			transaction.set('game.message', `Playing : ${currentPlayer.get('name')}`);
-			// TODO one may do better
+			// TODO may already be done
 			boardBinding.setSelectable('cities', false);
 			boardBinding.setSelectable('paths', false);
 		}

@@ -63,9 +63,19 @@ describe('PlacementDelegate', function() {
 	});
 
 	describe('on turn start', function() {
-		it('resets the step on new player turn', function() {
-			this.socket.receive(Channel.playTurnNew, { player: 13 });
-			expect(this.delegate._step).toEqual('Init');
+		describe('on my turn', function() {
+			beforeEach(function() {
+				this.socket.receive(Channel.playTurnNew, { player: 13 });
+				this.boardBinding = BoardBinding.from(this.binding);
+			});
+
+			it('resets the step on new player turn', function() {
+				expect(this.delegate._step).toEqual('Init');
+			});
+
+			it('makes cities selectable', function() {
+				expect(this.boardBinding.binding.get('cities').every(city => city.get('selectable') === true)).toBe(true);
+			});
 		});
 
 		it('does nothing on one\'s else turn', function() {
@@ -95,10 +105,19 @@ describe('PlacementDelegate', function() {
 			describe('on colony picked', function() {
 				beforeEach(function() {
 					this.socket.receive(Channel.playPickColony, { colony: { x: 1, y: 2 }, player: 13 });
+					this.boardBinding = BoardBinding.from(this.binding);
 				});
 
 				it('moves to next step', function() {
 					expect(this.delegate._step).toEqual('Has spot');
+				});
+
+				it('deactivates cities', function() {
+					expect(this.boardBinding.binding.get('cities').every(city => city.get('selectable') === false)).toBe(true);
+				});
+
+				it('makes paths selectable', function() {
+					expect(this.boardBinding.binding.get('paths').every(path => path.get('selectable') === true)).toBe(true);
 				});
 			});
 		});

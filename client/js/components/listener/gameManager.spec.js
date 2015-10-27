@@ -21,6 +21,7 @@ describe('GameManager', function() {
 
 		this.socket = new MockSocketIO();
 		this.game = new GameManager(new Socket(this.socket), ctx);
+		this.game.startListen();
 		this.initBoard = function(board) {
 			var helper = BoardBinding.from(this.binding);
 			helper.buildBoard(board);
@@ -28,11 +29,7 @@ describe('GameManager', function() {
 		};
 	});
 
-	describe('#startListen', function() {
-		beforeEach(function() {
-			this.game.startListen();
-		});
-
+	describe('on start up', function() {
 		[
 			Channel.gameStart, Channel.gamePrepare, Channel.gamePlay, Channel.gameReload,
 			Channel.playTurnNew, Channel.playRollDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves, Channel.playResourcesDrop,
@@ -400,10 +397,6 @@ describe('GameManager', function() {
 				var city = this.boardBinding.getElement('cities', { x: 0, y: 0 });
 				expect(city.get('owner')).toEqual(1);
 			});
-
-			it('makes paths selectable', function() {
-				expect(this.boardBinding.binding.get('paths').every(path => path.get('selectable') === true)).toBe(true);
-			});
 		});
 
 		describe('picking a path after a colony', function() {
@@ -500,11 +493,15 @@ describe('GameManager', function() {
 
 	describe('on new turn', function() {
 		beforeEach(function() {
-			this.initBoard({
-				tiles: [{ x: 0, y: 0 }],
-				cities: [{ x: 0, y: 0 }],
-				paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
-				thieves: { x: 0, y: 0 }
+			this.game.onGameStart({
+				board: {
+					tiles: [{ x: 0, y: 0 }],
+					cities: [{ x: 0, y: 0 }],
+					paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+					thieves: { x: 0, y: 0 }
+				}, players: [
+					1, 2
+				]
 			});
 		});
 
@@ -520,7 +517,7 @@ describe('GameManager', function() {
 
 			describe('for "me"', function() {
 				beforeEach(function() {
-					this.game.playTurnNew({ player: 1 });
+					this.socket.receive(Channel.playTurnNew, { player: 1 });
 				});
 
 				it('enables available cities', function() {

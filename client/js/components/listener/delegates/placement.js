@@ -31,7 +31,7 @@ export class PlacementDelegate extends DefaultDelegate {
 		if (player === this._player) {
 			this._step = Step.INIT;
 			this._manager.setMessage('Choose a new colony')
-				.activate('tiles', Conditions.emptyElement);
+				.activate('cities', Conditions.emptyElement);
 		}
 	}
 
@@ -48,7 +48,9 @@ export class PlacementDelegate extends DefaultDelegate {
 		if (player === this._player && _.eq(colony, this._selection)) {
 			this._selection = null;
 			this._step = Step.HAS_SPOT;
-			this._manager.setMessage('Choose a path');
+			this._manager.setMessage('Choose a path')
+				.deactivate('cities')
+				.activate('paths', Conditions.emptyElement);
 		}
 	}
 
@@ -65,6 +67,7 @@ export class PlacementDelegate extends DefaultDelegate {
 		if (player === this._player && _.eq(path, this._selection)) {
 			this._selection = null;
 			this._step = Step.COMPLETE;
+			this._manager.deactivate('paths');
 		}
 	}
 }
