@@ -74,7 +74,6 @@ export default class Dice extends MoreartyComponent {
 				cursor = binding.get('enabled') ? 'pointer' : 'auto';
 
 		var dices = binding.get('values').map((elem, index) => {
-
 			return (<Group key={index}>
 				<Rectangle x={margin * index} width={size} height={size} stroke="black" fill={color}/>
 				<Text y={size / 4} x={margin * index + size / 2} fill="black" alignment="center"
@@ -85,11 +84,9 @@ export default class Dice extends MoreartyComponent {
 		}).toArray();
 
 		return (
-				<Group x={this.props.x} y={this.props.y} onClick={this.launch.bind(this)} cursor={cursor}>
-
-					{dices}
-
-				</Group>
+			<Group x={this.props.x} y={this.props.y} onClick={this.launch.bind(this)} cursor={cursor}>
+				{dices}
+			</Group>
 		);
 	}
 
