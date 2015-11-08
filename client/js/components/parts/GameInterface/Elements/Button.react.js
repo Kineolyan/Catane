@@ -1,35 +1,37 @@
-
 import React from 'react'; // eslint-disable-line no-unused-vars
-import { Group } from 'react-art';
+
+import { Group, Text } from 'react-art';
 import Rectangle from 'react-art/shapes/rectangle';
 
-import Text from 'client/js/components/parts/GameInterface/Elements/Text.react';
+// import Text from 'client/js/components/parts/GameInterface/Elements/Text.react';
 
 export default class Button extends React.Component {
 
-
   render() {
-    const { x, y, onClick, minWidth, height, border, color, label, fontSize, margin } = this.props;
-    let ctx = document.createElement('canvas').getContext('2d');
-    ctx.font = `${fontSize}px`;
+    var { x, y, onClick, minWidth, height, border, color, label, fontSize, margin } = this.props;
+    // let ctx = document.createElement('canvas').getContext('2d');
+    // ctx.font = `${fontSize}px`;
 
-    const width = Math.max(ctx.measureText(label).width, minWidth) + margin * 2;
-    return (<Group x={x}
-                  y={y}
-                  onClick={onClick}
-                  onMouseOver={this.mouseOver.bind(this)}
-                  onMouseOut={this.mouseOut.bind(this)}>
-
-                <Rectangle  width={width}
-                            height={height}
-                            stroke={border}
-                            fill={color} />
-
-                <Text text={label}
-                      x={width / 2}
-                      y={height / 2}
-                      fontSize={fontSize} />
-            </Group>);
+    // const width = Math.max(ctx.measureText(label).width, minWidth) + margin * 2;
+    const width = Math.max(fontSize * 5, minWidth) + margin * 2;
+    // return (<Group x={x} y={y}
+    //          onClick={onClick}
+    //          onMouseOver={this.mouseOver.bind(this)}
+    //          onMouseOut={this.mouseOut.bind(this)}>
+    //
+    //     <Rectangle  width={width} height={height}
+    //                 stroke={border} fill={color} />
+    //
+    //     <Text font={{ 'font-size': `${fontSize}px` }}
+    //           x={width / 2} y={height / 2}>
+    //       {label}
+    //     </Text>
+    // </Group>);
+    return <Group x={x} y={y} onClick={onClick}>
+      <Rectangle x={0} y={0} height={height} width={width}
+                 stroke='black' fill={color} />
+      <Text x={5} y={5} fill="black" font={{ 'font-size': '12px' }}>{label}</Text>
+    </Group>;
   }
 
   mouseOver() {

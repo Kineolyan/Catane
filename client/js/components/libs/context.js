@@ -26,7 +26,8 @@ export function getDefaultContext(player) {
 			},
 			message: '', // message displayed for the current status
 			width: window.innerWidth,
-			height: window.innerHeight // message displayed for the current status
+			height: window.innerHeight, // message displayed for the current status
+			action: null // Action selected by the player
 		},
 
 		// 'I', the first player

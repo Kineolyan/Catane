@@ -35,7 +35,15 @@ var testsObj = {
 			internal = inst;
 		}
 
-		var ret = (internal._currentElement.type.displayName && internal._currentElement.type.displayName === type.displayName) ? [internal._currentElement] : [];
+		var correctType;
+		if (internal._currentElement === undefined) {
+			correctType = false;
+		} else if (type.displayName !== undefined) {
+			correctType = internal._currentElement.type.displayName === type.displayName;
+		} else {
+			correctType = internal._currentElement.type === type;
+		}
+		var ret = correctType ? [internal._currentElement] : [];
 		if (internal._renderedComponent) {
 			ret = ret.concat(this.getRenderedElements(internal._renderedComponent, type));
 		} else if (internal._renderedChildren) {
