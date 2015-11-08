@@ -97,6 +97,22 @@ export default class GameManager extends Manager {
 	}
 
 	/**
+	 * Sets the new delegate for the game.
+	 * If a delegate was previously defined, #complete is called on it.
+	 * @param {*} delegate delegate to configure, or null to remove the existing one.
+	 */
+	setDelegate(delegate) {
+		if (this._delegate !== null) {
+			this._delegate.complete();
+		}
+		this._delegate = delegate;
+	}
+
+	notifyDelegateCompletion() {
+		this._delegate = null;
+	}
+
+	/**
 	 * Start the game with a board
 	 * @param {Object} board The original board
 	 * @param {Array} playerIds the ids of the players in play order
@@ -226,10 +242,6 @@ export default class GameManager extends Manager {
 
 	selectCard(type, index) {
 		this._delegate.selectCard(type, index);
-	}
-
-	notifyDelegateCompletion() {
-		this._delegate = null;
 	}
 
 	/**

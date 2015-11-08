@@ -14,19 +14,6 @@ export default class Button extends React.Component {
 
     // const width = Math.max(ctx.measureText(label).width, minWidth) + margin * 2;
     const width = Math.max(fontSize * 5, minWidth) + margin * 2;
-    // return (<Group x={x} y={y}
-    //          onClick={onClick}
-    //          onMouseOver={this.mouseOver.bind(this)}
-    //          onMouseOut={this.mouseOut.bind(this)}>
-    //
-    //     <Rectangle  width={width} height={height}
-    //                 stroke={border} fill={color} />
-    //
-    //     <Text font={{ 'font-size': `${fontSize}px` }}
-    //           x={width / 2} y={height / 2}>
-    //       {label}
-    //     </Text>
-    // </Group>);
     return <Group x={x} y={y} onClick={onClick}>
       <Rectangle x={0} y={0} height={height} width={width}
                  stroke='black' fill={color} />

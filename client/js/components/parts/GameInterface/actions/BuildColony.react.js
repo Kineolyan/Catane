@@ -13,18 +13,18 @@ import Rectangle from 'react-art/shapes/rectangle';
 
 export class BuildColony extends MoreartyComponent {
 
+  get gameBinding() {
+    return this.getBinding('game');
+  }
+
+  get myBinding() {
+    return this.getBinding('me');
+  }
+
   render() {
     if (this.hasEnoughResources()) {
       const label = this.isActive() ? '(( Build colony ))' : 'Build colony';
 
-  	  // return (<Group x={this.props.x} y={this.props.y}
-			//        onClick={this.toggleAction.bind(this)}>
-			// 	<Rectangle x={0} y={0} height={this.props.height} width={this.props.width}
-			// 	           stroke='black' fill="#36a8ff"/>
-			// 	<Text x={5} y={5} fill="black" font={{ 'font-size': '12px' }}>
-			// 		{label}
-			// 	</Text>
-			// </Group>);
       return <Button label={label} color="#ff8200"
                      onClick={this.toggleAction.bind(this)}
                      {...this.props} />;
@@ -34,7 +34,7 @@ export class BuildColony extends MoreartyComponent {
   }
 
   hasEnoughResources() {
-    const myBinding = new MyBinding(this.getBinding('me'));
+    const myBinding = new MyBinding(this.myBinding);
     const resources = myBinding.resourceMap;
     return resources[Board.resourceName.bois] >= 1
       && resources[Board.resourceName.tuile] >= 1
@@ -43,19 +43,18 @@ export class BuildColony extends MoreartyComponent {
   }
 
   isActive() {
-    return this.getBinding('game').get('action') === BuildColony.ACTION;
+    return this.gameBinding.get('action') === BuildColony.ACTION;
   }
 
   toggleAction() {
-    if (this.isActive()) {
-      gameManager().setDelegate(new BuildColonyDelegate());
-      this.getBinding('game').set('action', BuildColony.ACTION);
+    if (!this.isActive()) {
+      gameManager().setDelegate(new BuildColonyDelegate(gameManager()));
+      this.gameBinding.set('action', BuildColony.ACTION);
     } else {
       gameManager().setDelegate(null);
-      this.getBinding('game').set('action', null);
+      this.gameBinding.set('action', null);
     }
   }
-
 }
 
 BuildColony.ACTION = 'BuildColony';

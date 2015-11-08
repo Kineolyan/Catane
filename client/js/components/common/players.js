@@ -31,15 +31,15 @@ export class MyBinding {
 
 	get resourceMap() {
 		var resources = this._binding.get('resources');
-		var map = {};
+		var mapping = {};
 		for (let resource of Object.keys(Board.resources)) {
-			var count = resources.filter(res => res === resource).size;
+			let count = resources.filter(res => res === resource).size;
 			if (count > 0) {
-				map[resource] = count;
+				mapping[resource] = count;
 			}
 		}
 
-		return map;
+		return mapping;
 	}
 
 	get resourceList() {
