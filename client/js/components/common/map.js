@@ -224,6 +224,6 @@ export class BoardBinding {
 	}
 
 	static emptyElement(element) {
-		return element.get('player') === undefined;
+		return element.get('owner') === undefined;
 	}
 }

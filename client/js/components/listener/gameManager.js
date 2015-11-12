@@ -35,6 +35,9 @@ export default class GameManager extends Manager {
 		this.listenToSocket(Channel.playRollDice, this.onRolledDice.bind(this));
 		this.listenToSocket(Channel.playPickColony, this.playPickElement.bind(this));
 		this.listenToSocket(Channel.playPickPath, this.playPickElement.bind(this));
+
+		this.listenToSocket(Channel.playAddColony, this.assignElement.bind(this, 'colony'));
+
 		this.listenToSocket(Channel.playMoveThieves, this.onThievesMove.bind(this));
 		this.listenToSocket(Channel.playResourcesDrop, this.onDroppedResources.bind(this));
 	}
@@ -251,7 +254,7 @@ export default class GameManager extends Manager {
 	playPickElement(res) {
 		if (this._binding.get('step') === Step.prepare) {
 			// get the map
-			var players = new PlayersBinding(this._binding.get('players'));
+			var players = PlayersBinding.from(this._binding);
 			var boardBinding = BoardBinding.from(this._binding);
 			var player = players.getPlayer(res.player);
 
@@ -279,6 +282,45 @@ export default class GameManager extends Manager {
 		} else {
 			throw new Error('Not the good step');
 		}
+	}
+
+	/**
+	 * Assigns a element to a player
+	 * @param {String} type the name of the element to assign
+	 * @param {Object} payload the action payload, provided by the server
+	 */
+	assignElement(type, payload) {
+			var players = PlayersBinding.from(this._binding);
+			var boardBinding = BoardBinding.from(this._binding);
+			var player = players.getPlayer(payload.player);
+
+			var key;
+			switch (type) {
+				case 'colony':
+					key = 'cities';
+					break;
+				case 'path':
+					key = 'paths';
+					break;
+				default:
+					throw new Error(`Unsupported type ${type}. Payload: ${payload}`);
+			}
+
+			var element = payload[type];
+			if(element !== undefined) {
+				// give an element to a player
+				boardBinding.giveElement(key, element, player);
+				boardBinding.save(this._binding);
+			} else {
+				throw new Error(`Cannot find ${type} in ${payload}`);
+			}
+
+			if (payload.resources !== undefined) {
+				// The player used some resources. Update it
+				const myBinding = MyBinding.from(this._binding);
+				myBinding.setCards(payload.resources);
+				myBinding.save(this._binding);
+			}
 	}
 
 	rollDice() {
@@ -335,6 +377,9 @@ export default class GameManager extends Manager {
 		this._binding.set('step', Globals.step.prepare);
 	}
 
+	/**
+	 * Asks to end the turn of the player.
+	 */
 	endTurn() {
 		this._socket.emit(Channel.playTurnEnd);
 	}

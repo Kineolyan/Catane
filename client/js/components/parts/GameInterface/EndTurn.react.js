@@ -3,9 +3,6 @@ import React from 'react';
 import { gameManager } from 'client/js/components/listener/listener';
 import Button from 'client/js/components/parts/GameInterface/Elements/Button.react';
 
-import { Group, Text } from 'react-art';
-import Rectangle from 'react-art/shapes/rectangle';
-
 export default class EndTurn extends React.Component {
 
 	render() {

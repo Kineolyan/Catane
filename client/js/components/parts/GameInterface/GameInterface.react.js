@@ -17,8 +17,6 @@ import EndTurn from 'client/js/components/parts/GameInterface/EndTurn.react';
 import BuildColony from 'client/js/components/parts/GameInterface/actions/BuildColony.react.js';
 
 import { Step } from 'client/js/components/libs/globals';
-import Popup from 'client/js/components/parts/GameInterface/Elements/Popup.react';
-import Rectangle from 'react-art/shapes/rectangle';
 
 export default class GameInterface extends MoreartyComponent {
 
@@ -46,13 +44,13 @@ export default class GameInterface extends MoreartyComponent {
 	}
 
 	getActions() {
-		const { width, height } = this.state;
+		const { width } = this.state;
 		const binding = this.getDefaultBinding();
 
 		return [
 			<EndTurn x={width - 75} y={10} height={30} width={60} />,
 			<BuildColony binding={{ game: binding.sub('game'), me: binding.sub('me') }}
-				 					 x={width - 90} y={50} height={30} width={75} />
+									 x={width - 90} y={50} height={30} width={75} />
 		];
 	}
 

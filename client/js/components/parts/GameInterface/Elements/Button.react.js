@@ -8,7 +8,7 @@ import Rectangle from 'react-art/shapes/rectangle';
 export default class Button extends React.Component {
 
   render() {
-    var { x, y, onClick, minWidth, height, border, color, label, fontSize, margin } = this.props;
+    var { x, y, onClick, minWidth, height, color, label, fontSize, margin } = this.props;
     // let ctx = document.createElement('canvas').getContext('2d');
     // ctx.font = `${fontSize}px`;
 

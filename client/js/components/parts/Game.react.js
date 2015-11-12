@@ -1,21 +1,20 @@
 'use strict';
 
-/*
- React component containing the whole game interface
- */
-
-
 import Globals from 'client/js/components/libs/globals';
 
-import React from 'react'; // eslint-disable-line no-unused-vars
 import StartInterface from 'client/js/components/parts/StartInterface/StartInterface.react';
 import GameInterface from 'client/js/components/parts/GameInterface/GameInterface.react';
 import Reconnect from 'client/js/components/parts/Reconnect.react.js';
 import DevTool from 'client/js/components/parts/DevTool.react.js';
+
+import React from 'react'; // eslint-disable-line no-unused-vars
 import MoreartyComponent from 'client/js/components/parts/MoreartyComponent.react';
 
-const DEBUG = true;
+const DEBUG = false;
 
+/**
+ * React component containing the whole game interface
+ */
 export default class Game extends MoreartyComponent {
 	/**
 	 * Render the whole interface of the game

@@ -1,6 +1,7 @@
 import BuildColony from 'client/js/components/parts/GameInterface/actions/BuildColony.react.js';
 
 import { MyBinding } from 'client/js/components/common/players.js';
+import { BoardBinding } from 'client/js/components/common/map';
 import { gameManager } from 'client/js/components/listener/listener';
 
 import Button from 'client/js/components/parts/GameInterface/Elements/Button.react.js';
@@ -19,6 +20,21 @@ describe('BuildColony', function() {
   beforeEach(function() {
     this.ctx = tests.getCtx();
     this.binding = this.ctx.getBinding();
+
+		var helper = BoardBinding.from(this.binding);
+		helper.buildBoard({
+			tiles: [{ x: 0, y: 0 }],
+			cities: [
+				{ x: 0, y: 0, player: 1 },
+				{ x: 1, y: 0, player: 2 },
+				{ x: 0, y: 1 },
+				{ x: 1, y: 1 }
+			],
+			paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+			thieves: { x: 0, y: 0 }
+		});
+		helper.save(this.binding);
+
 		this.root = tests.bootstrap(this.ctx, Wrapper);
     this.setCards = function(cards) {
       const binding = MyBinding.from(this.binding);
@@ -98,7 +114,7 @@ describe('BuildColony', function() {
 			// expect(this.mgr.setDelegate.calls.argsFor(0)).toEqual()
 		});
 
-		describe('on second click', function(done) {
+		describe('on second click', function() {
 			beforeEach(function(done) {
 				tests.simulateClick(this.getButton());
 				setTimeout(done, 100);

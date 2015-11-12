@@ -25,6 +25,7 @@ export const Channel = {
 	playMoveThieves: 'play:move:thieves',
 	playRollDice: 'play:roll-dice',
 	playResourcesDrop: 'play:resources:drop',
+	playAddColony: 'play:add:colony',
 	playTurnEnd: 'play:turn:end'
 };
 

@@ -8,8 +8,6 @@ import BuildColonyDelegate from 'client/js/components/listener/delegates/buildCo
 
 import Button from 'client/js/components/parts/GameInterface/Elements/Button.react.js';
 import Empty from 'client/js/components/parts/GameInterface/Elements/Empty.react.js';
-import { Group, Text } from 'react-art';
-import Rectangle from 'react-art/shapes/rectangle';
 
 export class BuildColony extends MoreartyComponent {
 
