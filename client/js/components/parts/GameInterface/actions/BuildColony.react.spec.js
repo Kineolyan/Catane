@@ -25,8 +25,8 @@ describe('BuildColony', function() {
 		helper.buildBoard({
 			tiles: [{ x: 0, y: 0 }],
 			cities: [
-				{ x: 0, y: 0, player: 1 },
-				{ x: 1, y: 0, player: 2 },
+				{ x: 0, y: 0, owner: 1 },
+				{ x: 1, y: 0, owner: 2 },
 				{ x: 0, y: 1 },
 				{ x: 1, y: 1 }
 			],
