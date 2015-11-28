@@ -15,6 +15,7 @@ import PlayersInfo from 'client/js/components/parts/GameInterface/PlayersInfo/Pl
 import Message from 'client/js/components/parts/GameInterface/Message.react';
 import EndTurn from 'client/js/components/parts/GameInterface/EndTurn.react';
 import BuildColony from 'client/js/components/parts/GameInterface/actions/BuildColony.react.js';
+import BuildRoad from 'client/js/components/parts/GameInterface/actions/BuildRoad.react.js';
 
 import { Step } from 'client/js/components/libs/globals';
 
@@ -50,7 +51,9 @@ export default class GameInterface extends MoreartyComponent {
 		return [
 			<EndTurn x={width - 75} y={10} height={30} width={60} />,
 			<BuildColony binding={{ game: binding.sub('game'), me: binding.sub('me') }}
-									 x={width - 90} y={50} height={30} width={75} />
+			             x={width - 90} y={50} height={30} width={75} />,
+			<BuildRoad binding={{ game: binding.sub('game'), me: binding.sub('me') }}
+			             x={width - 90} y={90} height={30} width={75} />
 		];
 	}
 

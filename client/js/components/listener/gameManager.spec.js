@@ -32,7 +32,7 @@ describe('GameManager', function() {
 	describe('on start up', function() {
 		[
 			Channel.gameStart, Channel.gamePrepare, Channel.gamePlay, Channel.gameReload,
-			Channel.playTurnNew, Channel.playRollDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves, Channel.playResourcesDrop, Channel.playAddColony,
+			Channel.playTurnNew, Channel.playRollDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves, Channel.playResourcesDrop, Channel.playAddColony, Channel.playAddRoad,
 			Channel.reconnect
 		].forEach(function(channel) {
 			it('listens to channel ' + channel, function() {
@@ -689,5 +689,47 @@ describe('GameManager', function() {
 		});
 	});
 
-})
-;
+	describe('on added road', function() {
+		beforeEach(function() {
+			var playersBinding = PlayersBinding.from(this.binding);
+			playersBinding.deleteAll();
+			playersBinding.setIPlayer(1, 'Oliv');
+			playersBinding.setIPlayer(2, 'Pierrick');
+			playersBinding.save(this.binding);
+
+			// start the game
+			this.game.onGameStart({
+				board: {
+					tiles: [
+						{ x: 0, y: 0, resource: 'tuile', diceValue: 1 }
+					], cities: [
+						{ x: 0, y: 1 },
+						{ x: 1, y: 0 },
+						{ x: 1, y: -1 }
+					], paths: [
+						{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } },
+						{ from: { x: 1, y: -1 }, to: { x: 1, y: 0 } }
+					], thieves: { x: 0, y: 0 }
+				}, players: [2, 1]
+			});
+
+			this.socket.receive(Channel.playAddRoad, {
+				player: 1,
+				path: { from: { x: 1, y: 0 }, to: { x: 0, y: 1 } },
+				resources: { mouton: 2 }
+			});
+		});
+
+		it('assigns the road to the player', function() {
+			const map = BoardBinding.from(this.binding);
+			const path = { from: { x: 1, y: 0 }, to: { x: 0, y: 1 } };
+			expect(map.getElement('paths', path).get('owner')).toBe(1);
+		});
+
+		it('updates player\'s resources', function() {
+			const me = MyBinding.from(this.binding);
+			expect(me.resourceMap).toEqual({ mouton: 2 });
+		});
+	});
+
+});

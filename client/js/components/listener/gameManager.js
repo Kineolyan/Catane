@@ -37,6 +37,7 @@ export default class GameManager extends Manager {
 		this.listenToSocket(Channel.playPickPath, this.playPickElement.bind(this));
 
 		this.listenToSocket(Channel.playAddColony, this.assignElement.bind(this, 'colony'));
+		this.listenToSocket(Channel.playAddRoad, this.assignElement.bind(this, 'path'));
 
 		this.listenToSocket(Channel.playMoveThieves, this.onThievesMove.bind(this));
 		this.listenToSocket(Channel.playResourcesDrop, this.onDroppedResources.bind(this));
