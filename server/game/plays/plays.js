@@ -83,7 +83,7 @@ export class Plays {
 			var addedColony = player.game.settleColony(player, location);
 
 			var message = { player: player.id, colony: addedColony.location.toJson() };
-			player.game.emit('play:add:colony', player, message);
+			player.game.emit(player, 'play:add:colony', message);
 
 			// Update the resources for the current player
 			message.resources = player.resources;
@@ -96,7 +96,7 @@ export class Plays {
 			var builtRoad = player.game.buildRoad(player, path);
 
 			var message = { player: player.id, path: builtRoad.toJson() };
-			player.game.emit('play:add:colony', player, message);
+			player.game.emit(player, 'play:add:road', message);
 
 			// Update the resources for the current player
 			message.resources = player.resources;
@@ -109,7 +109,7 @@ export class Plays {
 			var builtCity = player.game.buildCity(player, location);
 
 			var message = { player: player.id, colony: builtCity.location.toJson() };
-			player.game.emit('play:evolve:city', player, message);
+			player.game.emit(player, 'play:evolve:city', message);
 
 			// Update the resources for the current player
 			message.resources = player.resources;

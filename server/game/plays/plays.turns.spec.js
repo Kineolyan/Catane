@@ -100,8 +100,6 @@ describe('Play turn management', function() {
 		});
 	});
 
-	// TODO Test settling on a colony
-
 	describe('exchange', function() {
 		beforeEach(function() {
 			[this.p,  this.other] = this.game.players;
