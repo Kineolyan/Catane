@@ -14,6 +14,8 @@ import DiceReact from 'client/js/components/parts/GameInterface/Dice.react';
 import PlayersInfo from 'client/js/components/parts/GameInterface/PlayersInfo/PlayersInfo.react';
 import Message from 'client/js/components/parts/GameInterface/Message.react';
 import EndTurn from 'client/js/components/parts/GameInterface/EndTurn.react';
+import BuildColony from 'client/js/components/parts/GameInterface/actions/BuildColony.react.js';
+import BuildRoad from 'client/js/components/parts/GameInterface/actions/BuildRoad.react.js';
 
 import { Step } from 'client/js/components/libs/globals';
 
@@ -42,14 +44,26 @@ export default class GameInterface extends MoreartyComponent {
 		};
 	}
 
+	getActions() {
+		const { width } = this.state;
+		const binding = this.getDefaultBinding();
+
+		return [
+			<EndTurn x={width - 90} y={10} height={30} width={75} />,
+			<BuildColony binding={{ game: binding.sub('game'), me: binding.sub('me') }}
+			             x={width - 90} y={50} height={30} width={75} />,
+			<BuildRoad binding={{ game: binding.sub('game'), me: binding.sub('me') }}
+			             x={width - 90} y={90} height={30} width={75} />
+		];
+	}
+
 	/**
 	 * Render the whole interface of the game
 	 * @return {React.Element} the rendered element
 	 */
 	render() {
 		var binding = this.getDefaultBinding();
-		var width = this.state.width;
-		var height = this.state.height;
+		const { width, height } = this.state;
 
 		return (<Surface x={0} y={0} width={width} height={height}>
 			<DiceReact x={10} y={10} size={50}
@@ -71,7 +85,7 @@ export default class GameInterface extends MoreartyComponent {
 									 y={120} x={20}
 									 height={height} width={width} />
 
-			{ this.displayEndTurn() ? <EndTurn x={width - 75} y={10} height={30} width={60} /> : null }
+			{ this.displayEndTurn() ? this.getActions() : null }
 		</Surface>);
 	}
 

@@ -35,6 +35,10 @@ export default class GameManager extends Manager {
 		this.listenToSocket(Channel.playRollDice, this.onRolledDice.bind(this));
 		this.listenToSocket(Channel.playPickColony, this.playPickElement.bind(this));
 		this.listenToSocket(Channel.playPickPath, this.playPickElement.bind(this));
+
+		this.listenToSocket(Channel.playAddColony, this.assignElement.bind(this, 'colony'));
+		this.listenToSocket(Channel.playAddRoad, this.assignElement.bind(this, 'path'));
+
 		this.listenToSocket(Channel.playMoveThieves, this.onThievesMove.bind(this));
 		this.listenToSocket(Channel.playResourcesDrop, this.onDroppedResources.bind(this));
 	}
@@ -68,6 +72,11 @@ export default class GameManager extends Manager {
 		return this;
 	}
 
+	setAction(action) {
+		this._binding.set('game.action', action);
+		return this;
+	}
+
 	/**
 	 * Activates an element of a given type
 	 * @param {String} element name of the element
@@ -94,6 +103,25 @@ export default class GameManager extends Manager {
 		boardBinding.save(this._binding);
 
 		return this;
+	}
+
+	/**
+	 * Sets the new delegate for the game.
+	 * If a delegate was previously defined, #complete is called on it.
+	 * @param {*} delegate delegate to configure, or null to remove the existing one.
+	 */
+	setDelegate(delegate) {
+		if (this._delegate !== null) {
+			this._delegate.complete();
+		}
+		this._delegate = delegate;
+		if (this._delegate !== null) {
+			delegate.initialize();
+		}
+	}
+
+	notifyDelegateCompletion() {
+		this._delegate = null;
 	}
 
 	/**
@@ -228,10 +256,6 @@ export default class GameManager extends Manager {
 		this._delegate.selectCard(type, index);
 	}
 
-	notifyDelegateCompletion() {
-		this._delegate = null;
-	}
-
 	/**
 	 * A player picked something on the map
 	 * @param {Object} res result of the picking
@@ -239,7 +263,7 @@ export default class GameManager extends Manager {
 	playPickElement(res) {
 		if (this._binding.get('step') === Step.prepare) {
 			// get the map
-			var players = new PlayersBinding(this._binding.get('players'));
+			var players = PlayersBinding.from(this._binding);
 			var boardBinding = BoardBinding.from(this._binding);
 			var player = players.getPlayer(res.player);
 
@@ -267,6 +291,45 @@ export default class GameManager extends Manager {
 		} else {
 			throw new Error('Not the good step');
 		}
+	}
+
+	/**
+	 * Assigns a element to a player
+	 * @param {String} type the name of the element to assign
+	 * @param {Object} payload the action payload, provided by the server
+	 */
+	assignElement(type, payload) {
+			var players = PlayersBinding.from(this._binding);
+			var boardBinding = BoardBinding.from(this._binding);
+			var player = players.getPlayer(payload.player);
+
+			var key;
+			switch (type) {
+				case 'colony':
+					key = 'cities';
+					break;
+				case 'path':
+					key = 'paths';
+					break;
+				default:
+					throw new Error(`Unsupported type ${type}. Payload: ${payload}`);
+			}
+
+			var element = payload[type];
+			if(element !== undefined) {
+				// give an element to a player
+				boardBinding.giveElement(key, element, player);
+				boardBinding.save(this._binding);
+			} else {
+				throw new Error(`Cannot find ${type} in ${payload}`);
+			}
+
+			if (payload.resources !== undefined) {
+				// The player used some resources. Update it
+				const myBinding = MyBinding.from(this._binding);
+				myBinding.setCards(payload.resources);
+				myBinding.save(this._binding);
+			}
 	}
 
 	rollDice() {
@@ -323,6 +386,9 @@ export default class GameManager extends Manager {
 		this._binding.set('step', Globals.step.prepare);
 	}
 
+	/**
+	 * Asks to end the turn of the player.
+	 */
 	endTurn() {
 		this._socket.emit(Channel.playTurnEnd);
 	}

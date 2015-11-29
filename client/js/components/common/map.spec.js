@@ -274,11 +274,11 @@ describe('BoardBinding', function() {
 					{ x: 0, y: 0, resource: 'bois', diceValue: 1 },
 					{ x: 1, y: 1, resource: 'desert' }
 				], cities: [
-					{ x: 0, y: 1, player: 1 },
+					{ x: 0, y: 1, owner: 1 },
 					{ x: 1, y: 0 },
 					{ x: 1, y: -1 }
 				], paths: [
-					{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 }, player: 1 },
+					{ from: { x: 1, y: 0 }, to: { x: 0, y: 1 }, owner: 1 },
 					{ from: { x: 0, y: 1 }, to: { x: 1, y: 1 } }
 				], thieves: { x: 1, y: 1 }
 			};
