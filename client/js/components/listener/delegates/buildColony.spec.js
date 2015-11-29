@@ -34,9 +34,10 @@ describe('BuildColonyDelegate', function() {
 		this.socket = new MockSocketIO();
 		this.manager = new GameManager(new Socket(this.socket), ctx);
 		this.delegate = new BuildColonyDelegate(this.manager);
+		this.delegate.initialize();
 	});
 
-	describe('#constructor', function() {
+	describe('#initialize', function() {
 		[Channel.playAddColony].forEach(function(channel) {
 			it('starts listening to ' + channel, function() {
 				expect(this.socket.isListening(channel)).toBe(true);
@@ -45,6 +46,10 @@ describe('BuildColonyDelegate', function() {
 
 		it('asks to select a colony', function() {
 			expect(this.binding.get('game.message')).toEqual('Select a colony to settle on.');
+		});
+
+		it('sets the current game action', function() {
+			expect(this.binding.get('game.action')).toBe(BuildColonyDelegate.ACTION);
 		});
 
 		it('activates empty colonies', function() {
@@ -81,6 +86,10 @@ describe('BuildColonyDelegate', function() {
 
 		it('notifies the manager of the completion', function() {
 			expect(this.manager.notifyDelegateCompletion).toHaveBeenCalled();
+		});
+
+		it('unsets the current game action', function() {
+			expect(this.binding.get('game.action')).toBe(null);
 		});
 	});
 

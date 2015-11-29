@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 import DefaultDelegate from 'client/js/components/listener/delegates/default.js';
 import { Channel } from 'client/js/components/libs/socket.js';
@@ -7,12 +7,16 @@ import { Conditions } from 'client/js/components/listener/gameManager.js';
 export class BuildRoadDelegate extends DefaultDelegate {
 
   constructor(manager) {
-    super(manager);
+	  super(manager);
 
-    this._selectedPath = null;
+	  this._selectedPath = null;
+  }
+
+	initialize() {
     this._listener.on(Channel.playAddRoad, this.onAddedRoad.bind(this));
 
     this._manager.setMessage('Select a path to build.')
+      .setAction(BuildRoadDelegate.ACTION)
       .activate('paths', Conditions.emptyElement);
   }
 
@@ -28,10 +32,13 @@ export class BuildRoadDelegate extends DefaultDelegate {
   }
 
 	complete(notifyManager = false) {
-    this._manager.deactivate('paths');
+    this._manager.deactivate('paths')
+      .setAction(null);
     super.complete(notifyManager);
 	}
 
 }
+
+BuildRoadDelegate.ACTION = 'BuildRoad';
 
 export default BuildRoadDelegate;

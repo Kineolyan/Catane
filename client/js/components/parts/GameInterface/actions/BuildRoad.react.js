@@ -7,7 +7,6 @@ import { Board } from 'client/js/components/libs/globals.js';
 import BuildRoadDelegate from 'client/js/components/listener/delegates/buildRoad.js';
 
 import Button from 'client/js/components/parts/GameInterface/Elements/Button.react.js';
-import Empty from 'client/js/components/parts/GameInterface/Elements/Empty.react.js';
 
 export class BuildRoad extends MoreartyComponent {
 
@@ -20,15 +19,18 @@ export class BuildRoad extends MoreartyComponent {
 	}
 
 	render() {
-		if (this.hasEnoughResources()) {
-			const label = this.isActive() ? '(( Build road ))' : 'Build road';
-
-			return <Button label={label} color="#ff8200"
-			               onClick={this.toggleAction.bind(this)}
-				{...this.props} />;
+		var label = 'Build road';
+		var color = BuildRoad.theme.normal;
+		const activated = this.hasEnoughResources();
+		if (activated) {
+			if (this.isActive()) { color = BuildRoad.theme.focus; }
 		} else {
-			return <Empty x={this.props.x} y={this.props.y} />;
+			color = BuildRoad.theme.disabled;
 		}
+
+		return <Button label={label} color={color}
+		               enable={activated} onClick={this.toggleAction.bind(this)}
+									 {...this.props} />;
 	}
 
 	hasEnoughResources() {
@@ -39,21 +41,23 @@ export class BuildRoad extends MoreartyComponent {
 	}
 
 	isActive() {
-		return this.gameBinding.get('action') === BuildRoad.ACTION;
+		return this.gameBinding.get('action') === BuildRoadDelegate.ACTION;
 	}
 
 	toggleAction() {
 		if (!this.isActive()) {
 			gameManager().setDelegate(new BuildRoadDelegate(gameManager()));
-			this.gameBinding.set('action', BuildRoad.ACTION);
 		} else {
 			gameManager().setDelegate(null);
-			this.gameBinding.set('action', null);
 		}
 	}
 }
 
-BuildRoad.ACTION = 'BuildRoad';
+BuildRoad.theme = {
+	normal: '#ff8200',
+	focus: '#ffbc00',
+	disabled: '#9d3700'
+};
 
 BuildRoad.defaultProps = {
 	x: 0,

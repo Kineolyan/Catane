@@ -20,7 +20,7 @@ export function getDefaultContext(player) {
 			board: {}, // the board for the game, see common/map.js
 			dice: { // dice
 				enabled: false, // can throw
-				rolling: false,  // is rolling
+				rolling: false, // is rolling
 				values: [1, 1], // values on the dice
 				resources: {} // resources given by the dice
 			},

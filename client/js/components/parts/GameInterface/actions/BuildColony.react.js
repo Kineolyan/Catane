@@ -7,7 +7,6 @@ import { Board } from 'client/js/components/libs/globals.js';
 import BuildColonyDelegate from 'client/js/components/listener/delegates/buildColony.js';
 
 import Button from 'client/js/components/parts/GameInterface/Elements/Button.react.js';
-import Empty from 'client/js/components/parts/GameInterface/Elements/Empty.react.js';
 
 export class BuildColony extends MoreartyComponent {
 
@@ -20,15 +19,18 @@ export class BuildColony extends MoreartyComponent {
   }
 
   render() {
-    if (this.hasEnoughResources()) {
-      const label = this.isActive() ? '(( Build colony ))' : 'Build colony';
-
-      return <Button label={label} color="#ff8200"
-                     onClick={this.toggleAction.bind(this)}
-                     {...this.props} />;
+	  var label = 'Build colony';
+	  var color = BuildColony.theme.normal;
+	  const activated = this.hasEnoughResources();
+    if (activated) {
+		  if (this.isActive()) { color = BuildColony.theme.focus; }
     } else {
-      return <Empty x={this.props.x} y={this.props.y} />;
+		  color = BuildColony.theme.disabled;
     }
+
+	  return <Button label={label} color={color}
+	                 enable={activated} onClick={this.toggleAction.bind(this)}
+		               {...this.props} />;
   }
 
   hasEnoughResources() {
@@ -41,21 +43,23 @@ export class BuildColony extends MoreartyComponent {
   }
 
   isActive() {
-    return this.gameBinding.get('action') === BuildColony.ACTION;
+    return this.gameBinding.get('action') === BuildColonyDelegate.ACTION;
   }
 
   toggleAction() {
     if (!this.isActive()) {
       gameManager().setDelegate(new BuildColonyDelegate(gameManager()));
-      this.gameBinding.set('action', BuildColony.ACTION);
     } else {
       gameManager().setDelegate(null);
-      this.gameBinding.set('action', null);
     }
   }
 }
 
-BuildColony.ACTION = 'BuildColony';
+BuildColony.theme = {
+	normal: '#ff8200',
+	focus: '#ffbc00',
+	disabled: '#9d3700'
+};
 
 BuildColony.defaultProps = {
 	x: 0,

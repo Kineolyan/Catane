@@ -1,4 +1,5 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
+import { noop } from 'lodash';
 
 import { Group, Text } from 'react-art';
 import Rectangle from 'react-art/shapes/rectangle';
@@ -8,9 +9,10 @@ import Rectangle from 'react-art/shapes/rectangle';
 export default class Button extends React.Component {
 
   render() {
-    var { x, y, onClick, minWidth, height, color, label, fontSize, margin } = this.props;
+    var { x, y, onClick, minWidth, height, color, label, fontSize, margin, enable } = this.props;
     // let ctx = document.createElement('canvas').getContext('2d');
     // ctx.font = `${fontSize}px`;
+    if (!enable) { onClick = noop; }
 
     // const width = Math.max(ctx.measureText(label).width, minWidth) + margin * 2;
     const width = Math.max(fontSize * 5, minWidth) + margin * 2;
@@ -41,7 +43,8 @@ Button.propTypes = {
   border: React.PropTypes.string,
   label: React.PropTypes.string,
   fontSize: React.PropTypes.number,
-  margin: React.PropTypes.number
+  margin: React.PropTypes.number,
+  enable: React.PropTypes.bool
 };
 
 Button.defaultProps = {
@@ -53,7 +56,8 @@ Button.defaultProps = {
   border: 'black',
   label: 'Click',
   fontSize: 12,
-  margin: 10
+  margin: 10,
+  enable: true
 };
 
 Button.displayName = 'Button';

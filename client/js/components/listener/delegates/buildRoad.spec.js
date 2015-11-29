@@ -34,6 +34,7 @@ describe('BuildRoadDelegate', function() {
 		this.socket = new MockSocketIO();
 		this.manager = new GameManager(new Socket(this.socket), ctx);
 		this.delegate = new BuildRoadDelegate(this.manager);
+		this.delegate.initialize();
 	});
 
 	describe('#constructor', function() {
@@ -45,6 +46,10 @@ describe('BuildRoadDelegate', function() {
 
 		it('asks to select a path', function() {
 			expect(this.binding.get('game.message')).toEqual('Select a path to build.');
+		});
+
+		it('sets the current game action', function() {
+			expect(this.binding.get('game.action')).toBe(BuildRoadDelegate.ACTION);
 		});
 
 		it('activates empty paths', function() {
@@ -83,6 +88,10 @@ describe('BuildRoadDelegate', function() {
 			this.binding.get('game.board.paths').forEach(colony => {
 				expect(colony.get('selectable')).toEqual(false);
 			});
+		});
+
+		it('unsets the current game action', function() {
+			expect(this.binding.get('game.action')).toBe(null);
 		});
 
 		it('notifies the manager of the completion', function() {

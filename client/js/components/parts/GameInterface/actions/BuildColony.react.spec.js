@@ -3,9 +3,9 @@ import BuildColony from 'client/js/components/parts/GameInterface/actions/BuildC
 import { MyBinding } from 'client/js/components/common/players.js';
 import { BoardBinding } from 'client/js/components/common/map';
 import { gameManager } from 'client/js/components/listener/listener';
+import BuildColonyDelegate from 'client/js/components/listener/delegates/buildColony';
 
 import Button from 'client/js/components/parts/GameInterface/Elements/Button.react.js';
-import Empty from 'client/js/components/parts/GameInterface/Elements/Empty.react.js';
 
 import tests from 'client/js/components/libs/test.js';
 import React from 'react'; // eslint-disable-line no-unused-vars
@@ -41,12 +41,17 @@ describe('BuildColony', function() {
       binding.setCards(cards);
       binding.save(this.binding);
     };
+
+	  this.getButton = function() {
+		  return tests.getRenderedElements(this.root, Button)[0];
+	  };
   });
 
   it('renders nothing there are not enough resources for a colony', function(done) {
     this.setCards({ bois: 3, ble: 2 });
 		setTimeout(() => {
-      expect(tests.getRenderedElements(this.root, Empty)).toHaveLength(1);
+			const button = this.getButton();
+			expect(button.props.color).toEqual(BuildColony.theme.disabled);
 			done();
 		}, 100);
   });
@@ -55,7 +60,7 @@ describe('BuildColony', function() {
     it('detects if there are enough resources for a colony', function(done) {
       this.setCards({ bois: 1, ble: 1, mouton: 1, tuile: 1 });
 			setTimeout(() => {
-        expect(tests.getRenderedElements(this.root, Button)).toHaveLength(1);
+        expect(this.getButton().props.color).toEqual(BuildColony.theme.normal);
 				done();
 			}, 100)
     });
@@ -63,7 +68,8 @@ describe('BuildColony', function() {
     it('detects if there are not enough resources for a colony', function(done) {
       this.setCards({ bois: 3, ble: 2 });
 			setTimeout(() => {
-	      expect(tests.getRenderedElements(this.root, Empty)).toHaveLength(1);
+				const button = this.getButton();
+				expect(button.props.color).toEqual(BuildColony.theme.disabled);
 				done();
 			}, 100);
     });
@@ -80,6 +86,7 @@ describe('BuildColony', function() {
 			expect(buttons).toHaveLength(1);
 
 			const button = buttons[0];
+			expect(button.props.color).toEqual(BuildColony.theme.normal);
 			expect(button.props.label).toEqual('Build colony');
 	  });
 	});
@@ -88,12 +95,9 @@ describe('BuildColony', function() {
 		beforeEach(function(done) {
 			tests.createServer(this.ctx);
 			this.mgr = gameManager();
-			spyOn(this.mgr, 'setDelegate');
+			spyOn(this.mgr, 'setDelegate').and.callThrough();
 
 			this.setCards({ bois: 1, ble: 1, mouton: 1, tuile: 1 });
-			this.getButton = function() {
-				return tests.getRenderedElements(this.root, Button)[0];
-			};
 			setTimeout(() => {
 				tests.simulateClick(this.getButton());
 				setTimeout(done, 100);
@@ -102,19 +106,18 @@ describe('BuildColony', function() {
 
 		it('highlights the button', function() {
 			const button = this.getButton();
-			expect(button.props.label).toEqual('(( Build colony ))');
+			expect(button.props.color).toEqual(BuildColony.theme.focus);
 		});
 
 		it('saves action in the context', function() {
-			expect(this.binding.get('game.action')).toEqual(BuildColony.ACTION);
+			expect(this.binding.get('game.action')).toEqual(BuildColonyDelegate.ACTION);
 		});
 
 		it('sets a delegate to handle building', function() {
 			expect(this.mgr.setDelegate).toHaveBeenCalled();
-			// expect(this.mgr.setDelegate.calls.argsFor(0)).toEqual()
 		});
 
-		describe('on second click', function() {
+		describe('after second click', function() {
 			beforeEach(function(done) {
 				tests.simulateClick(this.getButton());
 				setTimeout(done, 100);
@@ -122,7 +125,7 @@ describe('BuildColony', function() {
 
 			it('un-highlights the button', function() {
 				const button = this.getButton();
-				expect(button.props.label).toEqual('Build colony');
+				expect(button.props.color).toEqual(BuildColony.theme.normal);
 			});
 
 			it('erases action from the context', function() {

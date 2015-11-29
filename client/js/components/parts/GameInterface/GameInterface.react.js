@@ -49,7 +49,7 @@ export default class GameInterface extends MoreartyComponent {
 		const binding = this.getDefaultBinding();
 
 		return [
-			<EndTurn x={width - 75} y={10} height={30} width={60} />,
+			<EndTurn x={width - 90} y={10} height={30} width={75} />,
 			<BuildColony binding={{ game: binding.sub('game'), me: binding.sub('me') }}
 			             x={width - 90} y={50} height={30} width={75} />,
 			<BuildRoad binding={{ game: binding.sub('game'), me: binding.sub('me') }}

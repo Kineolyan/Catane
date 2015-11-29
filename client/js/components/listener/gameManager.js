@@ -72,6 +72,11 @@ export default class GameManager extends Manager {
 		return this;
 	}
 
+	setAction(action) {
+		this._binding.set('game.action', action);
+		return this;
+	}
+
 	/**
 	 * Activates an element of a given type
 	 * @param {String} element name of the element
@@ -110,6 +115,9 @@ export default class GameManager extends Manager {
 			this._delegate.complete();
 		}
 		this._delegate = delegate;
+		if (this._delegate !== null) {
+			delegate.initialize();
+		}
 	}
 
 	notifyDelegateCompletion() {
