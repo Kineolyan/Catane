@@ -18,7 +18,8 @@ describe('ThievesDelegate', function() {
 			tiles: [
 				{ x: 0, y: 0 },
 				{ x: 1, y: 0 },
-				{ x: 0, y: 1 }
+				{ x: 0, y: 1 },
+				{ x: 1, y: 3 }
 			],
 			cities: [{ x: 0, y: 0 }],
 			paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
@@ -35,6 +36,9 @@ describe('ThievesDelegate', function() {
 		this.socket = new MockSocketIO();
 		this.manager = new GameManager(new Socket(this.socket), ctx);
 		this.delegate = ThievesDelegate.fromDrop(this.manager, 1, true);
+
+		const subHelper = BoardBinding.sub(this.binding);
+		this.getTile = subHelper.getElement.bind(subHelper, 'tiles');
 	});
 
 	describe('#constructor', function() {
@@ -134,14 +138,12 @@ describe('ThievesDelegate', function() {
 		});
 
 		it('activates the tiles without thieves', function() {
-			var boardBinding = BoardBinding.from(this.binding);
-			expect(boardBinding.getElement('tiles', { x: 0, y: 1 }).get('selectable')).toBe(true);
-			expect(boardBinding.getElement('tiles', { x: 1, y: 0 }).get('selectable')).toBe(true);
+			expect(this.getTile({ x: 0, y: 1 }).get('selectable')).toBe(true);
+			expect(this.getTile({ x: 1, y: 0 }).get('selectable')).toBe(true);
 		});
 
 		it('deactivates tile with thieves', function() {
-			var boardBinding = BoardBinding.from(this.binding);
-			expect(boardBinding.getElement('tiles', { x: 0, y: 0 }).get('selectable')).not.toBe(true);
+			expect(this.getTile({ x: 0, y: 0 }).get('selectable')).not.toBe(true);
 		});
 	});
 
@@ -155,7 +157,7 @@ describe('ThievesDelegate', function() {
 		describe('at correct step', function() {
 			beforeEach(function() {
 				this.socket.receive(Channel.gameAction, { action: 'move thieves' });
-				this.delegate.selectTile({ x: 1, y: 3 });
+				this.delegate.selectTile(this.getTile({ x: 1, y: 3 }));
 			});
 
 			it(`sends a message on ${Channel.playMoveThieves}`, function() {

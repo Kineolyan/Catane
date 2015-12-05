@@ -90,7 +90,8 @@ export class ThievesDelegate extends DefaultDelegate {
 
 	selectTile(tile) {
 		if (this._step === Step.PICK_TILE) {
-      this._listener.emit(Channel.playMoveThieves, { tile: tile });
+			const tileKey = tile.get('key').toJS();
+      this._listener.emit(Channel.playMoveThieves, { tile: tileKey });
 		} else {
 			throw new Error(`Cannot move thieves at that step ${this._step}`);
 		}

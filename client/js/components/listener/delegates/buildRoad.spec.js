@@ -19,7 +19,8 @@ describe('BuildRoadDelegate', function() {
 				{ from: { x: 0, y: 0 }, to: { x: 1, y: 0 }, owner: 1 },
 				{ from: { x: 0, y: 0 }, to: { x: 0, y: 1 }, owner: 2 },
 				{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } },
-				{ from: { x: 0, y: 0 }, to: { x: 2, y: 1 } }
+				{ from: { x: 0, y: 0 }, to: { x: 2, y: 1 } },
+				{ from: { x: 2, y: 4 }, to: { x: 1, y: 3 } }
 			],
 			thieves: { x: 0, y: 0 }
 		});
@@ -35,6 +36,9 @@ describe('BuildRoadDelegate', function() {
 		this.manager = new GameManager(new Socket(this.socket), ctx);
 		this.delegate = new BuildRoadDelegate(this.manager);
 		this.delegate.initialize();
+
+		const subHelper = BoardBinding.sub(this.binding);
+		this.getPath = subHelper.getElement.bind(subHelper, 'paths');
 	});
 
 	describe('#constructor', function() {
@@ -53,21 +57,18 @@ describe('BuildRoadDelegate', function() {
 		});
 
 		it('activates empty paths', function() {
-			const board = BoardBinding.from(this.binding);
-			const colonies = board.getElement.bind(board, 'paths');
-
 			[
 				{ from: { x: 0, y: 0 }, to: { x: 1, y: 0 } },
 				{ from: { x: 0, y: 0 }, to: { x: 0, y: 1 } }
-			].forEach(colony => {
-				expect(colonies(colony).get('selectable')).toEqual(false);
+			].forEach(path => {
+				expect(this.getPath(path).get('selectable')).toEqual(false);
 			});
 
 			[
 				{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } },
 				{ from: { x: 0, y: 0 }, to: { x: 2, y: 1 } }
-			].forEach(colony => {
-				expect(colonies(colony).get('selectable')).toEqual(true);
+			].forEach(path => {
+				expect(this.getPath(path).get('selectable')).toEqual(true);
 			});
 		});
 	});
@@ -101,7 +102,7 @@ describe('BuildRoadDelegate', function() {
 
 	describe('#selectPath', function() {
 		beforeEach(function() {
-			this.delegate.selectPath({ from: { x: 2, y: 4 }, to: { x: 1, y: 3 } });
+			this.delegate.selectPath(this.getPath({ from: { x: 2, y: 4 }, to: { x: 1, y: 3 } }));
 		});
 
 		it(`sends a message on ${Channel.playAddRoad}`, function() {

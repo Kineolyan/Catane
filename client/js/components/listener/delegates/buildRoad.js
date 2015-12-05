@@ -21,8 +21,9 @@ export class BuildRoadDelegate extends DefaultDelegate {
   }
 
   selectPath(path) {
-    this._selectedPath = path;
-    this._listener.emit(Channel.playAddRoad, { path });
+    const pathKey = path.get('key').toJS();
+    this._selectedPath = pathKey;
+    this._listener.emit(Channel.playAddRoad, { path: pathKey });
   }
 
   onAddedRoad({ path }) {

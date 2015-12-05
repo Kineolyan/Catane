@@ -16,7 +16,7 @@ class Wrapper extends tests.Wrapper {
 	}
 }
 
-describe('BuildColony', function() {
+describe('<BuildColony>', function() {
   beforeEach(function() {
     this.ctx = tests.getCtx();
     this.binding = this.ctx.getBinding();

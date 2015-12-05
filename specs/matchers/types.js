@@ -1,13 +1,12 @@
 'use strict';
 
 (function() {
-var n_util = require('util');
 
 function isInteger(value) {
 	if (value !== undefined && value !== null) {
 		return (typeof value === 'number') ?
-			value == parseInt(value) :
-			value === parseInt(value.toString());
+			value === parseInt(value, 10) :
+			value === parseInt(value.toString(), 10);
 	} else {
 		return false;
 	}
@@ -16,7 +15,7 @@ function isInteger(value) {
 function isFloat(value) {
 	if (value !== undefined && value !== null) {
 		return (typeof value === 'number') ?
-			value == parseFloat(value) :
+			value === parseFloat(value) :
 			value === parseFloat(value.toString());
 	} else {
 		return false;
@@ -24,6 +23,19 @@ function isFloat(value) {
 }
 
 var typeMatchers = {
+	toBeA: function() {
+		return {
+			compare: function(actual, expectedClass) {
+				var result = { pass: actual instanceof expectedClass };
+
+				result.message = 'Expecting ' + actual
+						+ (result.pass ? ' not' : '')
+						+ ' to be a ' + expectedClass;
+
+				return result;
+			}
+		}
+	},
 	toBeAnInteger: function() {
 		return {
 			compare: function(actual) {

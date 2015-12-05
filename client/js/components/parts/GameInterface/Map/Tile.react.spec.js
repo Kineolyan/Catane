@@ -106,7 +106,8 @@ describe('<Tile>', function() {
 
 		it('calls #selectTile', function() {
 			tests.simulateClick(this.root());
-			expect(this.mgr.selectTile).toHaveBeenCalledWith({ x: 10, y: 10 });
+			const tileBinding = this.ctx.getBinding().get();
+			expect(this.mgr.selectTile).toHaveBeenCalledWith(tileBinding);
 		});
 	});
 

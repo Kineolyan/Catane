@@ -72,6 +72,10 @@ export class BoardBinding {
 		return new BoardBinding(binding.get('game.board'));
 	}
 
+	static sub(binding) {
+		return new BoardBinding(binding.sub('game.board'));
+	}
+
 	save(binding) {
 		return binding.set('game.board', this._binding);
 	}

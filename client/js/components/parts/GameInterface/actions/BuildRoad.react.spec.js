@@ -16,7 +16,7 @@ class Wrapper extends tests.Wrapper {
 	}
 }
 
-describe('BuildRoad', function() {
+describe('<BuildRoad>', function() {
   beforeEach(function() {
     this.ctx = tests.getCtx();
     this.binding = this.ctx.getBinding();

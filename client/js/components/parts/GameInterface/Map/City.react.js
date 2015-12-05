@@ -31,8 +31,8 @@ export default class City extends MapElement {
 	}
 
 	handleClick() {
-		var city = this.getDefaultBinding();
-		gameManager().selectCity(city.get('key').toJS());
+		const city = this.getDefaultBinding();
+		gameManager().selectCity(city.get());
 	}
 }
 

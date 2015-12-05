@@ -2,6 +2,7 @@ import tests from 'client/js/components/libs/test';
 
 import { BoardBinding } from 'client/js/components/common/map';
 import { PlayersBinding } from 'client/js/components/common/players';
+import { gameManager } from 'client/js/components/listener/listener';
 
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { Shape, Group } from 'react-art';
@@ -16,9 +17,12 @@ class PathWithPlayer extends tests.Wrapper {
 describe('<Path>', function() {
 	beforeEach(function() {
 		var path = BoardBinding.buildPath({ from: { x: 1, y: 0 }, to: { x: 0, y: 1 } });
-		var ctx = tests.getCtx(path);
-		this.binding = ctx.getBinding();
-		this.element = tests.bootstrap(ctx, Path);
+		this.ctx = tests.getCtx(path);
+		this.binding = this.ctx.getBinding();
+		this.element = tests.bootstrap(this.ctx, Path);
+		this.root = function() {
+			return tests.getRenderedElements(this.element, Group)[0];
+		};
 	});
 
 	it('creates a rectangle', function() {
@@ -57,12 +61,26 @@ describe('<Path>', function() {
 	describe('when selectable', function() {
 		beforeEach(function(done) {
 			this.binding.set('selectable', true);
-			setTimeout(done, 1);
+			setTimeout(done, 100);
 		});
 
 		it('has click action', function() {
 			var group = tests.getRenderedElements(this.element, Group)[0];
 			expect(group.props).toHaveKey('onClick');
+		});
+
+		describe('on click', function() {
+			beforeEach(function() {
+				this.socket = tests.createServer(this.ctx);
+				this.mgr = gameManager();
+				spyOn(this.mgr, 'selectPath');
+			});
+
+			it('calls #selectPath', function() {
+				tests.simulateClick(this.root());
+				const pathBinding = this.ctx.getBinding().get();
+				expect(this.mgr.selectPath).toHaveBeenCalledWith(pathBinding);
+			});
 		});
 	});
 });

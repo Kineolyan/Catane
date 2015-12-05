@@ -62,8 +62,8 @@ export default class PathR extends MapElement {
 	}
 
 	handleClick() {
-		var path = this.getDefaultBinding();
-		gameManager().selectPath(path.get('key').toJS());
+		const path = this.getDefaultBinding().get();
+		gameManager().selectPath(path);
 	}
 }
 

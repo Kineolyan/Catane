@@ -37,8 +37,9 @@ export class PlacementDelegate extends DefaultDelegate {
 
 	selectCity(city) {
 		if (this._step === Step.INIT) {
-			this._selection = city;
-			this._listener.emit(Channel.playPickColony, { colony: city });
+			const cityKey = city.get('key').toJS();
+			this._selection = cityKey;
+			this._listener.emit(Channel.playPickColony, { colony: cityKey });
 		} else {
 			throw new Error(`Cannot select city at that step ${this._step}`);
 		}
@@ -56,8 +57,9 @@ export class PlacementDelegate extends DefaultDelegate {
 
 	selectPath(path) {
 		if (this._step === Step.HAS_SPOT) {
-      this._selection = path;
-			this._listener.emit(Channel.playPickPath, { path: path });
+			const pathKey = path.get('key').toJS();
+      this._selection = pathKey;
+			this._listener.emit(Channel.playPickPath, { path: pathKey });
 		} else {
 			throw new Error(`Cannot select path at that step ${this._step}`);
 		}

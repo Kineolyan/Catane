@@ -21,8 +21,9 @@ export class BuildColonyDelegate extends DefaultDelegate {
   }
 
   selectCity(colony) {
-    this._selectedColony = colony;
-    this._listener.emit(Channel.playAddColony, { colony: colony });
+    const colonyKey = colony.get('key').toJS();
+    this._selectedColony = colonyKey;
+    this._listener.emit(Channel.playAddColony, { colony: colonyKey });
   }
 
   onAddedColony({ colony }) {

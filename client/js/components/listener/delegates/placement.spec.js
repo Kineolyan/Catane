@@ -13,18 +13,26 @@ describe('PlacementDelegate', function() {
 		this.binding = ctx.getBinding();
 		var helper = BoardBinding.from(this.binding);
 		helper.buildBoard({
-			tiles: [
+			tiles: [{ x: 0, y: 0 }],
+			cities: [
 				{ x: 0, y: 0 },
 				{ x: 1, y: 0 },
-				{ x: 0, y: 1 }
+				{ x: 0, y: 1 },
+				{ x: 1, y: 2 }
 			],
-			cities: [{ x: 0, y: 0 }],
-			paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
+			paths: [
+				{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } },
+				{ from: { x: 1, y: 2 }, to: { x: 1, y: 3 } }
+			],
 			thieves: { x: 0, y: 0 }
 		});
 		helper.save(this.binding);
 		this.manager = new GameManager(new Socket(this.socket), ctx);
 		this.delegate = new PlacementDelegate(this.manager, 13);
+
+		const subHelper = BoardBinding.sub(this.binding);
+		this.getCity = subHelper.getElement.bind(subHelper, 'cities');
+		this.getPath = subHelper.getElement.bind(subHelper, 'paths');
 	});
 
 	describe('#constructor', function() {
@@ -94,7 +102,7 @@ describe('PlacementDelegate', function() {
 		describe('at correct step', function() {
 			beforeEach(function() {
 				this.socket.receive(Channel.playTurnNew, { player: 13 });
-				this.delegate.selectCity({ x: 1, y: 2 });
+				this.delegate.selectCity(this.getCity({ x: 1, y: 2 }));
 			});
 
 			it(`sends a message on ${Channel.playPickColony}`, function() {
@@ -135,11 +143,11 @@ describe('PlacementDelegate', function() {
 				this.socket.receive(Channel.playTurnNew, { player: 13 });
 
 				var spot = { x: 1, y: 2 };
-				this.delegate.selectCity(spot);
+				this.delegate.selectCity(this.getCity(spot));
 				this.socket.receive(Channel.playPickColony, { colony: spot, player: 13 });
 
 				this.path = { from: { x: 1, y: 2 }, to: { x: 1, y: 3 } };
-				this.delegate.selectPath(this.path);
+				this.delegate.selectPath(this.getPath(this.path));
 			});
 
 			it(`sends a message on ${Channel.playPickPath}`, function() {

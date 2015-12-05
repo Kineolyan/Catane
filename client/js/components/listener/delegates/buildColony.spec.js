@@ -18,7 +18,8 @@ describe('BuildColonyDelegate', function() {
 				{ x: 0, y: 0, owner: 1 },
 				{ x: 1, y: 0, owner: 2 },
 				{ x: 0, y: 1 },
-				{ x: 1, y: 1 }
+				{ x: 1, y: 1 },
+				{ x: 2, y: 4 }
 			],
 			paths: [{ from: { x: 0, y: 0 }, to: { x: 1, y: 1 } }],
 			thieves: { x: 0, y: 0 }
@@ -35,6 +36,9 @@ describe('BuildColonyDelegate', function() {
 		this.manager = new GameManager(new Socket(this.socket), ctx);
 		this.delegate = new BuildColonyDelegate(this.manager);
 		this.delegate.initialize();
+
+		const subHelper = BoardBinding.sub(this.binding);
+		this.getColony = subHelper.getElement.bind(subHelper, 'cities');
 	});
 
 	describe('#initialize', function() {
@@ -53,15 +57,12 @@ describe('BuildColonyDelegate', function() {
 		});
 
 		it('activates empty colonies', function() {
-			const board = BoardBinding.from(this.binding);
-			const colonies = board.getElement.bind(board, 'cities');
-
 			[{ x: 0, y: 0 }, { x: 1, y: 0 }].forEach(colony => {
-				expect(colonies(colony).get('selectable')).toEqual(false);
+				expect(this.getColony(colony).get('selectable')).toEqual(false);
 			});
 
 			[{ x: 0, y: 1 }, { x: 1, y: 1 }].forEach(colony => {
-				expect(colonies(colony).get('selectable')).toEqual(true);
+				expect(this.getColony(colony).get('selectable')).toEqual(true);
 			});
 		});
 	});
@@ -95,7 +96,7 @@ describe('BuildColonyDelegate', function() {
 
 	describe('#selectCity', function() {
 		beforeEach(function() {
-			this.delegate.selectCity({ x: 2, y: 4 });
+			this.delegate.selectCity(this.getColony({ x: 2, y: 4 }));
 		});
 
 		it(`sends a message on ${Channel.playAddColony}`, function() {

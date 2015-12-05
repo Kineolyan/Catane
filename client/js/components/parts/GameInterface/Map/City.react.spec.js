@@ -1,17 +1,13 @@
-import 'client/js/components/libs/test';
-
 import tests from 'client/js/components/libs/test';
-import { Channel } from 'client/js/components/libs/socket';
-
-import React from 'react';
-import { Group } from 'react-art';
-import Circle from 'react-art/shapes/circle';
 
 import { PlayersBinding } from 'client/js/components/common/players';
 import { BoardBinding } from 'client/js/components/common/map';
-import City from 'client/js/components/parts/GameInterface/Map/City.react';
+import { gameManager } from 'client/js/components/listener/listener';
 
-const util = React.addons.TestUtils;
+import React from 'react'; // eslint-disable-line no-unused-vars
+import { Group } from 'react-art';
+import Circle from 'react-art/shapes/circle';
+import City from 'client/js/components/parts/GameInterface/Map/City.react';
 
 class CityWithPlayer extends tests.Wrapper {
 	render() {
@@ -22,10 +18,12 @@ class CityWithPlayer extends tests.Wrapper {
 describe('<City>', function() {
 	beforeEach(function() {
 		var city = BoardBinding.buildCity({ x: 10, y: 10 });
-		var ctx = tests.getCtx(city);
-		this.binding = ctx.getBinding();
-		this.socket = tests.createServer(ctx);
-		this.element = tests.bootstrap(ctx, City);
+		this.ctx = tests.getCtx(city);
+		this.binding = this.ctx.getBinding();
+		this.element = tests.bootstrap(this.ctx, City);
+		this.root = function() {
+			return tests.getRenderedElements(this.element, Group)[0];
+		};
 	});
 
 	it('creates an simple circle', function() {
@@ -63,7 +61,7 @@ describe('<City>', function() {
 	describe('when selectable', function() {
 		beforeEach(function(done) {
 			this.binding.set('selectable', true);
-			setTimeout(done, 1);
+			setTimeout(done, 100);
 		});
 
 		it('has click action', function() {
@@ -71,13 +69,18 @@ describe('<City>', function() {
 			expect(group.props).toHaveKey('onClick');
 		});
 
-		xit('sends the colony coordinates on click', function() {
-			expect(() => {
-				util.Simulate.click(this.group);
-			}).toChangeBy(() => this.socket.messages(Channel.playPickColony).length, 1);
+		describe('on click', function() {
+			beforeEach(function() {
+				this.socket = tests.createServer(this.ctx);
+				this.mgr = gameManager();
+				spyOn(this.mgr, 'selectCity');
+			});
 
-			var message = this.socket.lastMessage(Channel.playPickColony);
-			expect(message).toEqual({ colony: { x: 10, y: 10 } });
+			it('calls #selectCity', function() {
+				tests.simulateClick(this.root());
+				const pathBinding = this.ctx.getBinding().get();
+				expect(this.mgr.selectCity).toHaveBeenCalledWith(pathBinding);
+			});
 		});
 	});
 });
