@@ -32,7 +32,7 @@ describe('GameManager', function() {
 	describe('on start up', function() {
 		[
 			Channel.gameStart, Channel.gamePrepare, Channel.gamePlay, Channel.gameReload,
-			Channel.playTurnNew, Channel.playRollDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves, Channel.playResourcesDrop, Channel.playAddColony, Channel.playAddRoad,
+			Channel.playTurnNew, Channel.playRollDice, Channel.playPickColony, Channel.playPickPath, Channel.playMoveThieves, Channel.playResourcesDrop, Channel.playResourcesConvert, Channel.playAddColony, Channel.playAddRoad,
 			Channel.reconnect
 		].forEach(function(channel) {
 			it('listens to channel ' + channel, function() {
@@ -730,6 +730,21 @@ describe('GameManager', function() {
 			const me = MyBinding.from(this.binding);
 			expect(me.resourceMap).toEqual({ mouton: 2 });
 		});
+	});
+
+	describe('#onConvertedResources', function() {
+		beforeEach(function() {
+			const myBinding = MyBinding.from(this.binding);
+			myBinding.setCards({ mouton: 1, ble: 4 });
+			myBinding.save(this.binding);
+
+			this.game.onConvertedResources({ resources: { mouton: 1, ble: 1 } });
+		});
+
+		it('sets my resources to the updated value', function (){
+			const resources = MyBinding.from(this.binding).resourceMap;
+			expect(resources).toEqual({ mouton: 1, ble: 1 });
+		})
 	});
 
 });

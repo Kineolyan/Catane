@@ -41,6 +41,7 @@ export default class GameManager extends Manager {
 
 		this.listenToSocket(Channel.playMoveThieves, this.onThievesMove.bind(this));
 		this.listenToSocket(Channel.playResourcesDrop, this.onDroppedResources.bind(this));
+		this.listenToSocket(Channel.playResourcesConvert, this.onConvertedResources.bind(this));
 	}
 
 	/**
@@ -434,6 +435,12 @@ export default class GameManager extends Manager {
 
 	onDroppedResources() {
 		// Currently nothing to do since it is handled by #onGameAction
+	}
+
+	onConvertedResources({ resources }) {
+		const myBinding = MyBinding.from(this._binding);
+		myBinding.setCards(resources);
+		myBinding.save(this._binding);
 	}
 
 }
