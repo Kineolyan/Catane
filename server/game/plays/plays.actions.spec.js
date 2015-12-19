@@ -1,5 +1,5 @@
 import * as starter from 'server/game/games/game-spec.starter';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import Location from 'server/elements/geo/location';
 import Path from 'server/elements/geo/path';
 

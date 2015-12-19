@@ -270,6 +270,18 @@ export default class Game {
 	}
 
 	/**
+	 * Plays a card from the player hand.
+	 * @param {Player} player the player executing the action
+	 * @param {*} cardId id of the card to play
+	 * @param {*} args arguments for card execution
+	 * @return card execution reply
+	 */
+	playCard(player, cardId, args) {
+		this._referee.checkTurn(player);
+		return player.useCard(cardId, args);
+	}
+
+	/**
 	 * Makes the player end its turn.
 	 * @param {Player} player the player ending its turn
 	 * @returns {Player} the next player whose turn has started

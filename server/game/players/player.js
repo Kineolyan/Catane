@@ -151,6 +151,23 @@ export default class Player {
 		this._resources[resource] = (this._resources[resource] || 0) + value;
 	}
 
+	addCard(card) {
+		this._cards[card.id] = card;
+	}
+
+	useCard(cardId, args) {
+		const card = this.cards[cardId];
+		if (card !== undefined) {
+			card.prepare(args);
+			const reply = card.applyOn({ player: this, game: this.game });
+			delete this._cards[cardId];
+
+			return reply;
+		} else {
+			throw new Error(`Player ${player.name} has no card ${cardId}`);
+		}
+	}
+
 	/**
 	 * Binds to the inner client #emit.
 	 * @param  {String}   channel event name to listen to

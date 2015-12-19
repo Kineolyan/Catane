@@ -1,6 +1,8 @@
 import Location from 'server/elements/geo/location';
 import Path from 'server/elements/geo/path';
 import { idGenerator } from 'server/game/util';
+import { cardGenerator } from 'server/elements/cards/generator';
+import _ from 'lodash';
 
 function getTileLocation(request) {
 	return new Location(request.tile.x, request.tile.y);
@@ -191,6 +193,21 @@ export class Plays {
 				otherPlayer.emit('play:resources:exchange', message);
 				return message;
 			}
+		});
+
+		user.on('play:card:buy', function() {
+			const player = user.player;
+
+			const newCard = cardGenerator.generate();
+			player.addCard(newCard);
+
+			player.game.emit(player, 'play:card:buy', { player: player.id, cards: _.size(player.cards) });
+			return { cards: _.mapValues(player.cards, 'description') };
+		});
+
+		user.on('play:card:use', function({ card: { id: cardId, args } }) {
+			const player = user.player;
+			return player.game.playCard(player, cardId, args);
 		});
 
 		user.on('play:turn:end', () => {
