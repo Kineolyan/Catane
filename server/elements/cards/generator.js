@@ -1,11 +1,15 @@
 import ScoreCard from 'server/elements/cards/score';
+import { idGenerator } from 'server/game/util';
 
 export class CardGenerator {
+	constructor() {
+		this._generateId = idGenerator();
+	}
+
 	generate() {
-		return new ScoreCard();
+		const id = this._generateId().toString();
+		return new ScoreCard(id);
 	}
 }
-
-export const cardGenerator = new CardGenerator();
 
 export default CardGenerator;

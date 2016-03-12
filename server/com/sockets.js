@@ -6,33 +6,40 @@ export class Reply {
 		this._actions = [];
 	}
 
-	translateArgs(defaultChannel, channel, message) {
-		if (message !== undefined) {
+	processMessage(defaultChannel, channel, message) {
+		if (message === undefined) {
 			message = channel;
 			channel = defaultChannel;
 		}
+
+		// Add success flag
+		message._success = true;
 
 		return [channel, message];
 	}
 
 	emit(channel, message) {
 		this._actions.push(defaultChannel => {
-			this._player.emit(...this.translateArgs(defaultChannel, channel, message));
+			const [c, m] = this.processMessage(defaultChannel, channel, message);
+			this._player.emit(c, m);
 		});
+		return this;
 	}
 
 	others(channel, message) {
 		this._actions.push(defaultChannel => {
-			const [c, m] = this.translateArgs(defaultChannel, channel, message);
+			const [c, m] = this.processMessage(defaultChannel, channel, message);
 			this._player.game.emit(this._player, c, m);
 		});
+		return this;
 	}
 
 	all(channel, message) {
 		this._actions.push(defaultChannel => {
-			const [c, m] = this.translateArgs(defaultChannel, channel, message);
+			const [c, m] = this.processMessage(defaultChannel, channel, message);
 			this._player.game.emit(c, m);
 		});
+		return this;
 	}
 
 	execute(channel) {

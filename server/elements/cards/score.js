@@ -2,8 +2,13 @@ import * as maps from 'libs/collections/maps';
 import { Reply } from 'server/com/sockets';
 
 export class ScoreCard {
-	constructor(value = 1) {
+	constructor(id, value = 1) {
+		this._id = id;
 		this._value = value;
+	}
+
+	get id() {
+		return this._id;
 	}
 
 	get value() {
@@ -21,6 +26,7 @@ export class ScoreCard {
 
 		const players = player.game.players;
 		return new Reply(player)
+			.emit({})
 			.all('play:score', {
 				maps: maps.object(players, player => [player.id, player.score])
 			});
