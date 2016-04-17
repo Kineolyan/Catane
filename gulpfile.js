@@ -2,7 +2,10 @@
 
 // Sets the paths for absolute requires
 var path = require('path');
-process.env.NODE_PATH = path.join(__dirname, 'build');
+process.env.NODE_PATH = [
+	path.join(__dirname, 'build'),
+	path.join(__dirname)
+].join(':');
 // Resets the module paths
 require('module').Module._initPaths();
 
@@ -67,14 +70,6 @@ function buildLibs() {
 			// .pipe(plumber.stop())
 			.pipe(gulp.dest(PATHS.build.libs()));
 }
-function buildServer() {
-	return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
-			.pipe(cached('server-js'))
-			// .pipe(plumber({ errorHandler: notify.onError("Build server : <%= error.message %>") }))
-			.pipe(babel({ sourceRoot: PATHS.server() }))
-			// .pipe(plumber.stop())
-			.pipe(gulp.dest(PATHS.build.server()));
-}
 
 function buildClient() {
 	return gulp.src(PATHS.client.js('components/**/*.js'))
@@ -106,7 +101,7 @@ function testJsServer(verbose) {
 	return runTests(gulp.src([
 		PATHS.specs('server-env.js'),
 		PATHS.specs.matchers('**/*.js'),
-		PATHS.build.server('**/*.spec.js')
+		PATHS.server('**/*.spec.js')
 	]), verbose);
 }
 
@@ -135,7 +130,7 @@ function cleanOutput(done) {
 
 gulp.task('build:js:libs', buildLibs);
 
-gulp.task('build:js:server', ['build:js:libs'], buildServer);
+gulp.task('build:js:server', ['build:js:libs']);
 
 gulp.task('build:sass', function() {
 	var sass = require('gulp-sass');

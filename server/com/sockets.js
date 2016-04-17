@@ -1,5 +1,52 @@
 const logger = global.logger;
 
+export class Reply {
+	constructor(player) {
+		this._player = player;
+		this._actions = [];
+	}
+
+	processMessage(defaultChannel, channel, message) {
+		if (message === undefined) {
+			message = channel;
+			channel = defaultChannel;
+		}
+
+		// Add success flag
+		message._success = true;
+
+		return [channel, message];
+	}
+
+	emit(channel, message) {
+		this._actions.push(defaultChannel => {
+			const [c, m] = this.processMessage(defaultChannel, channel, message);
+			this._player.emit(c, m);
+		});
+		return this;
+	}
+
+	others(channel, message) {
+		this._actions.push(defaultChannel => {
+			const [c, m] = this.processMessage(defaultChannel, channel, message);
+			this._player.game.emit(this._player, c, m);
+		});
+		return this;
+	}
+
+	all(channel, message) {
+		this._actions.push(defaultChannel => {
+			const [c, m] = this.processMessage(defaultChannel, channel, message);
+			this._player.game.emit(c, m);
+		});
+		return this;
+	}
+
+	execute(channel) {
+		for (let action of this._actions) { action(channel); }
+	}
+}
+
 export default class Socket {
 	constructor(id, socket, world) {
 		this._id = id;
@@ -17,7 +64,9 @@ export default class Socket {
 			try {
 				var response = cbk.apply(undefined, arguments);
 				if (response !== undefined) {
-					if (response instanceof Object) {
+					if (response instanceof Reply) {
+						response.execute(channel);
+					} else if (response instanceof Object) {
 						response._success = true;
 						self.emit(channel, response);
 					} else {

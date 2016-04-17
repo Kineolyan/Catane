@@ -345,6 +345,16 @@ export class GameReferee extends AReferee {
 		}
 	}
 
+	buyCard() {
+		if (this._step === GAME_STEPS.PLAY) {
+			if (!this.currentPlayer.hasResources(ResourceCosts.CARD)) {
+				throw new Error(`Not enough resources to build a card`);
+			}
+		} else {
+			throw new Error(`Not the correct step to settle on a card. Current ${this._step}`);
+		}
+	}
+
 	startTurn() {
 		this._step = GAME_STEPS.ROLL_DICE;
 	}

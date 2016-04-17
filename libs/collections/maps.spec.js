@@ -28,14 +28,21 @@ describe('maps module', function() {
 			}
 			expect(count).toBe(3);
 		});
+
+		it('supports empty maps', function() {
+			var count = 0;
+			for (let [, value] of maps.entries({})) {
+				count += value;
+			}
+			expect(count).toEqual(0);
+		});
 	});
 
-	it('supports empty maps', function() {
-		var count = 0;
-		for (let [, value] of maps.entries({})) {
-			count += value;
-		}
-		expect(count).toEqual(0);
+	describe('#object', function() {
+		it('converts an array to an object', function() {
+			const obj = maps.object([1, 2, 3], v => [v, v + 1]);
+			expect(obj).toEqual({ 1: 2, 2: 3, 3: 4 });
+		});
 	});
 
 });

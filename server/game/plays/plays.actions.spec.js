@@ -1,5 +1,5 @@
 import * as starter from 'server/game/games/game-spec.starter';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import Location from 'server/elements/geo/location';
 import Path from 'server/elements/geo/path';
 
@@ -78,6 +78,89 @@ describe('Play actions', function() {
 				const message = this.other.client.lastMessage('play:add:colony');
 				expect(message).toEqual({ player: this.p.id, colony: this.colony.toJson() });
 			});
+		});
+	});
+
+	describe('->play:card:buy', function () {
+		describe('with proper resources', function () {
+			beforeEach(function () {
+				// Give enough resources to the player
+				this.env.setPlayerResources(this.p, { caillou: 1, mouton: 1, ble: 1 });
+				this.p.client.receive('play:card:buy');
+			});
+
+			it('allows acquiring the card', function () {
+				const message = this.p.client.lastMessage('play:card:buy');
+				expect(message._success).toBe(true);
+			});
+
+			it('notifies the player of its new card', function () {
+				const message = this.p.client.lastMessage('play:card:buy');
+				const cards = _.chain(message.cards).values().map('name').value();
+				expect(cards).toEqual(['Score']);
+			});
+
+			it('notifies others of that players has a new card', function () {
+				const message = this.other.client.lastMessage('play:card:buy');
+				expect(message).toEqual({ player: this.p.id, cards: 1, _success: true });
+			});
+		});
+
+		describe('without enough resources', function() {
+			beforeEach(function() {
+				this.env.setPlayerResources(this.p, { tuile: 4 });
+				this.p.client.receive('play:card:buy');
+			});
+
+			it('fails to buy the card', function() {
+				const message = this.p.client.lastMessage('play:card:buy');
+				expect(message._success).toBe(false);
+				expect(message.message).toMatch(/not enough resources/i);
+			});
+		});
+
+		it('fails if it is not the player turn', function() {
+			this.env.setPlayerResources(this.other, { caillou: 1, mouton: 1, ble: 1 });
+			this.other.client.receive('play:card:buy');
+			const message = this.other.client.lastMessage('play:card:buy');
+			expect(message._success).toBe(false);
+			expect(message.message).toMatch(/not.+turn/i);
+		});
+	});
+
+	describe('->play:card:use', function () {
+		describe('with proper resources', function () {
+			beforeEach(function () {
+				// Give enough resources to the player
+				this.env.setPlayerResources(this.p, { caillou: 1, mouton: 1, ble: 1 });
+				this.p.client.receive('play:card:buy');
+				this.cardId = _.first(_.keys(this.p.client.lastMessage('play:card:buy').cards));
+				this.p.client.receive('play:card:use', { card: { id: this.cardId } });
+			});
+
+			it('allows using the card', function () {
+				const message = this.p.client.lastMessage('play:card:use');
+				expect(message._success).toBe(true);
+			});
+		});
+
+		describe('without card', function() {
+			beforeEach(function() {
+				this.p.client.receive('play:card:use', { card: { id: '13' } });
+			});
+
+			it('fails to use the card', function() {
+				const message = this.p.client.lastMessage('play:card:use');
+				expect(message._success).toBe(false);
+				expect(message.message).toMatch(/no card 13/i);
+			});
+		});
+
+		it('fails if it is not the player turn', function() {
+			this.other.client.receive('play:card:use', { card: { id: '52' } });
+			const message = this.other.client.lastMessage('play:card:use');
+			expect(message._success).toBe(false);
+			expect(message.message).toMatch(/not.+turn/i);
 		});
 	});
 

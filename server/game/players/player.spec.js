@@ -26,6 +26,14 @@ describe('Player', function() {
 		it('does not have any resources', function() {
 			expect(this.player.resources).toEqual({});
 		});
+
+		it('has no cards', function() {
+			expect(this.player.cards).toEqual({});
+		});
+
+		it('has a null score', function() {
+			expect(this.player.score).toEqual(0);
+		});
 	});
 
 	describe('#name', function() {
@@ -109,6 +117,70 @@ describe('Player', function() {
 			this.player.useResources({ ble: 2, bois: 1, caillou: 1 });
 			expect(this.player.resources).toEqual({ ble: 1, caillou: 0, bois: 1 });
 		});
+	});
+
+	describe('#addCard', function() {
+		beforeEach(function() {
+			this.player = new Player(this.socket.toSocket());
+			this.card = { id: 1 };
+			this.player.addCard(this.card);
+		});
+
+		it('records the card by its id', function() {
+			expect(this.player.cards[this.card.id]).toBe(this.card);
+		});
+	});
+
+	describe('#useCard', function() {
+		beforeEach(function() {
+			this.player = new Player(this.socket.toSocket());
+			this.card = jasmine.createSpyObj('player', ['prepare', 'applyOn']);
+			this.card.applyOn.and.returnValue('reply');
+			this.card.id = '74';
+			this.player.addCard(this.card);
+		});
+
+		describe('for existing card', function() {
+			beforeEach(function() {
+				this.player.game = 'game';
+				this.res = this.player.useCard(this.card.id, { dice: 2 });
+			});
+
+			it('prepares the card with the arguments', function() {
+				expect(this.card.prepare.calls.mostRecent().args).toEqual([{ dice: 2 }]);
+			});
+
+			it('executes the card action for the player', function() {
+				expect(this.card.applyOn.calls.mostRecent().args).toEqual([{ player: this.player, game: 'game' }]);
+			});
+
+			it('returns the result of the card execution', function() {
+				expect(this.res).toEqual('reply');
+			});
+
+			it('removes the card from the player list', function() {
+				expect(this.player.cards).not.toHaveKey(this.card.id);
+			});
+		});
+
+		it('throws if the card does not exist', function() {
+			expect(() => this.player.useCard(4275)).toThrowError(/no card 4275/i);
+		});
+	});
+
+	describe('#winPoints', function() {
+		beforeEach(function() {
+			this.player = new Player(this.socket.toSocket());
+		});
+
+		it('increments the score by the number of points', function() {
+			expect(() => this.player.winPoints(2)).toChangeBy(() => this.player.score, 2)
+		});
+
+		it('fails if the value is negative', function() {
+			expect(() => this.player.winPoints(-1)).toThrow();
+			expect(() => this.player.winPoints(0)).toThrow();
+		})
 	});
 
 	describe('->player:nickname', function() {

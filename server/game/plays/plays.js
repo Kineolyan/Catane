@@ -193,6 +193,16 @@ export class Plays {
 			}
 		});
 
+		user.on('play:card:buy', function() {
+			const player = user.player;
+			return player.game.buyCard(player);
+		});
+
+		user.on('play:card:use', function({ card: { id: cardId, args } }) {
+			const player = user.player;
+			return player.game.playCard(player, cardId, args);
+		});
+
 		user.on('play:turn:end', () => {
 			var player = user.player;
 			var nextPlayer = player.game.endTurn(player);

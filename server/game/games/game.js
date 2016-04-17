@@ -3,7 +3,12 @@ import { RoundGenerator } from 'server/elements/boards/generators/maps';
 import Dice from 'server/elements/dice/dice';
 import { PlacementReferee, GameReferee, ResourceCosts } from 'server/game/referees/referee';
 import { DropResourcesDelegate } from 'server/game/referees/delegates.js';
+import { CardGenerator } from 'server/elements/cards/generator';
+
+import { Reply } from 'server/com/sockets.js';
+
 import { shuffle } from 'libs/collections/arrays';
+import _ from 'lodash';
 
 const logger = global.logger;
 
@@ -16,6 +21,7 @@ export default class Game {
 		this._id = id;
 		this._players = new Set();
 		this._started = false;
+		this._cardGenerator = new CardGenerator();
 	}
 
 	/**
@@ -267,6 +273,36 @@ export default class Game {
 
 		otherPlayer.useResources(gottenResources);
 		player.receiveResources(gottenResources);
+	}
+
+	/**
+	 * Buys a card for a player.
+	 * @param {Player} player instance of player
+	 * @returns {Reply} result of the buy action
+	 */
+	buyCard(player) {
+		this._referee.checkTurn(player);
+		this._referee.buyCard(player);
+
+		const newCard = this._cardGenerator.generate();
+		player.addCard(newCard);
+
+		const reply = new Reply(player)
+			.emit({ cards: _.mapValues(player.cards, 'description') })
+			.others({ player: player.id, cards: _.size(player.cards) });
+		return reply;
+	}
+
+	/**
+	 * Plays a card from the player hand.
+	 * @param {Player} player the player executing the action
+	 * @param {String} cardId id of the card to play
+	 * @param {Object} args arguments for card execution
+	 * @return {Reply} card execution reply
+	 */
+	playCard(player, cardId, args) {
+		this._referee.checkTurn(player);
+		return player.useCard(cardId, args);
 	}
 
 	/**

@@ -8,6 +8,8 @@ export default class Player {
 		this._name = `Player ${id}`;
 		this._game = undefined;
 		this._resources = {};
+		this._cards = {};
+		this._score = 0;
 
 		socket.on('player:nickname', (name) => {
 			this._name = name;
@@ -77,6 +79,35 @@ export default class Player {
 
 	get resources() {
 		return this._resources;
+	}
+
+	/**
+	 * Gets cards owned by this player.
+	 * @returns {Object} card map as [<card id>] = <card>
+	 */
+	get cards() {
+		return this._cards;
+	}
+
+	/**
+	 * Gets the score of the player.
+	 * @returns {number} player score
+	 */
+	get score() {
+		return this._score;
+	}
+
+	/**
+	 * Increments the score of the player by the number of points given.
+	 * @param {Number} nbPoints number of points won by the user
+	 * @throws Error if the number of points is null or negative
+	 */
+	winPoints(nbPoints) {
+		if (nbPoints > 0) {
+			this._score += nbPoints;
+		} else {
+			throw new Error(`Negative or null value provided: ${nbPoints}`);
+		}
 	}
 
 	toString() {
@@ -149,6 +180,34 @@ export default class Player {
 	 */
 	_updateResource(resource, value) {
 		this._resources[resource] = (this._resources[resource] || 0) + value;
+	}
+
+	/**
+	 * Adds a card to player collection.
+	 * @param {Card} card card item to add
+	 */
+	addCard(card) {
+		this._cards[card.id] = card;
+	}
+
+	/**
+	 * Uses one of the player's card
+	 * @param {String} cardId id of a card
+	 * @param {Object} args arguments to pass to prepare card use
+	 * @returns {Reply} result of the card use
+	 * @throws Error if the card does not exist
+	 */
+	useCard(cardId, args) {
+		const card = this.cards[cardId];
+		if (card !== undefined) {
+			card.prepare(args);
+			const reply = card.applyOn({ player: this, game: this.game });
+			delete this._cards[cardId];
+
+			return reply;
+		} else {
+			throw new Error(`Player ${this.name} has no card ${cardId}`);
+		}
 	}
 
 	/**
