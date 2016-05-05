@@ -1,8 +1,8 @@
-import Player from 'server/game/players/player';
-import User from 'server/com/user';
-import Games from 'server/game/games/games';
-import Plays from 'server/game/plays/plays';
-import { idGenerator } from './game/util';
+import BasePlayer from 'server/core/game/players/player';
+import User from 'server/core/com/user';
+import Games from 'server/catane/game/games/games';
+import Plays from 'server/catane/game/plays/plays';
+import { idGenerator } from 'server/core/game/util';
 
 const logger = global.logger;
 const TIME_TO_RECONNECT = global.TIME_TO_RECONNECT;
@@ -32,7 +32,7 @@ export default class Server {
    * @param  {Socket} socket with client connection
    */
 	connect(socket) {
-		var player = new Player(socket, this._nextPlayerId().toString());
+		var player = new BasePlayer(socket, this._nextPlayerId().toString());
 		var user = new User(socket, player);
 		this._users.set(socket.id, user);
 		logger.log(`[Server] ${player.name} is connected`);

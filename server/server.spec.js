@@ -1,5 +1,5 @@
 import Server from './server';
-import { MockSocket } from './com/mocks';
+import { MockSocket } from 'server/core/com/mocks';
 
 describe('Server', function() {
 	beforeEach(function() {

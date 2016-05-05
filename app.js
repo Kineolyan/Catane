@@ -17,8 +17,8 @@ exports.appServer = function() {
 
 	// Create application
 	var Server = require('server/server');
-	var Socket = require('server/com/sockets');
-	var cUtil = require('server/game/util');
+	var Socket = require('server/core/com/sockets');
+	var cUtil = require('server/core/game/util');
 	var idGenerator = cUtil.idGenerator;
 
 	var catane = new Server();
