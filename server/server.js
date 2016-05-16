@@ -3,8 +3,8 @@ import User from 'server/core/com/user';
 import Games from 'server/catane/game/games/games';
 import Plays from 'server/catane/game/plays/plays';
 import { idGenerator } from 'server/core/game/util';
+import { logger } from 'libs/log/logger';
 
-const logger = global.logger;
 const TIME_TO_RECONNECT = global.TIME_TO_RECONNECT;
 
 export default class Server {

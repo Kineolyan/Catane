@@ -1,5 +1,4 @@
-import {CardGenerator} from 'server/catane/elements/cards/generator';
-const logger = global.logger;
+import { logger } from 'libs/log/logger';
 
 export default class AGame {
 	/**

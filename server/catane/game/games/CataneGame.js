@@ -10,9 +10,8 @@ import { Reply } from 'server/core/com/sockets.js';
 import AGame from 'server/core/game/games/AGame';
 
 import { shuffle } from 'libs/collections/arrays';
+import { logger } from 'libs/log/logger';
 import _ from 'lodash';
-
-const logger = global.logger;
 
 export default class CataneGame extends AGame {
 	/**

@@ -11,8 +11,6 @@ exports.appServer = function() {
 	require('babel/register');
 
 	// Create environment
-	var logging = require('libs/log/logger');
-	global.logger = logging.createLogger(logging.Level.ALL);
 	global.TIME_TO_RECONNECT = 15 /* min */ * 60 /* sec */ * 1000;
 
 	// Create application

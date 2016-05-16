@@ -1,4 +1,4 @@
-const logger = global.logger;
+import { logger } from 'libs/log/logger';
 
 export class Reply {
 	constructor(player) {

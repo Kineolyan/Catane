@@ -1,7 +1,6 @@
 import CataneGame from 'server/catane/game/games/CataneGame';
 import {idGenerator} from 'server/core/game/util';
-
-const logger = global.logger;
+import { logger } from 'libs/log/logger';
 
 export default class Games {
 	constructor() {
