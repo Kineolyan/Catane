@@ -1,4 +1,4 @@
-import Socket from './sockets';
+import Socket from 'server/core/com/sockets';
 import { idGenerator } from 'server/core/game/util.js';
 import { MockSocketIO } from 'libs/mocks/sockets';
 

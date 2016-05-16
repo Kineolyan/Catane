@@ -1,5 +1,5 @@
-import Game from './game';
-import { idGenerator } from 'server/core/game/util';
+import CataneGame from 'server/catane/game/games/CataneGame';
+import {idGenerator} from 'server/core/game/util';
 
 const logger = global.logger;
 
@@ -25,7 +25,7 @@ export default class Games {
 			return { game: { id: game.id } };
 		});
 
-		user.on('game:list', () => ({ games: this.list() }) );
+		user.on('game:list', () => ({ games: this.list() }));
 
 		user.on('game:join', gameId => {
 			var game = this._games.get(gameId);
@@ -101,10 +101,10 @@ export default class Games {
 
 	/**
 	 * Create a new game.
-	 * @return {Game} the newly created game
+	 * @return {CataneGame} the newly created game
 	 */
 	create() {
-		var game = new Game(this.nextGameId());
+		var game = new CataneGame(this.nextGameId());
 		this._games.set(game.id, game);
 		logger.log(`[Server] New game created ${game.id}`);
 
@@ -113,7 +113,7 @@ export default class Games {
 
 	/**
 	 * Destroys a game.
-	 * @param {Game} game the game to destroy
+	 * @param {CataneGame} game the game to destroy
 	 */
 	destroy(game) {
 		if (game.players.size === 0) {
@@ -127,14 +127,14 @@ export default class Games {
 	/**
 	 * Joins a player to a game.
 	 * This
-	 * @param {Game} game the game to join
+	 * @param {CataneGame} game the game to join
 	 * @param {User} user the player joining the game
 	 */
 	join(game, user) {
 		if (game === user.player.game) {
 			throw new Error('Duplicated player in game ' + game.id);
 		}
-		
+
 		if (undefined !== user.player.game) {
 			let leavedGame = user.player.game;
 			leavedGame.remove(user);
@@ -168,7 +168,7 @@ export default class Games {
 
 	/**
 	 * Broadcasts players list to all players of a game.
-	 * @param  {Game} game players of the game to consider
+	 * @param  {CataneGame} game players of the game to consider
 	 */
 	static broadcastPlayers(game) {
 		var players = Array.from(game.players, (player) => ({ name: player.name, id: player.id }));

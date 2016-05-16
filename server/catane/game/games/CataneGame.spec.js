@@ -1,4 +1,4 @@
-import Game from './game';
+import CataneGame from 'server/catane/game/games/CataneGame';
 
 import {MockSocket} from 'server/core/com/mocks';
 import BasePlayer from 'server/core/game/players/player';
@@ -6,7 +6,7 @@ import * as starter from './game-spec.starter.js';
 
 describe('Game', function () {
 	beforeEach(function () {
-		this.game = new Game(1);
+		this.game = new CataneGame(1);
 	});
 
 	describe('after creation', function () {

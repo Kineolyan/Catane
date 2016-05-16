@@ -2,8 +2,8 @@ import Location from 'server/catane/elements/geo/location';
 import Tile from 'server/catane/elements/geo/tile';
 import City from 'server/catane/elements/geo/city';
 import Path from 'server/catane/elements/geo/path';
-import { catane } from './dices';
-import { RandomResources } from './resources';
+import { catane } from 'server/catane/elements/boards/generators/dices';
+import { RandomResources } from 'server/catane/elements/boards/generators/resources';
 import * as geo from 'server/catane/elements/geo/geo';
 
 export class RoundGenerator {

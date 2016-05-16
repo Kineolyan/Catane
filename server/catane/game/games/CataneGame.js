@@ -7,92 +7,21 @@ import { CardGenerator } from 'server/catane/elements/cards/generator';
 import CatanePlayer from 'server/catane/game/players/CatanePlayer.js';
 
 import { Reply } from 'server/core/com/sockets.js';
+import AGame from 'server/core/game/games/AGame';
 
 import { shuffle } from 'libs/collections/arrays';
 import _ from 'lodash';
 
 const logger = global.logger;
 
-export default class Game {
+export default class CataneGame extends AGame {
 	/**
 	 * Constructor
 	 * @param  {Object} id player's id
 	 */
 	constructor(id) {
-		this._id = id;
-		this._players = new Set();
-		this._started = false;
+		super(id, 2, 4);
 		this._cardGenerator = new CardGenerator();
-	}
-
-	/**
-	 * Gets the id of the player
-	 * @return {Number} player's id
-	 */
-	get id() {
-		return this._id;
-	}
-
-	/**
-	 * Gets the list of players
-	 * @return {Set} the game's player
-	 */
-	get players() {
-		return this._players;
-	}
-
-	/**
-	 * Indicates if the game has started.
-	 * @return {Boolean} true if the game started, false otherwise
-	 */
-	isStarted() {
-		return this._started;
-	}
-
-	/**
-	 * Adds a new player to the game.
-	 * @param {User} user user holding a player to add
-	 * @return {boolean} true if the player is added, false if it was already
-	 *   present.
-	 */
-	add(user) {
-		const corePlayer = user.player;
-		if (!this._players.has(corePlayer)) {
-			// Decorates the player for the game
-			const gamePlayer = new CatanePlayer(corePlayer);
-			user.player = gamePlayer;
-			
-			this._players.add(gamePlayer);
-			gamePlayer.game = this;
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	remove(user) {
-		const gamePlayer = user.player;
-		if (this._players.has(gamePlayer)) {
-			this._players.delete(gamePlayer);
-			gamePlayer.game = undefined;
-			user.player = gamePlayer._player;
-			
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Gets the player of a given id.
-	 * @param {Number} pId the player id
-	 * @return {BasePlayer|null} the player or null if it does not exist
-	 */
-	getPlayer(pId) {
-		for (let player of this._players) {
-			if (player.id === pId) { return player; }
-		}
-		return null;
 	}
 
 	/**
@@ -335,35 +264,7 @@ export default class Game {
 		return this._referee.currentPlayer;
 	}
 
-	/**
-	 * Emits the message on the channel to all players of the game.
-	 * @param {BasePlayer|String} player the current player, defined to exclude the player for the broadcast.
-	 * @param {String|Object=} channel name of the event
-	 * @param {Object=} message message to send
-	 */
-	emit(player, channel, message) {
-		var excludedId;
-		if (typeof player === 'string') {
-			// It does not define any player
-			message = channel;
-			channel = player;
-			excludedId = -1;
-		} else {
-			excludedId = player.id;
-		}
-
-		this._players.forEach(player => {
-			if (player.id !== excludedId) { player.emit(channel, message); }
-		});
-	}
-
-	start() {
-		if (this._started) { throw new Error(`Game ${this._id} already started`); }
-		if (this._players.size < 2) { throw new Error(`Not enough players in the game (${this._players.size})`); }
-
-		this._started = true;
-		logger.info(`Game ${this.id} starting ...`);
-
+	doStart() {
 		var boardDescription = this.generatePlay();
 		var playerOrder = this.prepareGame();
 
@@ -429,5 +330,9 @@ export default class Game {
 		// TODO send to each player their resources
 
 		logger.info(`Game ${this.id} prepared and running !`);
+	}
+
+	createGamePlayer(corePlayer) {
+		return new CatanePlayer(corePlayer);
 	}
 }

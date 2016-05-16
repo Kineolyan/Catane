@@ -1,4 +1,4 @@
-import Location from './location';
+import Location from 'server/catane/elements/geo/location';
 
 export default class Tile {
 

@@ -59,7 +59,7 @@ export class BasePlayer {
 
 	/**
 	 * Gets the game the player belongs to.
-	 * @return {Game} the game
+	 * @return {CataneGame} the game
 	 */
 	get game() {
 		return this._game;
@@ -67,7 +67,7 @@ export class BasePlayer {
 
 	/**
 	 * Sets the game the player has joined
-	 * @param  {Game} game the joined game
+	 * @param  {CataneGame} game the joined game
 	 */
 	set game(game) {
 		this._game = game;
@@ -183,7 +183,7 @@ export class BasePlayerDecorator {
 
 	/**
 	 * Gets the game the player belongs to.
-	 * @return {Game} the game
+	 * @return {CataneGame} the game
 	 */
 	get game() {
 		return this._player.game;
@@ -191,7 +191,7 @@ export class BasePlayerDecorator {
 
 	/**
 	 * Sets the game the player has joined
-	 * @param  {Game} game the joined game
+	 * @param  {CataneGame} game the joined game
 	 */
 	set game(game) {
 		this._player.game = game;
