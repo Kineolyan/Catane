@@ -14,7 +14,7 @@ export function* entries(obj) {
 export function object(values, iteratee, thisArg) {
 	var result = {};
 	_.forEach(values, function(value, key) {
-		const [v, k] = iteratee.call(thisArg, value, key);
+		const [k, v] = iteratee.call(thisArg, value, key);
 		result[k] = v;
 	});
 
