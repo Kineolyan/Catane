@@ -1,5 +1,5 @@
 import CataneGame from 'server/catane/game/games/CataneGame';
-import {idGenerator} from 'server/core/game/util';
+import { idGenerator } from 'server/core/game/util';
 import { logger } from 'libs/log/logger';
 
 export default class Games {

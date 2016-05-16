@@ -46,7 +46,7 @@ describe('BasePlayer', function () {
 		});
 
 		it('returns basic object with name and id', function () {
-			expect(this.player.toJson()).toEqual({id: 1342, name: 'Olivier'});
+			expect(this.player.toJson()).toEqual({ id: 1342, name: 'Olivier' });
 		});
 	});
 
@@ -90,7 +90,7 @@ describe('BasePlayer', function () {
 
 		it('notifies others of the change', function () {
 			var message = this.another.lastMessage('player:nickname');
-			expect(message.player).toEqual({id: 1, name: 'Olivier'});
+			expect(message.player).toEqual({ id: 1, name: 'Olivier' });
 		});
 	});
 

@@ -1,5 +1,5 @@
 import * as maps from 'libs/collections/maps.js';
-import {BasePlayerDecorator} from 'server/core/game/players/player.js';
+import { BasePlayerDecorator } from 'server/core/game/players/player.js';
 
 export class CatanePlayer extends BasePlayerDecorator {
 

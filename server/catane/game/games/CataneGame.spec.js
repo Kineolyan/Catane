@@ -1,6 +1,6 @@
 import CataneGame from 'server/catane/game/games/CataneGame';
 
-import {MockSocket} from 'server/core/com/mocks';
+import { MockSocket } from 'server/core/com/mocks';
 import BasePlayer from 'server/core/game/players/player';
 import * as starter from './game-spec.starter.js';
 

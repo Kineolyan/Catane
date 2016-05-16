@@ -4,6 +4,8 @@ export default class AGame {
 	/**
 	 * Constructor
 	 * @param  {Object} id player's id
+	 * @param {Number} minPlayers minimum number of players for a game
+	 * @param {Number?} maxPlayers maximum number of players for a game
 	 */
 	constructor(id, minPlayers, maxPlayers) {
 		this._id = id;
