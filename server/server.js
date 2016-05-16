@@ -1,6 +1,7 @@
 import BasePlayer from 'server/core/game/players/player';
 import User from 'server/core/com/user';
-import Games from 'server/catane/game/games/games';
+import Games from 'server/core/game/games/games';
+import CataneGame from 'server/catane/game/games/CataneGame';
 import Plays from 'server/catane/game/plays/plays';
 import { idGenerator } from 'server/core/game/util';
 import { logger } from 'libs/log/logger';
@@ -14,7 +15,7 @@ export default class Server {
 		this._nextPlayerId = idGenerator();
 
 		this._resources = [
-			new Games(),
+			(new Games()).registerGame(CataneGame),
 			new Plays()
 		];
 	}

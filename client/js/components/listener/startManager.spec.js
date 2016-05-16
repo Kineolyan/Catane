@@ -35,8 +35,10 @@ describe('StartManager', function() {
 			this.mgr.createGame();
 		});
 
-		it('sends an emtpy message on channel ' + Channel.gameCreate, function() {
+		it('sends a message on channel ' + Channel.gameCreate, function() {
 			expect(this.socket.messages(Channel.gameCreate)).toHaveLength(1);
+			const message = this.socket.lastMessage(Channel.gameCreate);
+			expect(message).toEqual({ game: 'catane' });
 		});
 	});
 

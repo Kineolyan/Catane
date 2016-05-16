@@ -1,11 +1,35 @@
-import CataneGame from 'server/catane/game/games/CataneGame';
-import { idGenerator } from 'server/core/game/util';
-import { logger } from 'libs/log/logger';
+import CataneGame from '../../../catane/game/games/CataneGame';
+import { idGenerator } from '../util';
+import { logger } from '../../../../libs/log/logger';
 
 export default class Games {
 	constructor() {
+		this._classes = new Map();
 		this._games = new Map();
 		this.nextGameId = idGenerator();
+	}
+
+	/**
+	 * Registers a new kind of game.
+	 * @param {Object} gameClass class of the game
+	 * @param {String} name name of a game
+	 * @returns {Games} this
+	 * @throws Error if name is not defined
+	 */
+	registerGame(gameClass, name) {
+		if (name === undefined) {
+			name = gameClass.name;
+		}
+		if (name === undefined) {
+			throw new Error(`Name not defined for ${gameClass}`);
+		}
+
+		var previous = this._classes.get(name);
+		if (previous !== undefined) {
+			logger.log(`Replacing game implementation for ${name} ${previous} by ${gameClass}`);
+		}
+		this._classes.set(name, gameClass);
+		return this;
 	}
 
 	/**
@@ -13,8 +37,8 @@ export default class Games {
 	 * @param {User} user user to register
 	 */
 	register(user) {
-		user.on('game:create', () => {
-			var game = this.create();
+		user.on('game:create', ({ game: key }) => {
+			const game = this.create(key);
 			game.add(user);
 
 			user.broadcast('game:list', {
@@ -100,9 +124,15 @@ export default class Games {
 
 	/**
 	 * Create a new game.
+	 * @param {String} key name of a game to create
 	 * @return {CataneGame} the newly created game
 	 */
-	create() {
+	create(key) {
+		const gameClass = this._classes.get(key);
+		if (gameClass === undefined) {
+			throw new Error(`No game for ${key}`);
+		}
+
 		var game = new CataneGame(this.nextGameId());
 		this._games.set(game.id, game);
 		logger.log(`[Server] New game created ${game.id}`);

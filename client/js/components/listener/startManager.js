@@ -87,7 +87,7 @@ export default class StartManager extends Manager {
 	 * @see #gameCreate for answer
 	 */
 	createGame() {
-		this._socket.emit(Channel.gameCreate);
+		this._socket.emit(Channel.gameCreate, { game: 'catane' });
 	}
 
 	/**

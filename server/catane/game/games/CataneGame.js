@@ -23,6 +23,10 @@ export default class CataneGame extends AGame {
 		this._cardGenerator = new CardGenerator();
 	}
 
+	static get name() {
+		return 'catane';
+	}
+
 	/**
 	 * Picks a city for a player.
 	 * @param {BasePlayer} player the player wanting the location

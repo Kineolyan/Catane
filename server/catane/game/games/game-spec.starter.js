@@ -7,7 +7,8 @@ import User from 'server/core/com/user';
 import BasePlayer from 'server/core/game/players/player.js';
 import CatanePlayer from 'server/catane/game/players/CatanePlayer';
 // Managers
-import Games from 'server/catane/game/games/games.js';
+import Games from 'server/core/game/games/games.js';
+import CataneGame from 'server/catane/game/games/CataneGame';
 import Plays from 'server/catane/game/plays/plays.js';
 import * as maps from 'libs/collections/maps.js';
 
@@ -150,7 +151,7 @@ export function createGame(nbPlayers) {
 		let p = createPlayer();
 		players.push(p);
 		if (i === 0) {
-			p.client.receive('game:create');
+			p.client.receive('game:create', { game: CataneGame.name });
 			let message = p.client.lastMessage('game:create');
 			gameId = message.game.id;
 		} else {
@@ -162,7 +163,7 @@ export function createGame(nbPlayers) {
 }
 
 const playerId = idGenerator();
-const games = new Games();
+const games = new Games().registerGame(CataneGame);
 const plays = new Plays();
 class LocalPlayer {
 	constructor(client, user) {
@@ -197,7 +198,7 @@ export function createLocalPlayer(name) {
 }
 
 export function createLocalGame(nbPlayers) {
-	var game = games.create();
+	var game = games.create('catane');
 	var players = [];
 	for (let i = 0; i < nbPlayers; i += 1) {
 		let p = createLocalPlayer();
