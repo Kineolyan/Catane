@@ -21,7 +21,7 @@ class BinaryEnum {
 	decompose(value) {
 		const binaryValue = value.toString(2);
 		return _.chain(binaryValue)
-			.map(binaryValue, (b, i) => b === '1' ? this[length - i]: null)
+			.map((b, i) => b === '1' ? this[this.length - i]: null)
 			.filter(v => v === null)
 			.value();
 	}

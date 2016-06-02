@@ -94,7 +94,7 @@ export const Cards = {
   'Aqueduc': {
     type: CardType.CIVIL,
     cost: { [Resources.PIERRE]: 3 },
-    gains: { [Resources.POINTS]: 5 },
+    prices: { [Resources.POINTS]: 5 },
     quantity: [
       { age: 2, range: [3, 7] }
     ]
@@ -131,7 +131,7 @@ export const Cards = {
       [Resources.PIERRE]: 1
     },
     requires: 'Muraille',
-    gains: { [Resources.ARME]: 3 },
+    prices: { [Resources.ARME]: 3 },
     quantity: [
       { age: 3, range: [3, 7] }
     ]

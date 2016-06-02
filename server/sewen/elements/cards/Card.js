@@ -1,50 +1,8 @@
 import _ from 'lodash';
-import { Resources } from 'server/sewen/elements/cards/cards';
 import { effects } from 'server/sewen/elements/effects/effects';
-
-// class ForkedCost {
-// 	constructor(resources) {
-// 		this._resources = resources;
-// 		this._gains = [];
-// 		this._forks = [];
-// 	}
-//
-// 	gain(resource, value) {
-// 		if (this._resources.has(resource)) {
-// 			this._gains[resource] = value;
-// 		}
-// 	}
-//
-// 	fork() {
-// 		const fork = new ForkedCost(this._resources);
-// 		this._forks.push(fork);
-// 		return fork;
-// 	}
-// }
-
-class Cost {
-	constructor(wanted) {
-		this._wanted = _.clone(wanted);
-		this._resources = new Set(_.keys(this._wanted));
-		// this._forks = [];
-	}
-
-	gain(resource, value) {
-		if (this._resources.has(resource)) {
-			this._wanted[resource] -= value;
-		}
-	}
-
-	// fork() {
-	// 	const fork = new ForkedCost(this._resources);
-	// 	this._forks.push(fork);
-	// 	return fork;
-	// }
-
-	isPaid() {
-		return _.every(this._wanted, gain => gain <= 0);
-	}
-}
+import getResourcesMixin from 'server/sewen/elements/cards/ResourceMixins';
+import getWarMixin from 'server/sewen/elements/cards/WarMixins';
+import * as mixins from 'libs/mixins';
 
 export class Card {
 	constructor(name, definition) {
@@ -56,6 +14,10 @@ export class Card {
 		return this._name;
 	}
 
+	get ages() {
+		return this._definition.quantity.map(q => q.age);
+	}
+
 	get cost() {
 		return this._definition.cost;
 	}
@@ -64,105 +26,55 @@ export class Card {
 		return this._definition.gains;
 	}
 
-	/**
-	 * Decides if a player can acquire this card.
-	 * @param {SewenPlayer} player player to consider
-	 * @returns {boolean|String} true if possible, the reason otherwise
-	 */
-	canBeAcquiredBy(player) {
-		// Prevent duplicates
-		if (player.hasCard(this._name)) {
-			return 'Owned by user';
-		}
-
-		// Check for automatic build
-		const requirement = this._definition.requires;
-		if (requirement !== undefined && player.hasCard(requirement)) {
-			return true;
-		}
-
-		// Check for resources
-		// FIXME phase still to define
-		return player.hasResources(this._definition.cost) ?
-			true : 'Not enough resources';
-	}
-}
-
-export class BasicCard extends Card {
-	constructor(name, definition) {
-		super(name, definition);
-	}
-
-	canProvide() {
-		return false;
-	}
-}
-
-export class ResourcesCard extends Card {
-	constructor(name, definition) {
-		super(name, definition);
-	}
-
-	canProvide({ resources }) {
-		const cost = _.reduce(this.gains, (cost, gain, resource) => {
-			cost.gain(resource, gain);
-			return cost;
-		}, new Cost(resources));
-
-		return cost.isPaid();
-	}
-}
-
-export class MixedResourceCard extends Card {
-	constructor(name, definition) {
-		super(name, definition);
-
-		const resource = _.keys(this.gains)[0];
-		this._mixedResources = new Set(Resources.decompose(resource));
-		this._gain = this._gain[resource];
-	}
-
-	canProvide({ resources }) {
-		const cost = new Cost(resources);
-		const wantedResource = _.keys(resources)[0];
-		if (_.includes(this._mixedResources, wantedResource)) {
-			cost.gain(wantedResource, this._gain);
-		}
-
-		return cost.isPaid();
-	}
-}
-
-export class EffectCard extends Card {
-	constructor(name, definition) {
-		super(name, definition);
-		if (this._definition.effect !== undefined) {
-			this._effect = effects.get(this._definition.effect);
+	getCountFor(nbPlayers, age) {
+		const ageQuantity = this._definition.quantity.find(q => q.age === age);
+		if (ageQuantity !== undefined) {
+			return _(ageQuantity.range)
+				.filter(minNb => minNb <= nbPlayers)
+				.size();
 		} else {
-			throw new Error(`Card ${name} (${definition} has no effect`);
+			return 0;
 		}
 	}
 
-	canProvide({ resources, fee }) {
-		return false;
-	}
+	// /**
+	//  * Decides if a player can acquire this card.
+	//  * @param {SewenPlayer} player player to consider
+	//  * @returns {boolean|String} true if possible, the reason otherwise
+	//  */
+	// canBeAcquiredBy(player) {
+	// 	// Prevent duplicates
+	// 	if (player.hasCard(this._name)) {
+	// 		return 'Owned by user';
+	// 	}
+	//
+	// 	// Check for automatic build
+	// 	const requirement = this._definition.requires;
+	// 	if (requirement !== undefined && player.hasCard(requirement)) {
+	// 		return true;
+	// 	}
+	//
+	// 	// Check for resources
+	// 	// FIXME phase still to define
+	// 	return player.hasResources(this._definition.cost) ?
+	// 		true : 'Not enough resources';
+	// }
 }
 
 export function makeCard(name, definition) {
+	const card = new Card(name, definition);
+	const mixins = [];
+
+	mixins.push(getResourcesMixin(definition));
+	mixins.push(getWarMixin(definition));
+
+	// Effect mixin
 	if (definition.effect) {
-		return new EffectCard(name, definition);
+		mixins.push(effects.get(this._definition.effect));
 	}
 
-	const gains = _.size(definition.gains);
-	if (gains.length > 1) {
-		return new ResourcesCard(name, definition);
-	} else if (gains.length === 0) {
-		return new BasicCard(name, definition);
-	} else {
-		// Choose between mixed or single resource
-		const singleResource = gains[0];
-		return Resources.isValue(singleResource) ?
-			new ResourcesCard(name, definition) : new MixedResourceCard(name, definition);
-	}
+	mixins.apply(card, mixins);
+
+	return card;
 }
 
