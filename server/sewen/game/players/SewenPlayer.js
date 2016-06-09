@@ -1,4 +1,4 @@
-import {makeEnum} from 'libs/enum';
+import { makeEnum } from 'libs/enum';
 
 import { BasePlayerDecorator } from 'server/core/game/players/player';
 

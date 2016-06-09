@@ -1,7 +1,9 @@
-import {makeEnum} from 'libs/enum';
+import _ from 'lodash';
+
+import { makeEnum } from 'libs/enum';
 
 const Directions = makeEnum(['LEFT', 'RIGHT', 'BOTH']);
-import {Resources} from 'server/sewen/elements/cards/cards';
+import { Resources } from 'server/sewen/elements/cards/cards';
 
 export default {
 	name() {

@@ -20,9 +20,17 @@ class BinaryEnum {
 
 	decompose(value) {
 		const binaryValue = value.toString(2);
+		const size = binaryValue.length - 1;
 		return _.chain(binaryValue)
-			.map((b, i) => b === '1' ? this[this.length - i]: null)
-			.filter(v => v === null)
+			.map((b, i) => {
+				if (b === '1') {
+					const enumValue = 1 << (size - i);
+					return this[this[enumValue]];
+				} else {
+					return null;
+				}
+			})
+			.filter(v => v !== null)
 			.value();
 	}
 }

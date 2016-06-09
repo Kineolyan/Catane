@@ -2,7 +2,6 @@ import _ from 'lodash';
 import { effects } from 'server/sewen/elements/effects/effects';
 import getResourcesMixin from 'server/sewen/elements/cards/ResourceMixins';
 import getWarMixin from 'server/sewen/elements/cards/WarMixins';
-import * as mixins from 'libs/mixins';
 
 export class Card {
 	constructor(name, definition) {
@@ -63,17 +62,16 @@ export class Card {
 
 export function makeCard(name, definition) {
 	const card = new Card(name, definition);
-	const mixins = [];
 
-	mixins.push(getResourcesMixin(definition));
-	mixins.push(getWarMixin(definition));
-
+	const mixins = [
+		getResourcesMixin(definition),
+		getWarMixin(definition)
+	];
 	// Effect mixin
 	if (definition.effect) {
 		mixins.push(effects.get(this._definition.effect));
 	}
-
-	mixins.apply(card, mixins);
+	mixins.forEach(mixin => mixin.mixWith(card));
 
 	return card;
 }

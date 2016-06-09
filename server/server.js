@@ -6,8 +6,6 @@ import Plays from 'server/catane/game/plays/plays';
 import { idGenerator } from 'server/core/game/util';
 import { logger } from 'libs/log/logger';
 
-const TIME_TO_RECONNECT = global.TIME_TO_RECONNECT;
-
 export default class Server {
 	constructor(id = Date.now()) {
 		this._id = id;
@@ -68,7 +66,7 @@ export default class Server {
 					// No reconnection in the ellapsed time
 					this.doDisconnect(socket);
 				}
-			}, TIME_TO_RECONNECT);
+			}, Server.TIME_TO_RECONNECT);
 		} else {
 			this.doDisconnect(socket);
 		}
@@ -116,3 +114,5 @@ export default class Server {
 		}
 	}
 }
+
+Server.TIME_TO_RECONNECT = 60 /* secs */ * 1000;

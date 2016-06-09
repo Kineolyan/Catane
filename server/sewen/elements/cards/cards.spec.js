@@ -7,7 +7,7 @@ describe('cards', function () {
 		const invalidCards = _.chain(Cards)
 			.map((card, name) => [card, name])
 			.filter(([card, ]) => {
-				const gains = Object.keys(card.gains);
+				const gains = Object.keys(card.gains || {});
 				return gains.length > 1 && Array.some(gains, gain => !Resources.isValue(gain));
 			}).map(([, name]) => name)
 			.value();

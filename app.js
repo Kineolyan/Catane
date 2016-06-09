@@ -10,11 +10,11 @@ exports.appServer = function() {
 	// Requiring this polyfill to have a fully ES6 environment (Map, Symbol, ...)
 	require('babel/register');
 
-	// Create environment
-	global.TIME_TO_RECONNECT = 15 /* min */ * 60 /* sec */ * 1000;
-
 	// Create application
 	var Server = require('server/server');
+	Server.TIME_TO_RECONNECT = 15 /* min */ * 60 /* sec */ * 1000;
+
+	// Create environment
 	var Socket = require('server/core/com/sockets');
 	var cUtil = require('server/core/game/util');
 	var idGenerator = cUtil.idGenerator;

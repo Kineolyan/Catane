@@ -107,7 +107,7 @@ describe('Server', function() {
 			setTimeout(() => {
 				expect(this.server.users).not.toHaveKey(this.socket.id);
 				done();
-			}, global.TIME_TO_RECONNECT * 1.5);
+			}, Server.TIME_TO_RECONNECT * 1.5);
 		});
 	});
 

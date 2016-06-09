@@ -4,4 +4,6 @@ require('babel/register');
 // Create environment
 var logging = require('libs/log/logger');
 logging.logger.configure(logging.Level.SILENT);
-global.TIME_TO_RECONNECT = 250; // 500 ms
+
+const Server = require('server/server');
+Server.TIME_TO_RECONNECT = 250; // 500 ms
