@@ -63,7 +63,7 @@ describe('makeCard', function () {
 	});
 
 	it('has all required methods', function () {
-		['canProvide', /*'getCostFor', */'getWarPrice'].forEach(method => {
+		['canProvide', 'getCostFor', 'getWarPrice'].forEach(method => {
 			expect(this.card[method]).toBeA(Function);
 		});
 	});

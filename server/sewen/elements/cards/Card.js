@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { effects } from 'server/sewen/elements/effects/effects';
 import getResourcesMixin from 'server/sewen/elements/cards/ResourceMixins';
 import getWarMixin from 'server/sewen/elements/cards/WarMixins';
+import getCostMixin from 'server/sewen/elements/cards/CostMixins';
 
 export class Card {
 	constructor(name, definition) {
@@ -65,7 +66,8 @@ export function makeCard(name, definition) {
 
 	const mixins = [
 		getResourcesMixin(definition),
-		getWarMixin(definition)
+		getWarMixin(definition),
+		getCostMixin(definition)
 	];
 	// Effect mixin
 	if (definition.effect) {

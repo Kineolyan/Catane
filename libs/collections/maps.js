@@ -20,3 +20,17 @@ export function object(values, iteratee, thisArg) {
 
 	return result;
 }
+
+export function defaultValue(map, key) {
+	return map[key] || 0;
+}
+
+export function increment(map, key, value) {
+	map[key] = defaultValue(map, key) + value;
+}
+
+export function min(map, key, value) {
+	if (_.isNumber(value)) {
+		map[key] = Math.min(defaultValue(map, key), value);
+	}
+}

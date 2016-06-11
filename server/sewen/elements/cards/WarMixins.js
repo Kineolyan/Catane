@@ -11,11 +11,11 @@ export const EmptyMixin = new Mixin('EmptyWarMixin')
 export const WarMixin = new Mixin('WarMixin')
 	.withMethods({
 		getWarPrice() {
-			return this.gain()[Resources.ARME];
+			return this.gains[Resources.ARME];
 		}
 	});
 
-export default function(definition) {
-	const gain = definition.gain || {};
+export default function (definition) {
+	const gain = definition.gains || {};
 	return (gain[Resources.ARME] || 0) > 0 ? WarMixin : EmptyMixin;
 }
