@@ -1,7 +1,7 @@
 'use strict';
 
 (function() {
-var n_util = require('util');
+const nodeUtils = require('util');
 
 function asMap(array) {
 	var map = {};
@@ -28,7 +28,7 @@ var arrayMatchers = {
 			compare: function(actual, length) {
 				var actualLength = actual.length;
 				var result = { pass: actualLength === length };
-				result.message = 'Expecting ' + actual
+				result.message = 'Expecting ' + nodeUtils.inspect(actual)
 					+ (result.pass === true ? ' not' : '')
 					+ ' to have length of ' + length;
 				if (!result.pass) {
@@ -61,7 +61,7 @@ var arrayMatchers = {
 				if (actual.isEmpty !== undefined) { empty = actual.isEmpty(); }
 				else if (actual.size !== undefined) { empty = actual.size === 0; }
 				else if (actual.length !== undefined) { empty = actual.length === 0; }
-				else { throw new Error('No function to get size of ' + n_util.inspect(actual)); }
+				else { throw new Error('No function to get size of ' + nodeUtils.inspect(actual)); }
 
 				var result = { pass: empty };
 				result.message = 'Expecting ' + actual
@@ -75,14 +75,14 @@ var arrayMatchers = {
 	toHaveMembers: function(util, equalityTesters) {
 		return {
 			compare: function(actual, expected) {
-				var result = { pass: false }
+				var result = { pass: false };
 				if (actual.length === expected.length) {
 					result.pass = util.equals(asMap(actual), asMap(expected), equalityTesters);
 				}
 
-				result.message = 'Expecting ' + n_util.inspect(actual)
+				result.message = 'Expecting ' + nodeUtils.inspect(actual)
 					+ (result.pass === true ? ' not' : '')
-					+ ' to have members of ' + n_util.inspect(expected);
+					+ ' to have members of ' + nodeUtils.inspect(expected);
 
 				return result;
 			}

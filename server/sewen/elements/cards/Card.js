@@ -71,7 +71,7 @@ export function makeCard(name, definition) {
 	];
 	// Effect mixin
 	if (definition.effect) {
-		mixins.push(effects.get(this._definition.effect));
+		mixins.push(effects.get(definition.effect));
 	}
 	mixins.forEach(mixin => mixin.mixWith(card));
 

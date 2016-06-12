@@ -120,7 +120,7 @@ export default class AGame {
 		if (this._players.size < this._options.minPlayers) {
 			throw new Error(`Not enough players in the game. Condition: ${this._players.size} >= ${this._options.minPlayers}`);
 		} else if (this._players.size > this._options.maxPlayers) {
-			throw new Error(`Too enough players in the game. Condition: ${this._players.size} <= ${this._options.maxPlayers}`);
+			throw new Error(`Too many players in the game. Condition: ${this._players.size} <= ${this._options.maxPlayers}`);
 		}
 
 		this._started = true;

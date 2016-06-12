@@ -70,6 +70,9 @@ export class BasePlayer {
 	 * @param  {CataneGame} game the joined game
 	 */
 	set game(game) {
+		if (game && this._game) {
+			throw new Error(`Player ${this._id} (${this._name} already joined game ${this._game}. Cannot be added to ${game}`);
+		}
 		this._game = game;
 	}
 

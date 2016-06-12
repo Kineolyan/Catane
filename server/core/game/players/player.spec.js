@@ -39,6 +39,27 @@ describe('BasePlayer', function () {
 		});
 	});
 
+	describe('@game', function() {
+		beforeEach(function () {
+			this.game = { id: 'game' };
+			this.player = new BasePlayer(this.socket.toSocket());
+			this.player.game = this.game;
+		});
+
+		it('gets and sets the game the player belongs to', function() {
+			expect(this.player.game).toBe(this.game);
+		});
+
+		it('can unsets player\'s game', function() {
+			this.player.game = null;
+			expect(this.player.game).toBe(null);
+		});
+
+		it('throws if the player joins a game while already in another', function() {
+			expect(() => this.player.game = 'another game').toThrowError(/already joined game/);
+		});
+	});
+
 	describe('#toJson', function () {
 		beforeEach(function () {
 			this.player = new BasePlayer(this.socket.toSocket(), 1342);

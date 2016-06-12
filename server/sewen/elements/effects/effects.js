@@ -1,4 +1,5 @@
 import DiscountEffect from 'server/sewen/elements/effects/DiscountEffect';
+import ScienceBonusEffect from 'server/sewen/elements/effects/ScienceBonusEffect';
 
 export class EffectRegistry {
 	static get PARAMETER_EXPR() {
@@ -17,9 +18,9 @@ export class EffectRegistry {
 		if (!this.isParametric(name)) {
 			return this.safeGet(name);
 		} else {
-			const [effectName, parameters] = EffectRegistry.PARAMETER_EXPR.match(name);
+			const [, effectName, parameters] = EffectRegistry.PARAMETER_EXPR.exec(name);
 			const EffectClass = this.safeGet(effectName);
-			return new EffectClass(...parameters.split(/\s*,/));
+			return new EffectClass(...parameters.split(/\s*,\s*/));
 		}
 	}
 
@@ -38,5 +39,5 @@ export class EffectRegistry {
 }
 
 export const effects = new EffectRegistry();
-
 effects.registerEffect(DiscountEffect);
+effects.registerEffect(ScienceBonusEffect);

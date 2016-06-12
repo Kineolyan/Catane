@@ -1,33 +1,39 @@
-import _ from 'lodash';
+import Mixin from 'libs/mixins';
 
-import { makeEnum } from 'libs/enum';
+import {Resources} from 'server/sewen/elements/cards/cards';
+import {Side} from 'server/sewen/game/players/SewenPlayer';
+import {DEFAULT_COST, checkSide} from 'server/sewen/elements/cards/CostMixins';
 
-const Directions = makeEnum(['LEFT', 'RIGHT', 'BOTH']);
-import { Resources } from 'server/sewen/elements/cards/cards';
-
-export default {
-	name() {
+class DiscountEffect extends Mixin {
+	static get name() {
 		return 'discount';
-	},
-	setUp(card, resourceType, direction, cost) {
-		card._resources = new Set(
-			resourceType === 'raw' ?
-				[Resources.ARGILE, Resources.PIERRE, Resources.BOIS, Resources.MINERAI] :
-				[Resources.VERRE, Resources.TISSU, Resources.PAPIER]
-		);
-		card._direction = Directions[direction.toUpperCase()];
-		card._cost = parseInt(cost, 10);
-	},
-	methods: {
-		getCostFor(usage, side) {
-			// Ensure that all resources are of the resourceType
-			if (this._direction === side && _.every(usage, (count, resource) => this._resources.has(resource))) {
-				return this._cost * _.sum(usage);
-			} else if (this._direction !== side) {
-				throw new Error(`Invalid direction to pay for. Expect ${this._direction} but got ${side}`);
-			} else {
-				throw new Error(`Invalid resources to be paid: ${usage}`);
-			}
-		}
 	}
-};
+
+	constructor(resourceType, direction, cost) {
+		super('DiscountEffect');
+		const attributes = {
+			_resources: new Set(
+				resourceType === 'raw' ?
+					[Resources.ARGILE, Resources.PIERRE, Resources.BOIS, Resources.MINERAI] :
+					[Resources.VERRE, Resources.TISSU, Resources.PAPIER]
+			),
+			_direction: direction === 'both' ? null : Side[direction.toUpperCase()],
+			_cost: parseInt(cost, 10)
+		};
+		if (attributes._direction !== null) {
+			checkSide(attributes._direction);
+		}
+
+		this.initialize(card => {
+			Object.assign(card, attributes);
+		}).withMethods({
+			getCostFor(resource, side) {
+				const isSideOk = this._direction === null || this._direction === side;
+				return isSideOk && this._resources.has(resource) ? this._cost : DEFAULT_COST;
+			}
+		});
+	}
+}
+
+export default DiscountEffect;
+export {DiscountEffect};
