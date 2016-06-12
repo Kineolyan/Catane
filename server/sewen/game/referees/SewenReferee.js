@@ -15,7 +15,8 @@ export class SewenReferee {
 	playCard(player, card, order) {
 		this.failIf(`Player ${player.name} already has ${card.name}`, player.hasCard(card.name));
 
-		if (player.canGain(card.name)) {
+		// canGain is considering the requirement, to check if any card can make it for free
+		if (player.canGain(card)) {
 			return true;
 		}
 

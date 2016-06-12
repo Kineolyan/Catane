@@ -14,3 +14,12 @@ describe('cards', function () {
 		expect(invalidCards).toBeEmpty();
 	});
 });
+
+/*
+TODO tests:
+check that every requirement exists
+check that every requirement is from the previous age (-1)
+check that every element of a type has the correct type
+every card has a cost
+every card has gains
+ */
