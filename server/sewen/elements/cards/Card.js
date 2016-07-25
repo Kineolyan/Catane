@@ -1,4 +1,6 @@
 import _ from 'lodash';
+
+import { CardType } from 'server/sewen/elements/cards/cards';
 import { effects } from 'server/sewen/elements/effects/effects';
 import getResourcesMixin from 'server/sewen/elements/cards/ResourceMixins';
 import getWarMixin from 'server/sewen/elements/cards/WarMixins';
@@ -24,6 +26,14 @@ export class Card {
 
 	get gains() {
 		return this._definition.gains;
+	}
+
+	get requires() {
+		return _.isArray(this._definition.requires) ? this._definition.requires : [this._definition.requires];
+	}
+
+	isGuild() {
+		return this._definition.type === CardType.GUILDE;
 	}
 
 	getCountFor(nbPlayers, age) {

@@ -1,8 +1,8 @@
 import Mixin from 'libs/mixins';
 
-import {Resources} from 'server/sewen/elements/cards/cards';
-import {Side} from 'server/sewen/game/players/SewenPlayer';
-import {DEFAULT_COST, checkSide} from 'server/sewen/elements/cards/CostMixins';
+import { Resources } from 'server/sewen/elements/cards/cards';
+import { Side } from 'server/sewen/game/players/SewenPlayer';
+import { DEFAULT_COST, checkSide } from 'server/sewen/elements/cards/CostMixins';
 
 class DiscountEffect extends Mixin {
 	static get name() {
@@ -36,4 +36,3 @@ class DiscountEffect extends Mixin {
 }
 
 export default DiscountEffect;
-export {DiscountEffect};

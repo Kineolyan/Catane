@@ -18,7 +18,12 @@ class BinaryEnum {
 		return this[value] !== undefined;
 	}
 
-	decompose(value) {
+	decompose(input) {
+		const value = parseInt(input, 10);
+		if (!_.isFinite(value)) {
+			throw new Error(`${input} is not a number`);
+		}
+
 		const binaryValue = value.toString(2);
 		const size = binaryValue.length - 1;
 		return _.chain(binaryValue)

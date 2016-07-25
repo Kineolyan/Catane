@@ -38,7 +38,7 @@ export const Resources = makeMaskEnum([
  * @property {string} MILITAIRE
  * @property {string} GUILDE
  */
-export const CardType = makeEnum([
+export const CardType = makeMaskEnum([
   'MATIERE',
   'FABRIQUE',
   'COMMERCE',
@@ -66,7 +66,7 @@ export const RawResourcesCards = {
     cost: {},
     gains: { [Resources.PIERRE]: 1 },
     quantity: [
-      { age: 1, range: [3, 4] }
+      { age: 1, range: [3, 5] }
     ]
   },
   'Bassin argileux': {
@@ -201,7 +201,7 @@ export const CityBuildings = {
   'Preteurs sur gages': {
     type: CardType.CIVIL,
     cost: {},
-    prices: { [Resources.POINTS]: 3 },
+	  gains: {},
     quantity: [
       { age: 1, range: [4, 7] }
     ]
@@ -209,7 +209,7 @@ export const CityBuildings = {
   'Bains': {
     type: CardType.CIVIL,
     cost: { [Resources.PIERRE]: 1 },
-    prices: { [Resources.POINTS]: 3 },
+    gains: { [Resources.POINT]: 3 },
     quantity: [
       { age: 1, range: [3, 7] }
     ]
@@ -217,7 +217,7 @@ export const CityBuildings = {
   'Autel': {
     type: CardType.CIVIL,
     cost: {},
-    prices: { [Resources.POINTS]: 2 },
+    gains: { [Resources.POINT]: 2 },
     quantity: [
       { age: 1, range: [3, 5] }
     ]
@@ -225,7 +225,7 @@ export const CityBuildings = {
   'Theatre': {
     type: CardType.CIVIL,
     cost: {},
-    prices: { [Resources.POINTS]: 2 },
+    gains: { [Resources.POINT]: 2 },
     quantity: [
       { age: 1, range: [3, 6] }
     ]
@@ -233,7 +233,7 @@ export const CityBuildings = {
   'Acqueduc': {
     type: CardType.CIVIL,
     cost: { [Resources.PIERRE]: 3 },
-    prices: { [Resources.POINTS]: 5 },
+    gains: { [Resources.POINT]: 5 },
 	  requires: 'Bains',
     quantity: [
       { age: 2, range: [3, 7] }
@@ -242,7 +242,7 @@ export const CityBuildings = {
   'Temple': {
     type: CardType.CIVIL,
     cost: { [Resources.BOIS]: 1, [Resources.ARGILE]: 1, [Resources.VERRE]: 1 },
-    prices: { [Resources.POINTS]: 3 },
+    gains: { [Resources.POINT]: 3 },
 	  requires: 'Autel',
     quantity: [
       { age: 2, range: [3, 6] }
@@ -251,7 +251,7 @@ export const CityBuildings = {
 	'Statue': {
 		type: CardType.CIVIL,
 		cost: { [Resources.MINERAI]: 2, [Resources.BOIS]: 1 },
-		prices: { [Resources.POINTS]: 4 },
+		gains: { [Resources.POINT]: 4 },
 		requires: 'Theatre',
 		quantity: [
 			{ age: 2, range: [3, 7] }
@@ -260,7 +260,7 @@ export const CityBuildings = {
 	'Tribunal': {
 		type: CardType.CIVIL,
 		cost: { [Resources.ARGILE]: 2, [Resources.TISSU]: 1 },
-		prices: { [Resources.POINTS]: 4 },
+		gains: { [Resources.POINT]: 4 },
 		requires: 'Scriptorium',
 		quantity: [
 			{ age: 2, range: [3, 5] }
@@ -275,7 +275,7 @@ export const CityBuildings = {
 	    [Resources.TISSU]: 1,
 	    [Resources.VERRE]: 1
     },
-    prices: { [Resources.POINTS]: 7 },
+    gains: { [Resources.POINT]: 7 },
 	  requires: 'Temple',
     quantity: [
       { age: 3, range: [3, 6] }
@@ -284,7 +284,7 @@ export const CityBuildings = {
   'Jardins': {
     type: CardType.CIVIL,
     cost: { [Resources.ARGILE]: 2, [Resources.BOIS]: 1 },
-    prices: { [Resources.POINTS]: 5 },
+    gains: { [Resources.POINT]: 5 },
 	  requires: 'Statue',
     quantity: [
       { age: 3, range: [3, 4] }
@@ -293,7 +293,7 @@ export const CityBuildings = {
   'Hotel de ville': {
     type: CardType.CIVIL,
     cost: { [Resources.PIERRE]: 2, [Resources.MINERAI]: 1, [Resources.VERRE]: 1 },
-    prices: { [Resources.POINTS]: 6 },
+    gains: { [Resources.POINT]: 6 },
     quantity: [
       { age: 3, range: [3, 5, 6] }
     ]
@@ -309,7 +309,7 @@ export const CityBuildings = {
 			[Resources.PAPIER]: 1,
 			[Resources.TISSU]: 1
 		},
-		prices: { [Resources.POINTS]: 8 },
+		gains: { [Resources.POINT]: 8 },
 		quantity: [
 			{ age: 3, range: [3, 7] }
 		]
@@ -321,7 +321,7 @@ export const CityBuildings = {
 			[Resources.MINERAI]: 1,
 			[Resources.PIERRE]: 1
 		},
-		prices: { [Resources.POINTS]: 6 },
+		gains: { [Resources.POINT]: 6 },
 		requires: 'Bibliotheque',
 		quantity: [
 			{ age: 3, range: [3, 5] }
@@ -378,7 +378,7 @@ export const TradeCenters = {
 		type: CardType.COMMERCE,
 		cost: { [Resources.BOIS]: 2 },
 		gains: { [Resources.ARGILE | Resources.PIERRE | Resources.MINERAI | Resources.BOIS]: 1 },
-		requires: 'marche',
+		requires: 'Marche',
 		quantity: [
 			{ age: 2, range: [3, 5, 6] }
 		]
@@ -387,7 +387,7 @@ export const TradeCenters = {
 		type: CardType.COMMERCE,
 		cost: {},
 		gains: {},
-		effect: 'coins[1, raw, all]',
+		effect: `scoreAndCoins[0, 1, all, ${CardType.MATIERE}]`,
 		quantity: [
 			{ age: 2, range: [3, 6] }
 		]
@@ -396,7 +396,7 @@ export const TradeCenters = {
 		type: CardType.COMMERCE,
 		cost: {},
 		gains: {},
-		effect: 'coins[2, processed, all]',
+		effect: `scoreAndCoins[0, 2, all, ${CardType.FABRIQUE}]`,
 		quantity: [
 			{ age: 2, range: [4, 7] }
 		]
@@ -405,7 +405,7 @@ export const TradeCenters = {
 		type: CardType.COMMERCE,
 		cost: { [Resources.BOIS]: 1, [Resources.MINERAI]: 1, [Resources.TISSU]: 1 },
 		gains: {},
-		effect: 'score[1, 1, raw]',
+		effect: `scoreAndCoins[1, 1, own, ${CardType.MATIERE}]`,
 		requires: 'Forum',
 		quantity: [
 			{ age: 3, range: [3, 4] }
@@ -415,7 +415,7 @@ export const TradeCenters = {
 		type: CardType.COMMERCE,
 		cost: { [Resources.PIERRE]: 1, [Resources.VERRE]: 1 },
 		gains: {},
-		effect: 'score[1, 1, commerce]',
+		effect: `scoreAndCoins[1, 1, own, ${CardType.COMMERCE}]`,
 		requires: 'Caravanserail',
 		quantity: [
 			{ age: 3, range: [3, 6] }
@@ -425,7 +425,7 @@ export const TradeCenters = {
 		type: CardType.COMMERCE,
 		cost: { [Resources.ARGILE]: 2, [Resources.PAPIER]: 1 },
 		gains: {},
-		effect: 'score[2, 2, processed]',
+		effect: `scoreAndCoins[2, 2, own, ${CardType.FABRIQUE}]`,
 		quantity: [
 			{ age: 3, range: [4, 6] }
 		]
@@ -446,7 +446,7 @@ export const WarOffices = {
 	'Palissade': {
 		type: CardType.MILITAIRE,
 		cost: { [Resources.BOIS]: 1 },
-		prices: { [Resources.ARME]: 1 },
+		gains: { [Resources.ARME]: 1 },
 		quantity: [
 			{ age: 1, range: [3, 7] }
 		]
@@ -454,7 +454,7 @@ export const WarOffices = {
 	'Caserne': {
 		type: CardType.MILITAIRE,
 		cost: { [Resources.MINERAI]: 1 },
-		prices: { [Resources.ARME]: 1 },
+		gains: { [Resources.ARME]: 1 },
 		quantity: [
 			{ age: 1, range: [3, 5] }
 		]
@@ -462,7 +462,7 @@ export const WarOffices = {
 	'Tour de garde': {
 		type: CardType.MILITAIRE,
 		cost: { [Resources.ARGILE]: 1 },
-		prices: { [Resources.ARME]: 1 },
+		gains: { [Resources.ARME]: 1 },
 		quantity: [
 			{ age: 1, range: [3, 4] }
 		]
@@ -470,7 +470,7 @@ export const WarOffices = {
 	'Muraille': {
 		type: CardType.MILITAIRE,
 		cost: { [Resources.PIERRE]: 3 },
-		prices: { [Resources.ARME]: 2 },
+		gains: { [Resources.ARME]: 2 },
 		quantity: [
 			{ age: 2, range: [3, 7] }
 		]
@@ -478,7 +478,7 @@ export const WarOffices = {
 	'Place d\'armes': {
 		type: CardType.MILITAIRE,
 		cost: { [Resources.MINERAI]: 2, [Resources.BOIS]: 1 },
-		prices: { [Resources.ARME]: 2 },
+		gains: { [Resources.ARME]: 2 },
 		quantity: [
 			{ age: 2, range: [4, 6, 7] }
 		]
@@ -486,7 +486,7 @@ export const WarOffices = {
 	'Ecuries': {
 		type: CardType.MILITAIRE,
 		cost: { [Resources.MINERAI]: 1, [Resources.ARGILE]: 1, [Resources.BOIS]: 1 },
-		prices: { [Resources.ARME]: 2 },
+		gains: { [Resources.ARME]: 2 },
 		requires: 'Officine',
 		quantity: [
 			{ age: 2, range: [3, 5] }
@@ -495,7 +495,7 @@ export const WarOffices = {
 	'Champs de tir': {
 		type: CardType.MILITAIRE,
 		cost: { [Resources.BOIS]: 2, [Resources.MINERAI]: 1 },
-		prices: { [Resources.ARME]: 2 },
+		gains: { [Resources.ARME]: 2 },
 		requires: 'Atelier',
 		quantity: [
 			{ age: 2, range: [3, 6] }
@@ -508,7 +508,7 @@ export const WarOffices = {
       [Resources.PIERRE]: 1
     },
     requires: 'Muraille',
-    prices: { [Resources.ARME]: 3 },
+    gains: { [Resources.ARME]: 3 },
     quantity: [
       { age: 3, range: [3, 7] }
     ]
@@ -520,7 +520,7 @@ export const WarOffices = {
 			[Resources.MINERAI]: 1
 		},
 		requires: 'Place d\'armes',
-		prices: { [Resources.ARME]: 3 },
+		gains: { [Resources.ARME]: 3 },
 		quantity: [
 			{ age: 3, range: [4, 5, 6] }
 		]
@@ -532,7 +532,7 @@ export const WarOffices = {
 			[Resources.BOIS]: 2,
 			[Resources.TISSU]: 1
 		},
-		prices: { [Resources.ARME]: 3 },
+		gains: { [Resources.ARME]: 3 },
 		quantity: [
 			{ age: 3, range: [3, 4, 7] }
 		]
@@ -543,7 +543,7 @@ export const WarOffices = {
 			[Resources.BOIS]: 1,
 			[Resources.ARGILE]: 3
 		},
-		prices: { [Resources.ARME]: 3 },
+		gains: { [Resources.ARME]: 3 },
 		requires: 'Laboratoire',
 		quantity: [
 			{ age: 3, range: [3, 5] }
@@ -580,7 +580,7 @@ export const ScienceOffices = {
 		]
 	},
 	'Dispensaire': {
-		type: CardType.MILITAIRE,
+		type: CardType.SCIENCE,
 		subtype: ScienceType.SEXTAN,
 		cost: {
 			[Resources.MINERAI]: 2,
@@ -593,7 +593,7 @@ export const ScienceOffices = {
 		]
 	},
 	'Laboratoire': {
-		type: CardType.MILITAIRE,
+		type: CardType.SCIENCE,
 		subtype: ScienceType.ROUE,
 		cost: {
 			[Resources.ARGILE]: 2,
@@ -606,7 +606,7 @@ export const ScienceOffices = {
 		]
 	},
 	'Bibliotheque': {
-		type: CardType.MILITAIRE,
+		type: CardType.SCIENCE,
 		subtype: ScienceType.TABLETTE,
 		cost: {
 			[Resources.PIERRE]: 2,
@@ -619,7 +619,7 @@ export const ScienceOffices = {
 		]
 	},
 	'Ecole': {
-		type: CardType.MILITAIRE,
+		type: CardType.SCIENCE,
 		subtype: ScienceType.TABLETTE,
 		cost: {
 			[Resources.BOIS]: 1,
@@ -641,7 +641,7 @@ export const ScienceOffices = {
 		requires: 'Dispensaire',
 		gains: {},
 		quantity: [
-			{ age: 2, range: [3, 6] }
+			{ age: 3, range: [3, 6] }
 		]
 	},
 	'Observatoire': {
@@ -655,7 +655,7 @@ export const ScienceOffices = {
 		requires: 'Laboratoire',
 		gains: {},
 		quantity: [
-			{ age: 2, range: [3, 7] }
+			{ age: 3, range: [3, 7] }
 		]
 	},
 	'Universite': {
@@ -669,7 +669,7 @@ export const ScienceOffices = {
 		requires: 'Bibliotheque',
 		gains: {},
 		quantity: [
-			{ age: 2, range: [3, 4] }
+			{ age: 3, range: [3, 4] }
 		]
 	},
 	'Academie': {
@@ -711,13 +711,93 @@ export const Cards = Object.assign({},
 );
 
 export const Guildes = {
-  'Guilde des scientifiques': {
-    type: CardType.GUILDE,
-    cost: {
-      [Resources.MINERAI]: 2,
-      [Resources.BOIS]: 2,
-      [Resources.PAPIER]: 1
-    },
-    effect: 'bonus-science'
-  }
+	'Guilde des travailleurs': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.MINERAI]: 2,
+			[Resources.ARGILE]: 1,
+			[Resources.PIERRE]: 1,
+			[Resources.BOIS]: 1
+		},
+		effect: `scoreAndCoins[1, 0, around, ${CardType.MATIERE}]`
+	},
+	'Guilde des artisans': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.MINERAI]: 2,
+			[Resources.PIERRE]: 2
+		},
+		effect: `scoreAndCoins[2, 0, around, ${CardType.FABRIQUE}]`
+	},
+	'Guilde des commercants': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.TISSU]: 1,
+			[Resources.VERRE]: 1,
+			[Resources.PAPIER]: 1
+		},
+		effect: `scoreAndCoins[1, 0, around, ${CardType.COMMERCE}]`
+	},
+	'Guilde des philosophes': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.ARGILE]: 3,
+			[Resources.TISSU]: 1,
+			[Resources.PAPIER]: 1
+		},
+		effect: `scoreAndCoins[1, 0, around, ${CardType.SCIENCE}]`
+	},
+	'Guilde des espions': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.ARGILE]: 3,
+			[Resources.VERRE]: 1
+		},
+		effect: `scoreAndCoins[1, 0, around, ${CardType.MILITAIRE}]`
+	},
+	'Guilde des strateges': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.MINERAI]: 2,
+			[Resources.PIERRE]: 1,
+			[Resources.TISSU]: 1
+		},
+		effect: 'defeats[1, around]'
+	},
+	'Guilde des armateurs': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.BOIS]: 3,
+			[Resources.PAPIER]: 1,
+			[Resources.VERRE]: 1
+		},
+		effect: `scoreAndCoins[1, 0, own, ${CardType.MATIERE | CardType.FABRIQUE | CardType.GUILDE}]`
+	},
+	'Guilde des scientifiques': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.MINERAI]: 2,
+			[Resources.BOIS]: 2,
+			[Resources.PAPIER]: 1
+		},
+		effect: 'bonus-science'
+	},
+	'Guilde des magistrats': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.BOIS]: 3,
+			[Resources.PIERRE]: 1,
+			[Resources.TISSU]: 1
+		},
+		effect: `scoreAndCoins[1, 0, around, ${CardType.CIVIL}]`
+	},
+	'Guilde des batisseurs': {
+		type: CardType.GUILDE,
+		cost: {
+			[Resources.PIERRE]: 2,
+			[Resources.ARGILE]: 2,
+			[Resources.VERRE]: 1
+		},
+		effect: `scoreAndCoins[1, 0, all, wonder]`
+	}
 };

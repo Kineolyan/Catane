@@ -63,7 +63,13 @@ describe('Sewen effects', function () {
 
 	it('has predefined effects', function() {
 		const effectNames = Array.from(effects._effects.keys());
-		expect(effectNames).toHaveMembers(['discount', 'bonus-science']);
+		expect(effectNames).toHaveMembers([
+			'discount',
+			'bonus-science',
+			'scoreAndCoins',
+			'wonder',
+			'defeats'
+		]);
 	});
 
 });

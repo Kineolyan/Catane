@@ -50,9 +50,9 @@ export const MixedResourceMixin = new Mixin('MixedResourceMixin')
 		if (card._gain === 1 && gainedResources.length === 1) {
 			card._mixedResources = new Set(Resources.decompose(resource).map(v => v.toString()));
 		} else if (card._gain !== 1) {
-			throw new Error(`Mixed resources only supported with a gain of 1`);
+			throw new Error(`Mixed resources only supported with a gain of 1. Card "${card.name}" gains ${card._gain}`);
 		} else {
-			throw new Error(`Mixed resources only supported for one gain`);
+			throw new Error(`Mixed resources only supported for one gain. Card "${card.name}" gains ${gainedResources}`);
 		}
 	})
 	.withMethods({

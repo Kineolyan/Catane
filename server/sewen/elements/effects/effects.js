@@ -1,5 +1,8 @@
 import DiscountEffect from 'server/sewen/elements/effects/DiscountEffect';
 import ScienceBonusEffect from 'server/sewen/elements/effects/ScienceBonusEffect';
+import ScoreAndCoins from 'server/sewen/elements/effects/ScoreAndCoinsEffect';
+import WonderEffect from 'server/sewen/elements/effects/WonderEffect';
+import DefeatsEffect from 'server/sewen/elements/effects/DefeatsEffect';
 
 export class EffectRegistry {
 	static get PARAMETER_EXPR() {
@@ -41,3 +44,6 @@ export class EffectRegistry {
 export const effects = new EffectRegistry();
 effects.registerEffect(DiscountEffect);
 effects.registerEffect(ScienceBonusEffect);
+effects.registerEffect(ScoreAndCoins);
+effects.registerEffect(WonderEffect);
+effects.registerEffect(DefeatsEffect);

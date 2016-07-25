@@ -12,8 +12,15 @@ export class SewenReferee {
 		return side === Side.OWN ? player : player.getNeighbour(side);
 	}
 
-	playCard(player, card, order) {
-		this.failIf(`Player ${player.name} already has ${card.name}`, player.hasCard(card.name));
+	playCard(player, deck, card, order) {
+		if (player.hasCard(card.name)) {
+			this.failRule(`Player ${player.name} already has ${card.name}`);
+		}
+
+		// Check that the player has the card in his deck
+		if (_.find(deck, card) === undefined) {
+			this.failRule(`Card ${card.name} not in player ${player.name}'s deck: ${deck.map(c => c.name)}`);
+		}
 
 		// canGain is considering the requirement, to check if any card can make it for free
 		if (player.canGain(card)) {
@@ -67,12 +74,6 @@ export class SewenReferee {
 
 		if (player.coins < totalCost) {
 			this.failRule(`Player ${player.name} cannot afford the order. Costing ${totalCost} while owing ${player.coins}`);
-		}
-	}
-
-	failIf(message, condition) {
-		if (condition) {
-			this.failRule(message);
 		}
 	}
 }
