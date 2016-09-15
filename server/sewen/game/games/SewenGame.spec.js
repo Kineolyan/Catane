@@ -92,7 +92,8 @@ fdescribe('SewenGame', function() {
 			beforeEach(function() {
 				this.player = this.users[0].player;
 				this.initialDeck = this.game.getPlayerDeck(this.player).slice();
-				this.card = this.initialDeck[0];
+				this.card = this.initialDeck.find(card => _.isEqual(card.cost, []));
+				expect(this.card).not.toBe(undefined);
 				this.game.playCard(this.player, this.card.name, []);
 			});
 

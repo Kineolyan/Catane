@@ -4,6 +4,10 @@ import * as maps from 'libs/collections/maps';
 import { Side } from 'server/sewen/game/players/SewenPlayer';
 
 export class SewenReferee {
+	constructor(game) {
+		this._game = game;
+	}
+
 	failRule(message) {
 		throw new Error(message);
 	}

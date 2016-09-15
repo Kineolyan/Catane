@@ -1,16 +1,10 @@
-import { MockSocket } from 'server/core/com/mocks';
-
-import Server from 'server/server';
-import Location from 'server/catane/elements/geo/location.js';
-import { idGenerator } from 'server/core/game/util.js';
-import User from 'server/core/com/user';
-import BasePlayer from 'server/core/game/players/player.js';
-import CatanePlayer from 'server/catane/game/players/CatanePlayer';
-// Managers
-import Games from 'server/core/game/games/games.js';
-import CataneGame from 'server/catane/game/games/CataneGame';
-import Plays from 'server/catane/game/plays/plays.js';
 import * as maps from 'libs/collections/maps.js';
+import * as starter from 'server/core/game/games/game-spec.starter.js';
+
+import Location from 'server/catane/elements/geo/location.js';
+import CataneGame from 'server/catane/game/games/CataneGame';
+import CatanePlayer from 'server/catane/game/players/CatanePlayer';
+import Plays from 'server/catane/game/plays/plays.js';
 
 export const PICK_ARGS = [
 		// Outer city ring
@@ -29,35 +23,23 @@ export const PICK_ARGS = [
 		[ -1, 1, 0, 1 ]
 ];
 
-var server = new Server();
+starter.games.registerGame(CataneGame);
 
-/**
- * Creates a new player with its client.
- * @param  {String} name the optional name of the player
- * @return {Object} an object with the :player and its :client
- */
-export function createPlayer(name) {
-	var client = new MockSocket();
-	server.connect(client.toSocket());
-	var message = client.lastMessage('init');
-	var id = message.player.id;
-
-	var info = { client: client, id: id, server: message.server };
-	if (name !== undefined) {
-		client.receive('player:nickname', name);
-		info.name = name;
+const plays = new Plays();
+class GameEnv extends starter.GameEnv {
+	constructor() {
+		super(CataneGame.name, CatanePlayer);
 	}
 
-	return info;
-}
+	createLocalPlayer(name) {
+		const localPlayer = super.createLocalPlayer(name);
 
-function GameEnv(players, game) {
-	this.players = players;
-	this.game = game;
-}
+		plays.register(localPlayer.user);
 
-GameEnv.prototype = {
-	start: function() {
+		return localPlayer;
+	}
+
+	start() {
 		this.players[0].client.receive('game:start', this.game.id);
 
 		var message = this.players[0].client.lastMessage('game:start');
@@ -68,7 +50,8 @@ GameEnv.prototype = {
 		for (let p of this.players) { mappedPlayers[p.id] = p; }
 		this.players = [];
 		for (let pId of message.players) { this.players.push(mappedPlayers[pId]); }
-	},
+	}
+
 	/**
 	 * Picks a city and a road for the given player.
 	 * @param {Object} player the player acting
@@ -77,25 +60,27 @@ GameEnv.prototype = {
 	 * @param {Number} toX the x-coordinate of the road end
 	 * @param {Number} toY the y-coordinate of the road end
 	 */
-	pick: function pick(player, cityX, cityY, toX, toY) {
+	pick(player, cityX, cityY, toX, toY) {
 		player.client.receive('play:pick:colony', { colony: { x: cityX, y: cityY } });
 		player.client.receive('play:pick:path', { path: { from: { x: cityX, y: cityY }, to: { x: toX, y: toY } } });
 		player.client.receive('play:turn:end');
-	},
+	}
+
 	/**
 	 * Picks randomly cities for the players.
 	 */
-	randomPick: function() {
+	randomPick() {
 		var nbOfPicks = this.players.length * 2;
 		for (let i = 0; i < nbOfPicks; i += 1) {
 			this.pick(this.players[i % this.players.length], ...PICK_ARGS[i]);
 		}
-	},
+	}
+
 	/**
 	 * Rolls the dice for the current player
 	 * @param {Object} player the player that rolls
 	 */
-	rollDice: function(player) {
+	rollDice(player) {
 		player.client.receive('play:roll-dice');
 		var message = player.client.lastMessage('play:roll-dice');
 		var dice = message.dice[0] + message.dice[1];
@@ -124,87 +109,42 @@ GameEnv.prototype = {
 
 			this.moveThieves(player);
 		}
-	},
-	moveThieves: function(player) {
+	}
+
+	moveThieves(player) {
 		let newThievesLocation = this.thieves.hashCode() === 0 ?
 				new Location(1, 1) : new Location(0, 0);
 		player.client.receive('play:move:thieves', { tile: newThievesLocation.toJson() });
 		this.thieves = newThievesLocation;
-	},
-	setPlayerResources: function(index, resources) {
+	}
+
+	setPlayerResources(index, resources) {
 		var player = isNaN(index) ? index.player : this.players[index].player;
 		player.useResources(player.resources);
 		player.receiveResources(resources);
 	}
-};
+}
 
-/**
- * Creates a new game with a given number of players.
- * @param  {Integer} nbPlayers the number of players in the game
- * @return {Object} an object with the :game and the :players,
- *    created by #createPlayer.
- */
+export function createPlayer(name) {
+	const env = new GameEnv();
+	return env.createServerPlayer(name);
+}
+
 export function createGame(nbPlayers) {
-	var players = [];
-	var gameId;
-	for (let i = 0; i < nbPlayers; i += 1) {
-		let p = createPlayer();
-		players.push(p);
-		if (i === 0) {
-			p.client.receive('game:create', { game: CataneGame.name });
-			let message = p.client.lastMessage('game:create');
-			gameId = message.game.id;
-		} else {
-			p.client.receive('game:join', gameId);
-		}
-	}
+	const env = new GameEnv();
+	env.createServerGame(nbPlayers);
 
-	return new GameEnv(players, { id: gameId });
+	return env;
 }
 
-const playerId = idGenerator();
-const games = new Games().registerGame(CataneGame);
-const plays = new Plays();
-class LocalPlayer {
-	constructor(client, user) {
-		this.client = client;
-		this.user = user;
-	}
-
-	get player() {
-		return this.user.player;
-	}
-
-	get id() {
-		return this.player.id;
-	}
-
-	asGamePlayer() {
-		this.user.player = new CatanePlayer(this.user.player);
-		return this;
-	}
-}
 export function createLocalPlayer(name) {
-	var client = new MockSocket();
-	var player = new BasePlayer(client.toSocket(), playerId());
-	var user = new User(player.socket, player);
-	games.register(user);
-	plays.register(user);
-	if (name !== undefined) {
-		player.name = name;
-	}
-
-	return new LocalPlayer(client, user);
+	const env = new GameEnv();
+	return env.createLocalPlayer(name);
 }
 
 export function createLocalGame(nbPlayers) {
-	var game = games.create('catane');
-	var players = [];
-	for (let i = 0; i < nbPlayers; i += 1) {
-		let p = createLocalPlayer();
-		players.push(p);
-		games.join(game, p.user);
-	}
+	const env = new GameEnv();
+	env.createLocalGame(nbPlayers);
 
-	return new GameEnv(players, game);
+	return env;
 }
