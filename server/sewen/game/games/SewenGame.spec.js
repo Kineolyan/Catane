@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { MockSocket } from 'server/core/com/mocks';
 import BasePlayer from 'server/core/game/players/player';
 import SewenPlayer from 'server/sewen/game/players/SewenPlayer';
+import {GameEnv} from 'server/sewen/game/games/game-spec.starter';
 
 fdescribe('SewenGame', function() {
 	beforeEach(function() {
@@ -34,16 +35,10 @@ fdescribe('SewenGame', function() {
 
 	describe('#start', function() {
 		beforeEach(function() {
-			this.clients = [];
-			this.users = [];
-
-			_.times(3, i => {
-				this.clients.push(new MockSocket());
-				this.users.push({ player: new BasePlayer(this.clients[i].toSocket(), 1 + i) });
-
-				expect(this.game.add(this.users[i])).toBe(true);
-			});
-			this.game.start();
+      this.env = new GameEnv();
+      this.env.createLocalGame(3);
+      this.env.start();
+			this.game = this.env.game;
 		});
 
 		it('generates the deck sets for each age', function() {
@@ -65,48 +60,173 @@ fdescribe('SewenGame', function() {
 		});
 
 		it('places the players on a map', function() {
-			expect(this.game._playerOrder).toHaveMembers([1, 2, 3]);
+			const playerIds = this.env.players.map(p => p.id);
+			expect(this.game._playerOrder).toHaveMembers(playerIds);
 		});
 
 		it('initializes age and deck cursors', function() {
 			expect(this.game._age).toEqual(1);
 			expect(this.game._deckCursor).toEqual(0);
 		});
+
+		it('gives 3 coins to each player', function() {
+			this.env.players.forEach(p => {
+				expect(p.player.coins).toEqual(3);
+			});
+		});
+	});
+
+	describe('->play:turn:new', function() {
+		beforeEach(function() {
+      this.env = new GameEnv();
+      this.env.createLocalGame(3);
+      this.env.start();
+
+			const p = this.env.players[0];
+			this.player = p.player;
+			this.message = p.client.lastMessage('play:turn:new');
+		});
+
+		it('sends a message to each player', function() {
+			this.env.players.forEach(p => {
+				const message = p.client.lastMessage('play:turn:new');
+				expect(message).not.toBeUndefined();
+			});
+		});
+
+		it('sends the current age', function() {
+			expect(this.message.age).toEqual(1);
+		});
+
+		it('sends player deck', function() {
+			const playerDeck = this.env.game.getPlayerDeck(this.player);
+			expect(this.message.deck).toHaveMembers(playerDeck.map(card => card.name));
+		});
+
+		it('sends statuses for all players', function() {
+			const playerIds = this.env.players.map(p => p.id);
+			expect(_.keys(this.message.players)).toHaveMembers(playerIds);
+
+			// At start, all have empty cards and 3 coins
+			_.forEach(this.message.players, status => {
+				expect(status).toEqual({
+					coins: 3,
+					cards: []
+				});
+			});
+		});
 	});
 
 	describe('#playCard', function() {
 		beforeEach(function() {
-			this.clients = [];
-			this.users = [];
-
-			_.times(3, i => {
-				this.clients.push(new MockSocket());
-				this.users.push({ player: new BasePlayer(this.clients[i].toSocket(), 1 + i) });
-
-				expect(this.game.add(this.users[i])).toBe(true);
-			});
-			this.game.start();
+      this.env = new GameEnv();
+      this.env.createLocalGame(3);
+      this.env.start();
 		});
 
 		describe('for valid player and card', function() {
 			beforeEach(function() {
-				this.player = this.users[0].player;
-				this.initialDeck = this.game.getPlayerDeck(this.player).slice();
-				this.card = this.initialDeck.find(card => _.isEqual(card.cost, []));
+				this.player = this.env.players[0].player;
+				this.playerDeck = this.env.game.getPlayerDeck(this.player);
+				this.initialDeck = this.playerDeck.slice();
+				this.card = this.initialDeck.find(card => _.isEmpty(card.cost)); // OK for age I
 				expect(this.card).not.toBe(undefined);
-				this.game.playCard(this.player, this.card.name, []);
+				this.env.game.playCard(this.player, this.card.name, []);
 			});
 
-			it('adds the named card to the player', function() {
-				expect(this.player.cards[this.card.name]).toEqual(this.card);
+			it('does not change the player', function() {
+				expect(this.player.cards).not.toHaveKey(this.card.name);
 			});
 
-			it('removes the card from the player deck', function() {
-				const countCard = deck => _(deck)
-					.filter(card => card.name === this.card.name)
-					.size();
-				expect(countCard(this.game.getPlayerDeck(this.player))).toEqual(countCard(this.initialDeck) - 1);
+			it('stores player action for end of turn', function() {
+				const actions = _(this.env.game._turnActions).values().map('card').value();
+				expect(actions).toContain(this.card);
+			});
+
+			describe('when all players played', function() {
+				beforeEach(function() {
+					[1, 2].forEach(i => {
+						const player = this.env.players[i].player;
+						const card = _.find(this.env.game.getPlayerDeck(player), card => _.isEmpty(card.cost));
+						this.env.game.playCard(player, card.name, []);
+					});
+				});
+
+				it('adds the named card to the player', function() {
+					expect(this.player.cards[this.card.name]).toEqual(this.card);
+				});
+
+				it('removes the card from the player deck', function() {
+					const countCard = deck => _(deck)
+						.filter(card => card.name === this.card.name)
+						.size();
+					expect(countCard(this.playerDeck)).toEqual(countCard(this.initialDeck) - 1);
+				});
+
+				it('has no dropped cards', function() {
+					expect(this.env.game._droppedCards).toBeEmpty();
+				});
 			});
 		});
+	});
+
+	describe('#dropCard', function() {
+		beforeEach(function() {
+      this.env = new GameEnv();
+      this.env.createLocalGame(3);
+      this.env.start();
+		});
+
+		describe('for valid player and card', function() {
+			beforeEach(function() {
+				this.player = this.env.players[0].player;
+				this.playerDeck = this.env.game.getPlayerDeck(this.player);
+				this.initialDeck = this.playerDeck.slice();
+				this.card = this.initialDeck[0];
+				this.env.game.dropCard(this.player, this.card.name);
+			});
+
+			it('does not change the player', function() {
+				expect(this.player.cards).not.toHaveKey(this.card.name);
+			});
+
+			it('stores player action for end of turn', function() {
+				const actions = _(this.env.game._turnActions).values().map('card').value();
+				expect(actions).toContain(this.card);
+			});
+
+			describe('when all players played', function() {
+				beforeEach(function() {
+					[1, 2].forEach(i => {
+						const player = this.env.players[i].player;
+						const card = _.find(
+							this.env.game.getPlayerDeck(player),
+							card => card.name !== this.card.name
+						); // Use a different card to ease final test
+						this.env.game.dropCard(player, card.name);
+					});
+				});
+
+				it('does not give the card to the player', function() {
+					expect(this.player.cards).not.toHaveKey(this.card.name);
+				});
+
+				it('gives 3 coins to the player', function() {
+					expect(this.player.coins).toEqual(6); // initial 3 + 3 gained for the card
+				});
+
+				it('removes the card from the player deck', function() {
+					const countCard = deck => _(deck)
+						.filter(card => card.name === this.card.name)
+						.size();
+					expect(countCard(this.playerDeck)).toEqual(countCard(this.initialDeck) - 1);
+				});
+
+				it('contains player card among dropped cards', function() {
+					expect(this.env.game._droppedCards).toContain(this.card);
+				});
+			});
+		});
+
 	});
 });

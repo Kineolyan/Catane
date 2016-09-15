@@ -3,14 +3,14 @@ import SewenReferee from 'server/sewen/game/referees/SewenReferee';
 import _ from 'lodash';
 import {GameEnv} from 'server/sewen/game/games/game-spec.starter';
 
-fdescribe('SewenReferee', function() {
+describe('SewenReferee', function() {
   describe('#playCard', function() {
     beforeEach(function() {
       this.env = new GameEnv();
       this.env.createLocalGame(3);
       this.env.start();
 
-      this.player = this.env.players[0];
+      this.player = this.env.players[0].user.player;
       this.referee = new SewenReferee(this.env.game);
     });
 
@@ -22,5 +22,8 @@ fdescribe('SewenReferee', function() {
         .toThrowError(/not in .+ deck/i);
     });
 
+    // TODO complete with other tests on cases
   });
+
+  // TODO complete with tests for others methods
 });

@@ -128,12 +128,12 @@ export default class Games {
 	 * @return {CataneGame} the newly created game
 	 */
 	create(key) {
-		const gameClass = this._classes.get(key);
-		if (gameClass === undefined) {
+		const GameClass = this._classes.get(key);
+		if (GameClass === undefined) {
 			throw new Error(`No game for ${key}`);
 		}
 
-		var game = new CataneGame(this.nextGameId());
+		var game = new GameClass(this.nextGameId());
 		this._games.set(game.id, game);
 		logger.log(`[Server] New game created ${game.id}`);
 

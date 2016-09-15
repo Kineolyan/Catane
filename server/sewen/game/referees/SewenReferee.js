@@ -41,6 +41,12 @@ export class SewenReferee {
 		this.checkCost(order, player);
 	}
 
+	dropCard(player, deck, card){
+		if (_.find(deck, card) === undefined) {
+			this.failRule(`Card ${card.name} not in player ${player.name}'s deck: ${deck.map(c => c.name)}`);
+		}
+	}
+
 	checkCards(order) {
 		_.forEach(order, ({ side, usedCard }) => {
 			if (!this.getPlayer(side).hasCard(usedCard.name)) {

@@ -13,6 +13,10 @@ export class SewenGame extends AGame {
 		super(id, 3, 7);
 	}
 
+	static get name() {
+		return 'sewen';
+	}
+
 	createGamePlayer(corePlayer) {
 		return new SewenPlayer(corePlayer);
 	}
@@ -39,7 +43,16 @@ export class SewenGame extends AGame {
 			.shuffle()
 			.value();
 		this._droppedCards = [];
+		this.players.forEach(player => player.gainCoins(3));
 		this._age = 1;
+
+		// TODO send a message with player name, city, and order in the board
+		this.emit('game:start', {
+			players: [ // desc and order
+				{id: 0, name: '', city: ''},
+				{id: 1, name: '', city: ''}
+			]
+		});
 	}
 
 	initAge() {
@@ -47,7 +60,28 @@ export class SewenGame extends AGame {
 	}
 
 	initTurn() {
-		this._turnActions = [];
+		this._turnActions = {};
+
+		const playerStatuses = _.reduce(
+			Array.from(this._players.values()),
+			(statuses, player) => {
+				statuses[player.id] = {
+					cards: _(player.cards).values().map(card => card.name).value(),
+					coins: player.coins
+				};
+
+				return statuses;
+			},
+			{}
+		);
+		this.players.forEach(player => {
+			const playerDeck = this.getPlayerDeck(player);
+			this.emit('play:turn:new', {
+				age: this._age,
+				players: playerStatuses,
+				deck: playerDeck.map(card => card.name)
+			});
+		});
 	}
 
 	playCard(player, cardName, order) {
@@ -58,45 +92,54 @@ export class SewenGame extends AGame {
 			usage.card = this.getCard(usage.card);
 		}
 
+		if (this._turnActions[player.id] !== undefined) {
+			throw new Error(`Player ${player.name} already played`);
+		}
+
 		const playerDeck = this.getPlayerDeck(player);
-		// TODO !! Can't play twice
 		this._referee.playCard(player, playerDeck, card, order);
 
-		this._turnActions[this.getPlayerIdx(player)] = {
+		this._turnActions[player.id] = {
 			card, play: true
 		};
-
-		if (_.every(this._turnActions, choice => choice !== undefined)) { // Not the correct condition
-			// Give cards to all players
-		}
+		this.endTurnIfComplete();
 	}
 
 	dropCard(player, cardName) {
 		const card = this.getCard(cardName);
 		const playerDeck = this.getPlayerDeck(player);
 
-		this._referee.playCard(player, playerDeck, card, order);
-		this._turnActions[this.getPlayerIdx(player)] = {
+		this._referee.dropCard(player, playerDeck, card);
+		this._turnActions[player.id] = {
 			card, play: false
 		};
+		this.endTurnIfComplete();
 	}
 
 	endTurnIfComplete() {
-		if (_.every(this._turnActions, action => action !== undefined)) {
-			_.forEach(this._turnActions, ({play, card}}, playerId) => {
-				const player = null; // Get player
+		if (_(this._playerOrder).every(playerId => this._turnActions[playerId])) {
+			_.forEach(this._turnActions, ({play, card}, playerId) => {
+				const player = Array.from(this.players.values()).find(p => p.id == playerId);
 				if (play) {
 					player.gainCard(card);
 				} else {
 					this._droppedCards.push(card);
+					player.gainCoins(3);
 				}
 
 				// Remove the card from the deck
-				const cardIdx = _.findIndex(playerDeck, { name: cardName }); // It may contain duplicates of the card
-				assert(cardIdx >= 0, `Card ${cardName} not in player ${player.name} deck: ${playerDeck}`);
+				const playerDeck = this.getPlayerDeck(player);
+				const cardIdx = _.findIndex(playerDeck, { name: card.name }); // It may contain duplicates of the card
+				assert(cardIdx >= 0, `Card ${card.name} not in player ${player.name} deck: ${playerDeck}`);
 				playerDeck.splice(cardIdx, 1);
 			});
+
+			this.moveToNextTurn();
 		}
+	}
+
+	moveToNextTurn() {
+		// TODO code this method
 	}
 
 	getCard(cardName) {
