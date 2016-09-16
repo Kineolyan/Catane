@@ -97,4 +97,79 @@ describe('CataneGame', function () {
 			expect(this.description.currentPlayer).toBe(this.p.player.id);
 		});
 	});
+
+	describe('->game:start', function () {
+		beforeEach(function () {
+      this.env = starter.createLocalGame(3);
+      this.env.start();
+
+			this.client = this.env.players[0].client;
+		});
+
+		it('sends ok', function () {
+			var message = this.client.lastMessage('game:start');
+			expect(message._success).toBe(true);
+		});
+
+		describe('board definition', function () {
+			beforeEach(function () {
+				var message = this.client.lastMessage('game:start');
+				this.board = message.board;
+			});
+
+			it('contains all board elements', function () {
+				expect(this.board).toHaveKeys(['tiles', 'cities', 'paths', 'thieves']);
+			});
+
+			it('describes tiles', function () {
+				// TODO test it more intensively
+				var tile = this.board.tiles[0];
+
+				if (tile.resource === 'desert') {
+					expect(tile).toHaveKeys(['x', 'y', 'resource']);
+				} else {
+					expect(tile).toHaveKeys(['x', 'y', 'resource', 'diceValue']);
+				}
+
+				expect(tile.x).toBeAnInteger();
+				expect(tile.y).toBeAnInteger();
+				expect(tile.resource).toBeIn(['desert', 'tuile', 'bois', 'mouton', 'ble', 'caillou']);
+				if (tile.resource !== 'desert') {
+					expect(tile.diceValue).toBeAnInteger();
+					expect(tile.diceValue).toBeBetween(2, 12);
+				}
+			});
+
+			it('describes cities', function () {
+				var tile = this.board.cities[0];
+
+				expect(tile).toHaveKeys(['x', 'y']);
+				expect(tile.x).toBeAnInteger();
+				expect(tile.y).toBeAnInteger();
+			});
+
+			it('describes paths', function () {
+				var path = this.board.paths[0];
+
+				expect(path).toHaveKeys(['from', 'to']);
+				expect(path.from.y).toBeAnInteger();
+				expect(path.from.x).toBeAnInteger();
+				expect(path.to.y).toBeAnInteger();
+				expect(path.to.x).toBeAnInteger();
+			});
+
+			it('gives thieves position', function () {
+				// At start, thieves are in the desert, located by default at the center of the map
+				expect(this.board.thieves).toEqual({ x: 0, y: 0 });
+			});
+		});
+
+		describe('player order', function () {
+			beforeEach(function () {
+				var message = this.client.lastMessage('game:start');
+				this.board = message.board;
+			});
+
+		});
+	});
 });
