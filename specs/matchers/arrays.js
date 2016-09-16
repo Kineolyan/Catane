@@ -9,20 +9,6 @@ function asMap(array) {
 }
 
 var arrayMatchers = {
-	toBeIn: function(util, equalityTesters) {
-		return {
-			compare: function(actual, expected) {
-				expected = expected || [];
-
-				var result = { pass: util.contains(expected, actual, equalityTesters) };
-				result.message = result.pass === true ?
-					'Expecting ' + actual + ' not to be in ' + expected :
-					'Expecting ' + actual + ' to be in ' + expected;
-
-				return result;
-			}
-		}
-	},
 	toHaveLength: function() {
 		return {
 			compare: function(actual, length) {
@@ -67,6 +53,34 @@ var arrayMatchers = {
 				result.message = 'Expecting ' + actual
 					+ (result.pass === true ? ' not' : '')
 					+ ' to be empty';
+
+				return result;
+			}
+		}
+	},
+	toBeIn: function(util, equalityTesters) {
+		return {
+			compare: function(actual, expected) {
+				expected = expected || [];
+
+				var result = { pass: util.contains(expected, actual, equalityTesters) };
+				result.message = result.pass === true ?
+					'Expecting ' + actual + ' not to be in ' + expected :
+					'Expecting ' + actual + ' to be in ' + expected;
+
+				return result;
+			}
+		}
+	},
+	toIncludeMembers: function(util, equalityTesters) {
+		return {
+			compare: function(actual, expected) {
+				var result = { pass: false };
+				result.pass = Array.every(expected, item => util.contains(actual, item, equalityTesters));
+
+				result.message = 'Expecting ' + nodeUtils.inspect(actual)
+					+ (result.pass === true ? ' not' : '')
+					+ ' to include members of ' + nodeUtils.inspect(expected);
 
 				return result;
 			}

@@ -5,8 +5,9 @@ import { MockSocket } from 'server/core/com/mocks';
 import BasePlayer from 'server/core/game/players/player';
 import SewenPlayer from 'server/sewen/game/players/SewenPlayer';
 import {GameEnv} from 'server/sewen/game/games/game-spec.starter';
+import cities from 'server/sewen/elements/cities/cities';
 
-fdescribe('SewenGame', function() {
+describe('SewenGame', function() {
 	beforeEach(function() {
 		this.game = new SewenGame(1);
 	});
@@ -72,6 +73,33 @@ fdescribe('SewenGame', function() {
 		it('gives 3 coins to each player', function() {
 			this.env.players.forEach(p => {
 				expect(p.player.coins).toEqual(3);
+			});
+		});
+	});
+
+	describe('->game:start', function() {
+		beforeEach(function() {
+      this.env = new GameEnv();
+      this.env.createLocalGame(3);
+      this.env.start();
+
+			const p = this.env.players[0];
+			this.player = p.player;
+			this.message = p.client.lastMessage('game:start');
+		});
+
+		it('sends a message to each player', function() {
+			this.env.players.forEach(p => {
+				const message = p.client.lastMessage('game:start');
+				expect(message).not.toBeUndefined();
+			});
+		});
+
+		it('sends player order and cities', function() {
+			expect(this.message.players.map(desc => desc.id)).toHaveMembers([1, 2, 3]);
+			expect(cities).toIncludeMembers(this.message.players.map(desc => desc.city));
+			this.message.players.map(desc => desc.face).forEach(face => {
+				expect(face).toBeIn(['A', 'B']);
 			});
 		});
 	});

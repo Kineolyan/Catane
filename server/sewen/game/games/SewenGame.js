@@ -7,6 +7,7 @@ import AGame from 'server/core/game/games/AGame';
 import CardLoader from 'server/sewen/elements/cards/CardLoader';
 import SewenPlayer from 'server/sewen/game/players/SewenPlayer';
 import SewenReferee from 'server/sewen/game/referees/SewenReferee';
+import cities from 'server/sewen/elements/cities/cities';
 
 export class SewenGame extends AGame {
 	constructor(id) {
@@ -37,8 +38,16 @@ export class SewenGame extends AGame {
 		logger.log(`decks: ${this._decks}`);
 	}
 
+	generateCities() {
+		const randomFace = () => Math.random() < 0.5 ? 'A' : 'B';
+		return _(cities).shuffle().take(this._players.size)
+			.map(city => ({ name: city, face: randomFace() }))
+			.value();
+	}
+
 	initGame() {
-		this._playerOrder = _(Array.from(this._players.values()))
+		const players = _(Array.from(this._players.values()))
+		this._playerOrder = players
 			.map(player => player.id)
 			.shuffle()
 			.value();
@@ -46,12 +55,16 @@ export class SewenGame extends AGame {
 		this.players.forEach(player => player.gainCoins(3));
 		this._age = 1;
 
-		// TODO send a message with player name, city, and order in the board
+		const cities = this.generateCities();
 		this.emit('game:start', {
-			players: [ // desc and order
-				{id: 0, name: '', city: ''},
-				{id: 1, name: '', city: ''}
-			]
+			players: players.map((player, i) => ({
+					id: player.id,
+					city: cities[i].name,
+					face: cities[i].face
+				})).reduce((res, description) => {
+					res[this.getPlayerIdx(description)] = description;
+					return res;
+				}, [])
 		});
 	}
 
