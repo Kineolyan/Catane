@@ -3,21 +3,20 @@
 exports.appServer = function() {
 	// Sets the paths for absolute requires
 	var path = require('path');
-	process.env.NODE_PATH = path.join(__dirname, 'build');
+	process.env.NODE_PATH = [
+		path.join(__dirname, 'build'),
+		path.join(__dirname)
+	].join(':');
 	// Resets the module paths
 	require('module').Module._initPaths();
 
-	// Requiring this polyfill to have a fully ES6 environment (Map, Symbol, ...)
-	require('babel/register');
-
 	// Create application
-	var Server = require('server/server');
+	var Server = require('server/server.js').default;
 	Server.TIME_TO_RECONNECT = 15 /* min */ * 60 /* sec */ * 1000;
 
 	// Create environment
-	var Socket = require('server/core/com/sockets');
-	var cUtil = require('server/core/game/util');
-	var idGenerator = cUtil.idGenerator;
+	var Socket = require('server/core/com/sockets').default;
+	var { idGenerator } = require('server/core/game/util');
 
 	var catane = new Server();
 

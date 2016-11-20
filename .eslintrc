@@ -26,7 +26,9 @@
     "io": true
   },
   "parser": "babel-eslint",
-  "plugins": [ "react" ],
+
+  "plugins": [ "react", "jsx-a11y" ],
+
   "rules": {
     // Potential errors
     "no-cond-assign": [2, "except-parens"], // disallow assignment in conditional expressions
@@ -169,8 +171,14 @@
     // "space-unary-ops": 2, // Require or disallow spaces before/after unary operators (words on by default, nonwords off by default)
     // "space-unary-word-ops": 2, // (deprecated) Require or disallow spaces before/after unary operators (words on by default, nonwords off by default)
     "spaced-comment": [1, "always"], // require or disallow a space immediately following the // or /* in a comment (off by default)
-    "wrap-regex": 0 // require regex literals to be wrapped in parentheses (off by default)
+    "wrap-regex": 0, // require regex literals to be wrapped in parentheses (off by default)
 
     // More on http://eslint.org/docs/rules/
+
+    // https://github.com/evcohen/eslint-plugin-jsx-a11y/tree/master/docs/rules
+    "jsx-a11y/aria-role": "warn",
+    "jsx-a11y/img-has-alt": "warn",
+    "jsx-a11y/img-redundant-alt": "warn",
+    "jsx-a11y/no-access-key": "warn"
   }
 }

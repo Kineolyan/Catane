@@ -5,7 +5,6 @@
  Entry point of the interface
  */
 
-import 'babel/register';
 // declare socket first
 
 import { Socket, Channel } from 'client/js/components/libs/socket';

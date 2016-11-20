@@ -2,10 +2,7 @@
 
 // Sets the paths for absolute requires
 var path = require('path');
-process.env.NODE_PATH = [
-	path.join(__dirname, 'build'),
-	path.join(__dirname)
-].join(':');
+process.env.NODE_PATH = path.join(__dirname, 'build');
 // Resets the module paths
 require('module').Module._initPaths();
 
@@ -14,50 +11,13 @@ var del = require('del');
 var cached = require('gulp-cached');
 var jas = require('gulp-jasmine');
 var babel = require('gulp-babel');
-var browserify = require('browserify');
 var notify = require('gulp-notify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
 var runSequence = require('run-sequence');
-
-function pathItem(name) {
-	return function(children) {
-		var items = [name];
-		if (this instanceof Function) {
-			items.unshift(this());
-		}
-		if (children) {
-			items.push(children);
-		}
-		return path.join.apply(path, items);
-	};
-}
-
-var PATHS = pathItem('.');
-PATHS.bin = pathItem('bin');
-
-PATHS.server = pathItem('server');
-PATHS.libs = pathItem('libs');
-
-PATHS.client = pathItem('client');
-PATHS.client.scssLib = pathItem('scss_lib');
-PATHS.client.scss = pathItem('scss');
-PATHS.client.js = pathItem('js');
-PATHS.client.res = pathItem('res');
-
-PATHS.build = pathItem('build');
-PATHS.build.libs = pathItem('libs');
-PATHS.build.server = pathItem('server');
-PATHS.build.client = pathItem('client');
-PATHS.build.client.js = pathItem('js');
-
-PATHS.specs = pathItem('specs');
-PATHS.specs.matchers = pathItem('matchers');
-
-PATHS.docs = pathItem('docs');
-PATHS.docs.libs = pathItem('libs');
-
-PATHS.bower = pathItem('bower');
+const webpack = require('webpack-stream');
+const webpackConfig = require('./config/webpack.config.prod.js');
+const PATHS = require('./config/paths');
 
 /* -- Actions -- */
 
@@ -66,19 +26,36 @@ function buildLibs() {
 	return gulp.src([PATHS.libs('**/*.js')], { base: PATHS.libs() })
 			.pipe(cached('libs-js'))
 			// .pipe(plumber({ errorHandler: notify.onError("Build libs : <%= error.message %>") }))
-			.pipe(babel({ sourceRoot: PATHS.libs() }))
+			.pipe(babel({
+				sourceRoot: PATHS.libs(),
+				plugins: ['transform-es2015-modules-commonjs']
+			}))
 			// .pipe(plumber.stop())
 			.pipe(gulp.dest(PATHS.build.libs()));
 }
 
-function buildClient() {
-	return gulp.src(PATHS.client.js('components/**/*.js'))
-			.pipe(cached('client-js'))
-			// .pipe(plumber({ errorHandler: notify.onError("Build:jsx : <%= error.message %>") }))
-			.pipe(babel())
+function buildServer() {
+	return gulp.src([PATHS.server('**/*.js')], { base: PATHS.server() })
+			.pipe(cached('server-js'))
+			// .pipe(plumber({ errorHandler: notify.onError("Build libs : <%= error.message %>") }))
+			.pipe(babel({
+				sourceRoot: PATHS.server(),
+				plugins: [
+					'transform-es2015-modules-commonjs'
+				]
+			}))
 			// .pipe(plumber.stop())
-			.pipe(gulp.dest(PATHS.build.client('js/components')));
+			.pipe(gulp.dest(PATHS.build.server()));
 }
+
+// function buildClient() {
+// 	return gulp.src(PATHS.client.js('components/**/*.js'))
+// 			.pipe(cached('client-js'))
+// 			// .pipe(plumber({ errorHandler: notify.onError("Build:jsx : <%= error.message %>") }))
+// 			.pipe(babel())
+// 			// .pipe(plumber.stop())
+// 			.pipe(gulp.dest(PATHS.build.client('js/components')));
+// }
 
 function runTests(stream, verbose) {
 	if (verbose === undefined) {
@@ -130,7 +107,7 @@ function cleanOutput(done) {
 
 gulp.task('build:js:libs', buildLibs);
 
-gulp.task('build:js:server', ['build:js:libs']);
+gulp.task('build:js:server', ['build:js:libs'], buildServer);
 
 gulp.task('build:sass', function() {
 	var sass = require('gulp-sass');
@@ -145,7 +122,11 @@ gulp.task('build:sass', function() {
 			.pipe(gulp.dest(PATHS.build.client('css')));
 });
 
-gulp.task('build:js:client', ['build:js:libs'], buildClient);
+gulp.task('build:js:client', /*['build:js:libs'], */function() {
+	return gulp.src(PATHS.build.client.js('components/main.js'))
+		.pipe(webpack(webpackConfig))
+		.pipe(gulp.dest(PATHS.build.client()));
+});
 
 gulp.task('build:js', ['build:js:libs', 'build:js:server', 'build:js:client']);
 
@@ -154,14 +135,14 @@ gulp.task('build:dependencies', function() {
 			.pipe(gulp.dest(PATHS.build.client('bower')));
 });
 
-gulp.task('build:browserify', ['build:js:client', 'build:dependencies'], function() {
-	return browserify({
-		entries: './' + PATHS.build.client('js/components/main.js'),
-		debug: true
-	}).bundle()
-			.pipe(source('catane.js')) // the output filename
-			.pipe(gulp.dest(PATHS.build.client('js'))); // the output directory
-});
+// gulp.task('build:browserify', ['build:js:client', 'build:dependencies'], function() {
+// 	return browserify({
+// 		entries: './' + PATHS.build.client('js/components/main.js'),
+// 		debug: true
+// 	}).bundle()
+// 			.pipe(source('catane.js')) // the output filename
+// 			.pipe(gulp.dest(PATHS.build.client('js'))); // the output directory
+// });
 
 gulp.task('install:css', function() {
 	return gulp.src([
@@ -177,7 +158,7 @@ gulp.task('install:fonts', function() {
 
 gulp.task('install:assets', ['install:css', 'install:fonts']);
 
-gulp.task('build', ['build:js', 'build:sass', 'build:browserify', 'install:assets']);
+gulp.task('build', ['build:js', 'build:sass', 'install:assets']);
 
 /* -- Test task -- */
 
